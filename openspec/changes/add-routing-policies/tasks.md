@@ -31,7 +31,7 @@
 ## 5. Ablation and tuning (A, H8 to H16)
 
 - [x] 5.1 Run the ablations on ordering, `max_paths`, `congestion_lambda`, `util_cap`, one knob at a time, and record the table in the pull request description
-- [ ] 5.2 Set the S2 defaults from the data; if the congestion cost shows no benefit, remove it with its tests and say so in `CHANGELOG.md`
+- [x] 5.2 Set the S2 defaults from the data; if the congestion cost shows no benefit, remove it with its tests and say so in `CHANGELOG.md`
 - [x] 5.3 Time the recompute at 50 nodes and 200 flows; if it is 1 second or more, apply the A3 cut line (lazy bounds, then `max_paths = 2`)
 
 ## 6. Optional, only if core is stable at H12
