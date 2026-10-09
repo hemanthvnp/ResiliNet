@@ -30,7 +30,13 @@ const LAYER_OF_TYPE: Record<string, number> = {
 };
 const WIDTH = 800;
 const ROW_GAP = 120;
-const MAX_PER_ROW = 12; // a wider layer (e.g. 37 generated buildings) wraps onto further rows
+const MAX_PER_ROW = 12;
+const LABEL_ALL_UP_TO = 20; // above this many nodes, building labels overlap and only the backbone is named
+
+/** A node's label: every node on a small network, only services, core and distribution on a large one. */
+export function getNodeLabel(node: { name: string; type: string }, nodeCount: number): string {
+  return nodeCount <= LABEL_ALL_UP_TO || (LAYER_OF_TYPE[node.type] ?? 4) < 3 ? node.name : '';
+} // a wider layer (e.g. 37 generated buildings) wraps onto further rows
 
 /**
  * Deterministic node coordinates: nodes are placed in rows by type (services, core,
@@ -183,7 +189,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
         group: 'nodes' as const,
         data: {
           id: node.id,
-          label: node.name,
+          label: getNodeLabel(node, topology.nodes.length),
           type: node.type,
         },
         position: positions[node.id],
