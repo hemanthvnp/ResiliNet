@@ -180,3 +180,8 @@ def test_scaling_the_template_by_two():  # S4
     flows = resolve_traffic(traffic, resolve_topology(TemplateTopologySpec(template="campus")).topology)
     assert sum(f.rate for f in scale_flows(flows, 2.0)) == 170
 
+
+def test_consecutive_seeds_do_not_collide_after_retry():  # Group 3b
+    effective = [resolve_inputs(DEFAULT_TOPOLOGY.model_copy(update={"seed": s}), DEFAULT_TRAFFIC)[0].seed
+                 for s in range(1, 31)]
+    assert len(set(effective)) == 30, f"effective seeds: {effective}"

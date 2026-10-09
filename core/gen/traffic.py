@@ -1,9 +1,10 @@
 """Seeded traffic generator (PLAN.md sections 2, 7 and 9).
 
 Classes are assigned exactly: largest-remainder counts from `class_mix`, given to
-flows in id order. Each flow then draws, from one random.Random(seed) and in a fixed
-order, a source (a building or hostel), a destination for its class, and a weight
-from 1 to 10. Weights are scaled so the total is about load_factor times the access
+flows in id order. Sources (buildings and hostels) are spread evenly within each
+class, so no building is oversubscribed by chance and fails the path check. Each
+flow then draws, from one random.Random(seed) and in a fixed order, a destination
+for its class and a weight from 1 to 10. Weights are scaled so the total is about load_factor times the access
 capacity, rounding half up with a minimum of 1. All arithmetic on the float inputs
 is exact (Fraction of their decimal form).
 """
@@ -63,6 +64,15 @@ def target_demand(topo: Topology, load_factor: float) -> int:
     return _half_up(_exact(load_factor) * access_capacity(topo))
 
 
+def balanced_sources(rng: random.Random, sources: list[str], count: int) -> list[str]:
+    """`count` sources in random order, each used floor(count/m) or ceil(count/m) times.
+    The remainder goes to distinct sources drawn at random."""
+    base, extra = divmod(count, len(sources))
+    pool = sources * base + rng.sample(sources, extra)
+    rng.shuffle(pool)
+    return pool
+
+
 def generate_traffic(spec: GeneratedTrafficSpec, topo: Topology) -> list[Flow]:
     nodes = {n.id for n in topo.nodes}
     sources = sorted(n.id for n in topo.nodes if n.type in SOURCE_TYPES)
@@ -79,8 +89,7 @@ def generate_traffic(spec: GeneratedTrafficSpec, topo: Topology) -> list[Flow]:
     rng = random.Random(spec.seed)
     drawn = []  # (cls, src, dst, weight), in flow id order
     for cls, count in counts.items():
-        for _ in range(count):
-            src = rng.choice(sources)
+        for src in balanced_sources(rng, sources, count):
             dst = rng.choice(DESTINATIONS[cls])
             weight = rng.randint(*WEIGHT_RANGE)
             drawn.append((cls, src, dst, weight))
