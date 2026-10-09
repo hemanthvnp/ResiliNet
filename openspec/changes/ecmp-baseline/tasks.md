@@ -10,9 +10,11 @@
 ## 1. Branch, review and tests first
 
 - [x] 1.1 Create the branch `feat/ecmp-baseline` from an up-to-date `main` after the cycle-2 plan PR is merged. Verify that `git log -1 main` matches `origin/main` and that `openspec/changes/ecmp-baseline/` exists. Also add an empty `ext/__init__.py` and check that `pytest --collect-only ext` can import `ext` (section 0); if it cannot, apply the `pythonpath` fix in the same commit.
-- [ ] 1.2 A human (D, or another member) re-works by hand the square, shared-first-hop, eight-path and diamond numbers in `specs/ecmp-routing/spec.md`, and records "checked by <name>" in the PR description. Verify that every scenario value matches the hand calculation.
+- [x] 1.2 A human (D, or another member) re-works by hand the square, shared-first-hop, eight-path and diamond numbers in `specs/ecmp-routing/spec.md`, and records "checked by <name>" in the PR description. Verify that every scenario value matches the hand calculation.
+  - Checked by Nithiish (D): square (8/7 and 5/5 split, F2 2 + 3 under strict priority), shared first hop (60/60, then 30/30), eight paths (13x4 + 12x4, excess 40, greedy gap 80 - 30 = 50) and the diamond equalities.
 - [ ] 1.3 D sends `proposal.md`, `design.md` and the spec to ChatGPT for an adversarial review (PLAN-CYCLE2.md §6). Record each finding and its resolution in the PR description. If a finding is accepted, update the spec and design first.
-- [ ] 1.4 D asks ChatGPT to write `ext/tests/test_ecmp.py` from the spec scenarios only, without showing it any implementation. Paste the facts in section 0 into the prompt so the tests import the right names: `from ext.ecmp import Ecmp, EcmpQoS`, policies run through `Simulation`. Commit the tests on their own. Verify that `pytest ext/tests` fails only because `ext/ecmp.py` does not exist yet.
+- [x] 1.4 D asks ChatGPT to write `ext/tests/test_ecmp.py` from the spec scenarios only, without showing it any implementation. Paste the facts in section 0 into the prompt so the tests import the right names: `from ext.ecmp import Ecmp, EcmpQoS`, policies run through `Simulation`. Commit the tests on their own. Verify that `pytest ext/tests` fails only because `ext/ecmp.py` does not exist yet.
+  - Waived by D: D's agent wrote `ext/tests/test_ecmp.py` from the spec scenarios, together with the code, instead of a different model writing it first.
 
 ## 2. Example data
 
@@ -45,4 +47,5 @@
 
 - [ ] 5.1 Send the diff to Gemini or ChatGPT for an adversarial review. Fix accepted findings in the branch and record them in the PR.
 - [x] 5.2 Run the full suite with `pytest`, and `check_invariants` on every ECMP snapshot of `examples/square.json` and the campus template. Verify that all pass.
-- [ ] 5.3 Rebase onto `main`, run `sh .github/scripts/check-history.sh`, and open the pull request from `.github/pull_request_template.md`.
+- [x] 5.3 Rebase onto `main`, run `sh .github/scripts/check-history.sh`, and open the pull request from `.github/pull_request_template.md`.
+  - Done in #36.
