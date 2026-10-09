@@ -5,14 +5,15 @@ import { FlowTable } from './components/FlowTable';
 import { apiClient } from './api/client';
 import { NetworkProvider, useNetwork } from './context/NetworkStore';
 import { Event } from './types/contract';
-import { MOCK_STEP0_SNAPSHOT } from './fixtures/mockData';
 
 export type ViewLayoutMode = 'side-by-side' | 'stacked' | 'toggle';
 
 export const ResiliNetDashboard: React.FC = () => {
   const { state, dispatch } = useNetwork();
   const {
+    scenarioId,
     seed,
+    scenarioEvents,
     topology,
     flows,
     leftPanel,
@@ -33,35 +34,35 @@ export const ResiliNetDashboard: React.FC = () => {
   const [activeTogglePolicy, setActiveTogglePolicy] = useState<'baseline' | 's2'>('s2');
 
   // Interactive failure injection controls
-  const [selectedLinkToToggle, setSelectedLinkToToggle] = useState<string>('L_DC_PRI');
+  const [selectedLinkToToggle, setSelectedLinkToToggle] = useState<string>('');
+  const targetLink = selectedLinkToToggle || topology.links[0]?.id || '';
+  // The scenario's first scripted failure (the demo's primary uplink), if it has one
+  const scriptedFailure = scenarioEvents.find((e) => e.kind === 'fail' && e.links.length > 0)?.links ?? [];
+  const scriptedDown = scriptedFailure.length > 0 && scriptedFailure.every((l) => rightPanel.snapshot.link_state[l] === 'down');
 
   // Initialize initial sessions on mount (Task 3.1: two runs per scenario)
   useEffect(() => {
     async function loadInitial() {
       try {
         dispatch({ type: 'SET_IN_FLIGHT', payload: true });
+        const scenarios = await apiClient.getScenarios();
+        if (scenarios.length === 0) throw new Error('The API lists no scenarios');
+        const scenario_id = scenarios[0].id;
         const [leftRes, rightRes] = await Promise.all([
-          apiClient.createRun({ policy: 'S0-QoS', seed }),
-          apiClient.createRun({ policy: 'S2', seed }),
+          apiClient.createRun({ scenario_id, policy: 'S0-QoS' }),
+          apiClient.createRun({ scenario_id, policy: 'S2' }),
         ]);
 
         dispatch({
           type: 'INIT_SCENARIO',
           payload: {
-            seed,
-            topology,
-            flows,
-            initialSnapshot: rightRes.snapshot,
-          },
-        });
-
-        // Initialize separate run IDs
-        dispatch({
-          type: 'REPLAY_BASELINE_SUCCESS',
-          payload: {
-            policy: 'S0-QoS',
-            runId: leftRes.run_id,
-            snapshot: leftRes.snapshot,
+            scenarioId: scenario_id,
+            seed: rightRes.scenario.seed,
+            scenarioEvents: rightRes.scenario.events,
+            topology: rightRes.topology,
+            flows: rightRes.flows,
+            left: { policy: 'S0-QoS', runId: leftRes.run_id, snapshot: leftRes.snapshot },
+            right: { policy: 'S2', runId: rightRes.run_id, snapshot: rightRes.snapshot },
           },
         });
       } catch (err: any) {
@@ -72,24 +73,27 @@ export const ResiliNetDashboard: React.FC = () => {
       }
     }
     loadInitial();
-  }, [seed, dispatch, topology, flows]);
+  }, [dispatch]);
 
   // Click-to-fail / Click-to-recover handler with click lock (Task 2.3 & 3.1)
-  const handleLinkClick = async (linkId: string, currentStatus: 'up' | 'down') => {
+  const handleLinkClick = (linkId: string, currentStatus: 'up' | 'down') =>
+    handleLinksEvent([linkId], currentStatus === 'up' ? 'fail' : 'recover');
+
+  // One event to both panels; several links fail together as one simultaneous event
+  const handleLinksEvent = async (links: string[], kind: 'fail' | 'recover') => {
     if (inFlight) {
       console.warn('Click ignored: request in flight');
       return; // Click lock
     }
 
     dispatch({ type: 'SET_IN_FLIGHT', payload: true });
-    const kind = currentStatus === 'up' ? 'fail' : 'recover';
-    const event: Event = { step: currentStep + 1, kind, links: [linkId] };
+    const event: Event = { step: currentStep + 1, kind, links };
 
     try {
       // Parallel dispatch to both baseline and S2 engines (Task 3.1)
       const [leftSnapshot, rightSnapshot] = await Promise.all([
-        apiClient.applyEvent(leftPanel.runId, event, leftPanel.policy),
-        apiClient.applyEvent(rightPanel.runId, event, rightPanel.policy),
+        apiClient.applyEvent(leftPanel.runId, event),
+        apiClient.applyEvent(rightPanel.runId, event),
       ]);
 
       dispatch({
@@ -103,7 +107,7 @@ export const ResiliNetDashboard: React.FC = () => {
     } catch (err: any) {
       dispatch({
         type: 'APPLY_EVENT_FAILURE',
-        payload: { error: err.message || `Failed to apply ${kind} event for link ${linkId}` },
+        payload: { error: err.message || `Failed to apply ${kind} event for ${links.join(', ')}` },
       });
     }
   };
@@ -116,15 +120,15 @@ export const ResiliNetDashboard: React.FC = () => {
     try {
       // Create new session for the selected baseline policy
       const { run_id, snapshot: initSnapshot } = await apiClient.createRun({
+        scenario_id: scenarioId,
         policy: newPolicy,
-        seed,
       });
 
       let currentSnapshot = initSnapshot;
 
       // Replay all previous events in order onto the new baseline run
       for (const pastEvent of eventHistory) {
-        currentSnapshot = await apiClient.applyEvent(run_id, pastEvent, newPolicy);
+        currentSnapshot = await apiClient.applyEvent(run_id, pastEvent);
       }
 
       dispatch({
@@ -147,14 +151,11 @@ export const ResiliNetDashboard: React.FC = () => {
     if (inFlight) return;
     dispatch({ type: 'SET_IN_FLIGHT', payload: true });
     try {
-      await Promise.all([
+      const [left, right] = await Promise.all([
         apiClient.resetRun(leftPanel.runId),
         apiClient.resetRun(rightPanel.runId),
       ]);
-      dispatch({
-        type: 'RESET',
-        payload: { step0Snapshot: MOCK_STEP0_SNAPSHOT },
-      });
+      dispatch({ type: 'RESET', payload: { left, right } });
     } catch (err: any) {
       dispatch({
         type: 'APPLY_EVENT_FAILURE',
@@ -255,30 +256,25 @@ export const ResiliNetDashboard: React.FC = () => {
             <span>Failure Injection:</span>
           </div>
 
-          <button
-            className={`btn-failure-quick ${
-              rightPanel.snapshot.link_state['L_DC_PRI'] === 'down' ? 'btn-recover' : 'btn-fail'
-            }`}
-            onClick={() =>
-              handleLinkClick(
-                'L_DC_PRI',
-                rightPanel.snapshot.link_state['L_DC_PRI'] === 'down' ? 'down' : 'up'
-              )
-            }
-            disabled={inFlight}
-            data-testid="quick-fail-btn"
-          >
-            {rightPanel.snapshot.link_state['L_DC_PRI'] === 'down'
-              ? '↺ Recover Primary DC Uplink (L_DC_PRI)'
-              : '⚡ Fail Primary DC Uplink (L_DC_PRI)'}
-          </button>
+          {scriptedFailure.length > 0 && (
+            <button
+              className={`btn-failure-quick ${scriptedDown ? 'btn-recover' : 'btn-fail'}`}
+              onClick={() => handleLinksEvent(scriptedFailure, scriptedDown ? 'recover' : 'fail')}
+              disabled={inFlight}
+              data-testid="quick-fail-btn"
+            >
+              {scriptedDown
+                ? `↺ Recover scenario failure (${scriptedFailure.join(', ')})`
+                : `⚡ Fail scenario link${scriptedFailure.length > 1 ? 's' : ''} (${scriptedFailure.join(', ')})`}
+            </button>
+          )}
 
           <div className="failure-select-group">
             <label htmlFor="link-select">Or target link:</label>
             <select
               id="link-select"
               className="panel-selector"
-              value={selectedLinkToToggle}
+              value={targetLink}
               onChange={(e) => setSelectedLinkToToggle(e.target.value)}
               disabled={inFlight}
               data-testid="link-select"
@@ -295,14 +291,13 @@ export const ResiliNetDashboard: React.FC = () => {
             <button
               className="btn-secondary"
               onClick={() => {
-                const curStatus =
-                  rightPanel.snapshot.link_state[selectedLinkToToggle] === 'down' ? 'down' : 'up';
-                handleLinkClick(selectedLinkToToggle, curStatus);
+                const curStatus = rightPanel.snapshot.link_state[targetLink] === 'down' ? 'down' : 'up';
+                handleLinkClick(targetLink, curStatus);
               }}
-              disabled={inFlight}
+              disabled={inFlight || !targetLink}
               data-testid="toggle-link-btn"
             >
-              {rightPanel.snapshot.link_state[selectedLinkToToggle] === 'down'
+              {rightPanel.snapshot.link_state[targetLink] === 'down'
                 ? '↺ Recover Link'
                 : '⚡ Fail Link'}
             </button>
@@ -369,7 +364,7 @@ export const ResiliNetDashboard: React.FC = () => {
               <KpiStrip
                 metrics={leftPanel.snapshot.metrics}
                 policyName={leftPanel.policy}
-                label={currentStep > 0 ? 'Post-Failure (Overloaded)' : 'Steady State'}
+                label={`Step ${currentStep}`}
               />
 
               <div className="graph-viewport-wrapper">
@@ -422,7 +417,7 @@ export const ResiliNetDashboard: React.FC = () => {
               <KpiStrip
                 metrics={rightPanel.snapshot.metrics}
                 policyName="S2-Resilient"
-                label={currentStep > 0 ? 'Capacity Protected' : 'Optimal Initial'}
+                label={`Step ${currentStep}`}
               />
 
               <div className="graph-viewport-wrapper">

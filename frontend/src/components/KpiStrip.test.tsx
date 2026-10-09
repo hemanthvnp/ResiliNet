@@ -55,4 +55,11 @@ describe('KPI Strip Component (Task 3.4)', () => {
     // Check OVERLOAD_LOSS value
     expect(screen.getByTestId('cause-OVERLOAD_LOSS')).toHaveTextContent('770 Mbps');
   });
+
+  it('shows a dash, not 100%, for a class with no flows', () => {
+    render(<KpiStrip metrics={{ ...MOCK_STEP1_S2_SNAPSHOT.metrics, dr_by_class: { 0: 0.5 } }} />);
+
+    expect(screen.getByText('50.0%')).toBeInTheDocument(); // P0
+    expect(screen.getByText('—')).toBeInTheDocument(); // P1 has no flows
+  });
 });

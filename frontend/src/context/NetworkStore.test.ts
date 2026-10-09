@@ -7,14 +7,20 @@ describe('Network Reducer (Task 2.1)', () => {
     const nextState = networkReducer(initialNetworkState, {
       type: 'INIT_SCENARIO',
       payload: {
+        scenarioId: 'campus-template',
         seed: 99,
+        scenarioEvents: [{ step: 1, kind: 'fail', links: ['L_DC_PRI'] }],
         topology: CAMPUS_TOPOLOGY,
         flows: INITIAL_FLOWS,
-        initialSnapshot: MOCK_STEP0_SNAPSHOT,
+        left: { policy: 'S0-QoS', runId: 'run-left', snapshot: MOCK_STEP0_SNAPSHOT },
+        right: { policy: 'S2', runId: 'run-right', snapshot: MOCK_STEP0_SNAPSHOT },
       },
     });
 
     expect(nextState.seed).toBe(99);
+    expect(nextState.scenarioId).toBe('campus-template');
+    expect(nextState.topology).toBe(CAMPUS_TOPOLOGY);
+    expect([nextState.leftPanel.runId, nextState.rightPanel.runId]).toEqual(['run-left', 'run-right']);
     expect(nextState.eventHistory).toEqual([]);
     expect(nextState.leftPanel.snapshot.step).toBe(0);
     expect(nextState.rightPanel.snapshot.step).toBe(0);
@@ -144,8 +150,12 @@ describe('Network Reducer (Task 2.1)', () => {
 
     const nextState = networkReducer(stateWithHistory, {
       type: 'RESET',
-      payload: { step0Snapshot: MOCK_STEP0_SNAPSHOT },
+      payload: { left: MOCK_STEP0_SNAPSHOT, right: { ...MOCK_STEP0_SNAPSHOT, metrics: { ...MOCK_STEP0_SNAPSHOT.metrics, dr: 0.5 } } },
     });
+
+    // Each panel gets its own server snapshot, not a shared one
+    expect(nextState.leftPanel.snapshot.metrics.dr).toBe(MOCK_STEP0_SNAPSHOT.metrics.dr);
+    expect(nextState.rightPanel.snapshot.metrics.dr).toBe(0.5);
 
     expect(nextState.eventHistory).toEqual([]);
     expect(nextState.leftPanel.snapshot.step).toBe(0);

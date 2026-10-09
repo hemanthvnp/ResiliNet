@@ -131,14 +131,68 @@ export interface Snapshot {
   decisions: DecisionRecord[];
 }
 
+export interface TemplateTopologySpec {
+  template: string; // e.g. "campus"
+}
+
+export interface GeneratedTopologySpec {
+  generator: string;
+  buildings: number;
+  redundancy: number;
+  seed: number;
+}
+
+export type TopologySpec = TemplateTopologySpec | GeneratedTopologySpec;
+
+export interface GeneratedTrafficSpec {
+  generator: string;
+  n_flows: number;
+  load_factor: number;
+  class_mix: Record<number, number>;
+  seed: number;
+}
+
+export type TrafficSpec = Flow[] | GeneratedTrafficSpec;
+
+// A scenario holds specs, not the resolved network: POST /runs returns the resolved
+// topology and flows alongside it (RunResponse).
 export interface Scenario {
   id: string;
-  name?: string;
   seed: number;
-  topology: Topology;
-  flows: Flow[];
+  topology: TopologySpec;
+  traffic: TrafficSpec;
   events: Event[];
   config: PolicyConfig;
+}
+
+// --- API envelopes (api/schemas.py) -------------------------------------------
+
+export interface ScenarioInfo {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export interface RunResponse {
+  run_id: string;
+  scenario: Scenario;
+  topology: Topology;
+  flows: Flow[];
+  snapshot: Snapshot;
+}
+
+// The server assigns the step, so an event request carries none.
+export type EventRequest = Omit<Event, 'step'>;
+
+export interface CompareRow {
+  policy: string;
+  metrics: Metrics; // of the final step
+}
+
+export interface CompareResponse {
+  scenario: Scenario;
+  table: CompareRow[];
+  snapshots: Record<string, Snapshot[]>;
 }
 
 export interface RunSession {

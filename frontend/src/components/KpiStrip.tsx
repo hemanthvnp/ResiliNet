@@ -24,8 +24,9 @@ export const CAUSE_LABELS: Record<string, string> = {
 
 export const KpiStrip: React.FC<KpiStripProps> = ({ metrics, label, policyName }) => {
   const drPercent = (metrics.dr * 100).toFixed(1);
-  const drP0Percent = ((metrics.dr_by_class[0] ?? 1.0) * 100).toFixed(1);
-  const drP1Percent = ((metrics.dr_by_class[1] ?? 1.0) * 100).toFixed(1);
+  // A class with no flows has no delivery ratio (dr_by_class lists only classes with flows): show a dash, not 100%
+  const classPercent = (cls: number) =>
+    metrics.dr_by_class[cls] === undefined ? '—' : `${(metrics.dr_by_class[cls] * 100).toFixed(1)}%`;
 
   const isOverloaded = metrics.overloaded_arcs > 0;
   const maxUtilPercent = (metrics.max_util * 100).toFixed(0);
@@ -49,14 +50,14 @@ export const KpiStrip: React.FC<KpiStripProps> = ({ metrics, label, policyName }
         <div className="kpi-item">
           <div className="kpi-title">P0 Critical</div>
           <div className={`kpi-value ${metrics.dr_by_class[0] < 1.0 ? 'text-danger' : 'text-success'}`}>
-            {drP0Percent}%
+            {classPercent(0)}
           </div>
         </div>
 
         <div className="kpi-item">
           <div className="kpi-title">P1 Academic</div>
           <div className={`kpi-value ${metrics.dr_by_class[1] < 1.0 ? 'text-warning' : 'text-success'}`}>
-            {drP1Percent}%
+            {classPercent(1)}
           </div>
         </div>
 

@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
 import { Topology, Flow, Snapshot, Event } from '../types/contract';
-import { CAMPUS_TOPOLOGY, INITIAL_FLOWS, MOCK_STEP0_SNAPSHOT } from '../fixtures/mockData';
 
 export type BaselinePolicy = 'S0-QoS' | 'S0';
 
@@ -11,7 +10,9 @@ export interface PanelState {
 }
 
 export interface NetworkState {
+  scenarioId: string;
   seed: number;
+  scenarioEvents: Event[]; // the scenario's scripted events, e.g. the primary-uplink failure
   topology: Topology;
   flows: Flow[];
   eventHistory: Event[];
@@ -30,10 +31,13 @@ export type NetworkAction =
   | {
       type: 'INIT_SCENARIO';
       payload: {
+        scenarioId: string;
         seed: number;
+        scenarioEvents: Event[];
         topology: Topology;
         flows: Flow[];
-        initialSnapshot: Snapshot;
+        left: PanelState;
+        right: PanelState;
       };
     }
   | { type: 'SET_BASELINE_POLICY'; payload: BaselinePolicy }
@@ -57,54 +61,65 @@ export type NetworkAction =
   | { type: 'APPLY_EVENT_FAILURE'; payload: { error: string } }
   | { type: 'CLEAR_ERROR' }
   | { type: 'SELECT_FLOW'; payload: string | null }
-  | { type: 'RESET'; payload: { step0Snapshot: Snapshot } };
+  | { type: 'RESET'; payload: { left: Snapshot; right: Snapshot } };
+
+// Shown until the API answers: no network, no traffic, nothing claimed.
+export const EMPTY_SNAPSHOT: Snapshot = {
+  step: 0,
+  link_state: {},
+  allocation: { results: {}, arc_load: {} },
+  metrics: {
+    dr: 0,
+    dr_by_class: {},
+    dr_reach: 0,
+    unserved_by_cause: {},
+    overloaded_arcs: 0,
+    overload_excess: 0,
+    max_util: 0,
+    mean_util: 0,
+    arcs_above_90: 0,
+    link_util: {},
+    latency_stretch: 0,
+    recovery_ratio: null,
+    churn_flows: 0,
+    churn_rate: 0,
+    p0_greedy_gap: 0,
+    compute_ms: 0,
+  },
+  affected_flows: [],
+  decisions: [],
+};
 
 export const initialNetworkState: NetworkState = {
-  seed: 42,
-  topology: CAMPUS_TOPOLOGY,
-  flows: INITIAL_FLOWS,
+  scenarioId: '',
+  seed: 0,
+  scenarioEvents: [],
+  topology: { nodes: [], links: [] },
+  flows: [],
   eventHistory: [],
-  leftPanel: {
-    policy: 'S0-QoS',
-    runId: 'run-s0-qos-init',
-    snapshot: MOCK_STEP0_SNAPSHOT,
-  },
-  rightPanel: {
-    policy: 'S2',
-    runId: 'run-s2-init',
-    snapshot: MOCK_STEP0_SNAPSHOT,
-  },
-  selectedFlowId: 'F03',
+  leftPanel: { policy: 'S0-QoS', runId: '', snapshot: EMPTY_SNAPSHOT },
+  rightPanel: { policy: 'S2', runId: '', snapshot: EMPTY_SNAPSHOT },
+  selectedFlowId: null,
   inFlight: false,
   error: null,
-  lastGoodSnapshots: {
-    left: MOCK_STEP0_SNAPSHOT,
-    right: MOCK_STEP0_SNAPSHOT,
-  },
+  lastGoodSnapshots: { left: EMPTY_SNAPSHOT, right: EMPTY_SNAPSHOT },
 };
 
 export function networkReducer(state: NetworkState, action: NetworkAction): NetworkState {
   switch (action.type) {
     case 'INIT_SCENARIO': {
-      const { seed, topology, flows, initialSnapshot } = action.payload;
+      const { scenarioId, seed, scenarioEvents, topology, flows, left, right } = action.payload;
       return {
         ...state,
+        scenarioId,
         seed,
+        scenarioEvents,
         topology,
         flows,
         eventHistory: [],
-        leftPanel: {
-          ...state.leftPanel,
-          snapshot: initialSnapshot,
-        },
-        rightPanel: {
-          ...state.rightPanel,
-          snapshot: initialSnapshot,
-        },
-        lastGoodSnapshots: {
-          left: initialSnapshot,
-          right: initialSnapshot,
-        },
+        leftPanel: left,
+        rightPanel: right,
+        lastGoodSnapshots: { left: left.snapshot, right: right.snapshot },
         error: null,
         inFlight: false,
       };
@@ -216,22 +231,13 @@ export function networkReducer(state: NetworkState, action: NetworkAction): Netw
     }
 
     case 'RESET': {
-      const { step0Snapshot } = action.payload;
+      const { left, right } = action.payload;
       return {
         ...state,
         eventHistory: [],
-        leftPanel: {
-          ...state.leftPanel,
-          snapshot: step0Snapshot,
-        },
-        rightPanel: {
-          ...state.rightPanel,
-          snapshot: step0Snapshot,
-        },
-        lastGoodSnapshots: {
-          left: step0Snapshot,
-          right: step0Snapshot,
-        },
+        leftPanel: { ...state.leftPanel, snapshot: left },
+        rightPanel: { ...state.rightPanel, snapshot: right },
+        lastGoodSnapshots: { left, right },
         error: null,
         inFlight: false,
       };

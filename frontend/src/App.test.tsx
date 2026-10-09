@@ -2,7 +2,39 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import App from './App';
 import { apiClient } from './api/client';
-import { MOCK_STEP1_S2_SNAPSHOT, MOCK_STEP1_S0_QOS_SNAPSHOT } from './fixtures/mockData';
+import {
+  CAMPUS_TOPOLOGY,
+  INITIAL_FLOWS,
+  MOCK_STEP0_SNAPSHOT,
+  MOCK_STEP1_S2_SNAPSHOT,
+  MOCK_STEP1_S0_QOS_SNAPSHOT,
+} from './fixtures/mockData';
+import { RunResponse } from './types/contract';
+
+// A fake API server: run ids name their policy, the scenario scripts the uplink failure.
+function stubApi() {
+  vi.spyOn(apiClient, 'getScenarios').mockResolvedValue([
+    { id: 'campus-template', name: 'Campus', description: 'test campus' },
+  ]);
+  vi.spyOn(apiClient, 'createRun').mockImplementation(async ({ scenario_id, policy }) => ({
+    run_id: `run-${policy}`,
+    scenario: {
+      id: scenario_id,
+      seed: 42,
+      topology: { template: 'campus' },
+      traffic: INITIAL_FLOWS,
+      events: [{ step: 1, kind: 'fail', links: ['L_DC_PRI'] }],
+      config: { order: 'class_size_desc', max_paths: 3, congestion_lambda: 0, util_cap: 1.0 },
+    },
+    topology: CAMPUS_TOPOLOGY,
+    flows: INITIAL_FLOWS,
+    snapshot: MOCK_STEP0_SNAPSHOT,
+  }) as RunResponse);
+  vi.spyOn(apiClient, 'applyEvent').mockImplementation(async (runId) =>
+    runId === 'run-S2' ? MOCK_STEP1_S2_SNAPSHOT : MOCK_STEP1_S0_QOS_SNAPSHOT,
+  );
+  vi.spyOn(apiClient, 'resetRun').mockResolvedValue(MOCK_STEP0_SNAPSHOT);
+}
 
 // Cytoscape mock for jsdom
 vi.mock('cytoscape', () => {
@@ -27,6 +59,16 @@ vi.mock('cytoscape', () => {
 describe('App Component (Phase 1 & Phase 2)', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    stubApi();
+  });
+
+  it('loads the first listed scenario into both panels with one run per policy (Task 1.5 & 3.1)', async () => {
+    render(<App />);
+
+    expect(await screen.findByTestId('quick-fail-btn')).toHaveTextContent('L_DC_PRI');
+    expect(apiClient.createRun).toHaveBeenCalledWith({ scenario_id: 'campus-template', policy: 'S0-QoS' });
+    expect(apiClient.createRun).toHaveBeenCalledWith({ scenario_id: 'campus-template', policy: 'S2' });
+    expect(screen.getByText('42')).toBeInTheDocument(); // seed from the API's scenario
   });
 
   it('renders the ResiliNet application header and main dashboard (Task 1.2)', async () => {
@@ -41,13 +83,10 @@ describe('App Component (Phase 1 & Phase 2)', () => {
   });
 
   it('handles link failure event and updates both panels (Task 2.3 & Task 2.6)', async () => {
-    const applyEventSpy = vi.spyOn(apiClient, 'applyEvent');
-    applyEventSpy.mockImplementation(async (_runId, _event, policy) => {
-      if (policy === 'S2') return MOCK_STEP1_S2_SNAPSHOT;
-      return MOCK_STEP1_S0_QOS_SNAPSHOT;
-    });
+    const applyEventSpy = vi.mocked(apiClient.applyEvent);
 
     render(<App />);
+    await screen.findByTestId('quick-fail-btn'); // runs created
 
     await waitFor(() => {
       expect((global as any).__mockCytoscapeTapEdge).toBeDefined();
@@ -65,20 +104,24 @@ describe('App Component (Phase 1 & Phase 2)', () => {
     });
 
     await waitFor(() => {
-      expect(applyEventSpy).toHaveBeenCalled();
+      expect(applyEventSpy).toHaveBeenCalledTimes(2);
     });
+    // The same event goes to each panel's own run
+    const calledRuns = applyEventSpy.mock.calls.map(([runId]) => runId).sort();
+    expect(calledRuns).toEqual(['run-S0-QoS', 'run-S2']);
+    expect(applyEventSpy.mock.calls[0][1]).toMatchObject({ kind: 'fail', links: ['L_DC_PRI'] });
 
-    // Verify step incremented and post-failure state reflected
+    // Verify step incremented in both panels
     await waitFor(() => {
-      expect(screen.getByText('Post-Failure (Overloaded)')).toBeInTheDocument();
+      expect(screen.getAllByText('Step 1')).toHaveLength(2);
     });
   });
 
   it('displays error banner on request failure while retaining snapshots (Task 2.5)', async () => {
-    const applyEventSpy = vi.spyOn(apiClient, 'applyEvent');
-    applyEventSpy.mockRejectedValueOnce(new Error('Simulated backend timeout'));
+    vi.mocked(apiClient.applyEvent).mockRejectedValueOnce(new Error('Simulated backend timeout'));
 
     render(<App />);
+    await screen.findByTestId('quick-fail-btn');
 
     await waitFor(() => {
       expect((global as any).__mockCytoscapeTapEdge).toBeDefined();
@@ -127,10 +170,11 @@ describe('App Component (Phase 1 & Phase 2)', () => {
   });
 
   it('replays event history when baseline policy is switched (Task 3.3)', async () => {
-    const createRunSpy = vi.spyOn(apiClient, 'createRun');
-    const applyEventSpy = vi.spyOn(apiClient, 'applyEvent');
+    const createRunSpy = vi.mocked(apiClient.createRun);
+    const applyEventSpy = vi.mocked(apiClient.applyEvent);
 
     render(<App />);
+    await screen.findByTestId('quick-fail-btn');
 
     await waitFor(() => {
       expect((global as any).__mockCytoscapeTapEdge).toBeDefined();
@@ -152,7 +196,23 @@ describe('App Component (Phase 1 & Phase 2)', () => {
 
     // Should create new run for S0 and replay the event
     await waitFor(() => {
-      expect(createRunSpy).toHaveBeenCalledWith(expect.objectContaining({ policy: 'S0' }));
+      expect(createRunSpy).toHaveBeenCalledWith({ scenario_id: 'campus-template', policy: 'S0' });
+    });
+    // ...and replays the failure onto the new S0 run
+    await waitFor(() => {
+      expect(applyEventSpy).toHaveBeenCalledWith('run-S0', expect.objectContaining({ links: ['L_DC_PRI'] }));
+    });
+  });
+
+  it('resets both panels to the snapshots the server returns', async () => {
+    render(<App />);
+    await screen.findByTestId('quick-fail-btn');
+
+    fireEvent.click(screen.getByText('Reset'));
+
+    await waitFor(() => {
+      expect(apiClient.resetRun).toHaveBeenCalledWith('run-S0-QoS');
+      expect(apiClient.resetRun).toHaveBeenCalledWith('run-S2');
     });
   });
 });
