@@ -9,7 +9,7 @@
 
 - [x] 2.1 Add `cli/main.py` with shared scenario and config arguments and the `run` subcommand (snapshot sequence to JSON, headline metrics to stdout), with tests: the diamond under S2 exits 0 with valid output, an unknown policy exits non-zero and names it
 - [x] 2.2 Add the `compare` subcommand with the default policy list, with a test that the diamond gives four rows and the S2 row shows `DR` 0.80 and 0 overloaded arcs at the healthy step
-- [ ] 2.3 Add the config flags (`--order`, `--max-paths`, `--lambda`, `--util-cap`), with a test that a path limit of 1 reports F1 as `PATH_LIMIT`
+- [x] 2.3 Add the config flags (`--order`, `--max-paths`, `--lambda`, `--util-cap`), with a test that a path limit of 1 reports F1 as `PATH_LIMIT`
 - [x] 2.4 Add a test that two runs of the same generator spec and seed write identical output once `compute_ms` is masked, and a test that `cli/` does not import `api`
 
 ## 3. Benchmark runner (D, H8 to H12)

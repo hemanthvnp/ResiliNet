@@ -116,3 +116,21 @@ def test_cli_runs_without_importing_the_api():
             "bad = sorted(m for m in sys.modules if m.split('.')[0] in ('api', 'fastapi', 'starlette'));"
             "assert rc == 0 and not bad, bad")
     subprocess.run([sys.executable, "-c", code], cwd=ROOT, check=True, capture_output=True)
+
+
+# --- config flags change the result (2.3) -------------------------------------
+
+def test_a_path_limit_of_one_reports_f1_as_path_limit(tmp_path):
+    # PLAN.md section 5 on the healthy diamond: F1 (15) takes A-B-D (10), A-C-D still has room,
+    # but one path is all it may use, so 5 are left with cause PATH_LIMIT.
+    out = tmp_path / "limit.json"
+    assert main(["run", "--scenario", "07_diamond", "--policy", "S2", "--max-paths", "1", "--out", str(out)]) == 0
+    f1 = SNAPSHOTS.validate_json(out.read_text())[0].allocation.results["F1"]
+    assert (f1.cause, f1.delivered, f1.unserved, len(f1.paths)) == ("PATH_LIMIT", 10.0, 5.0, 1)
+
+
+def test_the_default_path_limit_splits_f1_over_two_paths(tmp_path):
+    out = tmp_path / "default.json"
+    assert main(["run", "--scenario", "07_diamond", "--policy", "S2", "--out", str(out)]) == 0
+    f1 = SNAPSHOTS.validate_json(out.read_text())[0].allocation.results["F1"]
+    assert (f1.cause, f1.delivered, len(f1.paths)) == ("NONE", 15.0, 2)
