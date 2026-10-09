@@ -55,7 +55,20 @@ describe('API client against the REST contract (Task 1.5)', () => {
   it('explains how to start the API when it cannot be reached', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
 
-    await expect(new ApiClient('/api').getScenarios()).rejects.toThrow('REROUTER_MOCK=1 uvicorn api.app:app');
+    await expect(new ApiClient('/api').getScenarios()).rejects.toThrow('Start it with: uvicorn api.app:app --port 8000');
+  });
+
+  it('treats the dev proxy\'s empty 500 as a backend that is down', async () => {
+    // What Vite's /api proxy answers when nothing listens on port 8000
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 500, statusText: 'Internal Server Error' })));
+
+    await expect(new ApiClient('/api').getScenarios()).rejects.toThrow('Cannot reach the API at /api');
+  });
+
+  it("still reports the API's own JSON error for a 5xx", async () => {
+    stubFetch(501, { detail: 'live mode needs core/sim' });
+
+    await expect(new ApiClient('/api').getScenarios()).rejects.toThrow('HTTP 501: live mode needs core/sim');
   });
 
   it('records whether the API answered in mock mode', async () => {

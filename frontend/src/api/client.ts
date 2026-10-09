@@ -22,22 +22,30 @@ export class ApiClient {
 
   constructor(private baseUrl: string = '/api') {}
 
+  private unreachable() {
+    return new Error(
+      `Cannot reach the API at ${this.baseUrl}. Start it with: uvicorn api.app:app --port 8000` +
+        ' (REROUTER_MOCK=1 for fixtures only), or use "Load saved run".',
+    );
+  }
+
   private async request<T>(path: string, init?: RequestInit): Promise<T> {
     let res: Response;
     try {
       res = await fetch(`${this.baseUrl}${path}`, init);
     } catch {
-      throw new Error(
-        `Cannot reach the API at ${this.baseUrl}. Start it with: REROUTER_MOCK=1 uvicorn api.app:app --reload`,
-      );
+      throw this.unreachable();
     }
     if (!res.ok) {
-      let detail = res.statusText;
+      let detail: string;
       try {
         const parsed = await res.json();
         detail = typeof parsed.detail === 'string' ? parsed.detail : JSON.stringify(parsed.detail);
       } catch {
-        // no JSON body: keep the status text
+        // The API always answers errors in JSON. A 5xx without it comes from the dev proxy,
+        // which answers 500 with an empty body when the backend is down.
+        if (res.status >= 500) throw this.unreachable();
+        detail = res.statusText;
       }
       throw new Error(`HTTP ${res.status}: ${detail}`);
     }

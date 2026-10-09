@@ -7,7 +7,7 @@
 
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-dim: #8391a7; /* dimmer than --text-muted, yet 4.5:1 on the panels (WCAG AA, task 5.3) */
 
   --accent-cyan: #38bdf8;
   --accent-blue: #0284c7;
