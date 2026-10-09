@@ -12,16 +12,19 @@ requires-python = ">=3.11"
 dependencies = [
     "pydantic==2.12.5",
     "networkx==3.5",
+    "fastapi==0.142.4",
+    "uvicorn==0.53.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest==8.4.2",
     "hypothesis==6.135.0",
+    "httpx==0.28.1",
 ]
 
 [tool.setuptools.packages.find]
-include = ["core*"]
+include = ["core*", "api*"]
 
 [tool.pytest.ini_options]
 # Unit tests live beside each module in core/<module>/tests/; importlib mode lets
