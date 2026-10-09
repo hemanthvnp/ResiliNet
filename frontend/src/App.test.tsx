@@ -441,4 +441,26 @@ describe('App Component (Phase 1 & Phase 2)', () => {
 
     expect(await screen.findByTestId('benchmark-chart')).toHaveTextContent('Source: bench.csv');
   });
+
+  it('replays the last event in three stages, and another event closes the player (Task 5.6)', async () => {
+    render(<App />);
+    fireEvent.click(await screen.findByTestId('quick-fail-btn'));
+    await waitFor(() => expect(screen.getAllByText('Step 1')).toHaveLength(2));
+    expect(screen.getByTestId('stage-player')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('stage-2'));
+    expect(screen.getAllByText('Link fails: routes not yet recomputed')).toHaveLength(2);
+    expect(screen.getByTestId('stage-caption')).toHaveTextContent('L_DC_PRI');
+    expect(screen.getByTestId('stage-caption')).toHaveTextContent('3 flows were using it');
+
+    fireEvent.click(screen.getByTestId('stage-1'));
+    expect(screen.getAllByText('Before the event')).toHaveLength(2);
+
+    fireEvent.click(screen.getByTestId('stage-3'));
+    expect(screen.getAllByText('Rerouted')).toHaveLength(2);
+
+    // another event: the panels show the current step again
+    fireEvent.click(screen.getByTestId('quick-fail-btn'));
+    await waitFor(() => expect(screen.queryByTestId('stage-caption')).not.toBeInTheDocument());
+  });
 });
