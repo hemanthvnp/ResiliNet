@@ -8,6 +8,11 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- Metrics and the invariant checker (`core/metrics/`): `compute_metrics` gives every
+  PLAN.md section 8 measure from the topology, flows and allocation alone, and
+  `check_invariants` reports every violation of I1 to I11 at once, sorted, sharing
+  no code with the policies. Helpers for I8 (`snapshots_identical`) and I10
+  (`class_isolation`).
 - Routing policies and decision records (`core/routing/`, `core/explain/`): S0
   (latency shortest path, proportional loss), S0-QoS (the same routes with strict
   priority on each arc), S1 and S2 (one allocator: flows placed in order on the
