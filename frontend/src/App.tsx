@@ -4,6 +4,7 @@ import { KpiStrip } from './components/KpiStrip';
 import { Legend } from './components/Legend';
 import { FlowTable, CLASS_COLORS } from './components/FlowTable';
 import { DecisionPanel } from './components/DecisionPanel';
+import { LinkDetailsCard } from './components/LinkDetailsCard';
 import { Pair, Stage, StagePlayer, changedLinks, stageCaption, stageSnapshot } from './components/StagePlayer';
 import { BenchmarkChart, BenchmarkRow, parseBenchmarkCsv } from './components/BenchmarkChart';
 import { apiClient } from './api/client';
@@ -56,6 +57,10 @@ export const ResiliNetDashboard: React.FC = () => {
   // Interactive failure injection controls
   const [selectedLinkToToggle, setSelectedLinkToToggle] = useState<string>('');
   const targetLink = selectedLinkToToggle || topology.links[0]?.id || '';
+  // Link inspector and capacity label states
+  const [inspectedLinkId, setInspectedLinkId] = useState<string | null>(null);
+  const [showCapacityLabels, setShowCapacityLabels] = useState<boolean>(true);
+  const [clickAction, setClickAction] = useState<'fail' | 'inspect'>('fail');
   // The scenario's first scripted failure (the demo's primary uplink), if it has one
   const scriptedFailure = scenarioEvents.find((e) => e.kind === 'fail' && e.links.length > 0)?.links ?? [];
   const scriptedDown = scriptedFailure.length > 0 && scriptedFailure.every((l) => rightPanel.snapshot.link_state[l] === 'down');
@@ -205,10 +210,15 @@ export const ResiliNetDashboard: React.FC = () => {
     loadLive();
   }, [dispatch]);
 
-  // Click-to-fail / Click-to-recover handler with click lock (Task 2.3 & 3.1)
+  // Click-to-fail / Click-to-inspect handler with click lock (Task 2.3 & 3.1)
   const eventLock = useRef(false);
-  const handleLinkClick = (linkId: string, currentStatus: 'up' | 'down') =>
-    handleLinksEvent([linkId], currentStatus === 'up' ? 'fail' : 'recover');
+  const handleLinkClick = (linkId: string, currentStatus: 'up' | 'down') => {
+    setSelectedLinkToToggle(linkId);
+    setInspectedLinkId(linkId);
+    if (clickAction === 'fail') {
+      handleLinksEvent([linkId], currentStatus === 'up' ? 'fail' : 'recover');
+    }
+  };
 
   // One event to both panels; several links fail together as one simultaneous event
   const handleLinksEvent = async (links: string[], kind: 'fail' | 'recover') => {
@@ -585,21 +595,48 @@ export const ResiliNetDashboard: React.FC = () => {
             </button>
           )}
 
+          {/* Link Capacity Labels Toggle */}
+          <button
+            type="button"
+            className={`btn-secondary ${showCapacityLabels ? 'btn-toggle-active' : ''}`}
+            onClick={() => setShowCapacityLabels((on) => !on)}
+            data-testid="toggle-link-sizes-btn"
+            title="Toggle link capacity and usage labels on all edges"
+          >
+            {showCapacityLabels ? '👁️ Link Sizes: ON' : '👁️ Link Sizes: OFF'}
+          </button>
+
+          {/* Click Mode Toggle */}
+          <button
+            type="button"
+            className={`btn-secondary ${clickAction === 'inspect' ? 'btn-toggle-active' : ''}`}
+            onClick={() => setClickAction((mode) => (mode === 'fail' ? 'inspect' : 'fail'))}
+            data-testid="toggle-click-mode-btn"
+            title={clickAction === 'inspect' ? 'Clicking link opens details inspector without failing' : 'Clicking link immediately toggles failure'}
+          >
+            {clickAction === 'inspect' ? '🔍 Mode: Inspect Details' : '⚡ Mode: Direct Fail/Recover'}
+          </button>
+
           <div className="failure-select-group">
             <label htmlFor="link-select">Or target link:</label>
             <select
               id="link-select"
               className="panel-selector"
               value={targetLink}
-              onChange={(e) => setSelectedLinkToToggle(e.target.value)}
+              onChange={(e) => {
+                setSelectedLinkToToggle(e.target.value);
+                setInspectedLinkId(e.target.value);
+              }}
               disabled={locked}
               data-testid="link-select"
             >
               {topology.links.map((link) => {
                 const status = rightPanel.snapshot.link_state[link.id] || 'up';
+                const util = rightPanel.snapshot.metrics.link_util[link.id];
+                const used = util !== undefined ? Math.round(util * link.capacity) : 0;
                 return (
                   <option key={link.id} value={link.id}>
-                    {link.id} ({link.u} ↔ {link.v}) [{status.toUpperCase()}]
+                    {link.id} ({link.u} ↔ {link.v}) · {link.capacity}M (used: {used}M) [{status.toUpperCase()}]
                   </option>
                 );
               })}
@@ -641,6 +678,22 @@ export const ResiliNetDashboard: React.FC = () => {
 
         {before && <StagePlayer stage={stage} onStage={setStage} caption={caption} eventLabel={eventLabel} />}
 
+        {/* Link Capacity & Usage Details Card */}
+        {inspectedLinkId && (
+          <LinkDetailsCard
+            linkId={inspectedLinkId}
+            topology={topology}
+            baselineSnapshot={leftPanel.snapshot}
+            s2Snapshot={rightPanel.snapshot}
+            baselinePolicy={leftPanel.policy}
+            onToggleStatus={(linkId, currentStatus) => {
+              handleLinksEvent([linkId], currentStatus === 'up' ? 'fail' : 'recover');
+            }}
+            onClose={() => setInspectedLinkId(null)}
+            disabled={locked}
+          />
+        )}
+
         {/* Comparison Grid (Side-by-side vs Stacked vs Toggle) */}
         <div
           className={`comparison-grid ${
@@ -679,11 +732,16 @@ export const ResiliNetDashboard: React.FC = () => {
               />
 
               <div className="graph-viewport-wrapper">
-                <div className="graph-instruction-banner">Click any link to fail / recover</div>
+                <div className="graph-instruction-banner">
+                  {clickAction === 'inspect' ? 'Click any link to inspect capacity & usage' : 'Click any link to fail / recover'}
+                </div>
                 <TopologyGraph
                   topology={topology}
                   snapshot={leftShown}
                   onLinkClick={handleLinkClick}
+                  onLinkSelect={setInspectedLinkId}
+                  selectedLinkId={inspectedLinkId ?? undefined}
+                  showCapacityLabels={showCapacityLabels}
                   {...graphProps(leftPanel.snapshot, leftShown, 'left')}
                   readOnly={locked}
                   viewport={sharedViewport}
@@ -719,11 +777,16 @@ export const ResiliNetDashboard: React.FC = () => {
               />
 
               <div className="graph-viewport-wrapper">
-                <div className="graph-instruction-banner">Synchronized parallel view</div>
+                <div className="graph-instruction-banner">
+                  {clickAction === 'inspect' ? 'Click any link to inspect capacity & usage' : 'Synchronized parallel view'}
+                </div>
                 <TopologyGraph
                   topology={topology}
                   snapshot={rightShown}
                   onLinkClick={handleLinkClick}
+                  onLinkSelect={setInspectedLinkId}
+                  selectedLinkId={inspectedLinkId ?? undefined}
+                  showCapacityLabels={showCapacityLabels}
                   {...graphProps(rightPanel.snapshot, rightShown, 'right')}
                   readOnly={locked}
                   viewport={sharedViewport}

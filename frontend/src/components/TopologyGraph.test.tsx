@@ -116,6 +116,10 @@ describe('Selected flow route highlight (Task 4.1)', () => {
     expect(getLinkLabel(0.9, false)).toBe('90%');
     expect(getLinkLabel(0.5, false)).toBe('');
     expect(getLinkLabel(undefined, false)).toBe('');
+
+    // When showCapacityLabels is enabled: displays used/capacity
+    expect(getLinkLabel(0.45, false, 1000, true)).toBe('450/1000M');
+    expect(getLinkLabel(0.0, true, 1000, true)).toBe('DOWN (1000M)');
   });
 
   it('names every node on the campus template but only the backbone on a large network', () => {
@@ -137,6 +141,9 @@ describe('Selected flow route highlight (Task 4.1)', () => {
     expect(getLinkHint(topo, snap('up'), 'L6')).toBe('Click to fail L6: C1 ↔ Distribution 1 (20 Mbps)');
     expect(getLinkHint(topo, snap('down'), 'L6')).toBe('Click to recover L6: C1 ↔ Distribution 1 (20 Mbps)');
     expect(getLinkHint(topo, snap('up'), 'L99')).toBe('');
+
+    // Detailed hint with capacity and usage
+    expect(getLinkHint(topo, snap('up'), 'L6', true)).toContain('Cap: 20M');
   });
 
   it('draws every link at least 3.5 px wide so it is easy to click', () => {

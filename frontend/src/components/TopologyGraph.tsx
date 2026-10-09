@@ -11,6 +11,9 @@ export interface TopologyGraphProps {
   topology: Topology;
   snapshot: Snapshot;
   onLinkClick?: (linkId: string, currentStatus: 'up' | 'down') => void;
+  onLinkSelect?: (linkId: string) => void;
+  selectedLinkId?: string;
+  showCapacityLabels?: boolean;
   highlightedArcs?: string[]; // e.g. ["L_DC_PRI:N_CORE1>N_DC"]
   flowRates?: Record<string, number>; // link id -> Mbps of the animated flow(s); see flowRatesByLink
   highlightColor?: string;
@@ -125,20 +128,42 @@ function interpolateColor(color1: string, color2: string, factor: number): strin
 /**
  * Text on the edge, so a failed link, a full link and an overloaded one can be told apart
  * without colour (a link at 100% and a failed link are both red; task 5.3).
+ * When showCapacityLabels is true, displays used/capacity (e.g. 450/1000M).
  */
-export function getLinkLabel(util: number | undefined, isDown: boolean): string {
-  if (isDown) return 'DOWN';
+export function getLinkLabel(
+  util: number | undefined,
+  isDown: boolean,
+  capacity?: number,
+  showCapacityLabels: boolean = false,
+): string {
+  if (isDown) return showCapacityLabels && capacity !== undefined ? `DOWN (${capacity}M)` : 'DOWN';
+  if (showCapacityLabels && capacity !== undefined) {
+    const used = util !== undefined ? Math.round(util * capacity) : 0;
+    return `${used}/${capacity}M`;
+  }
   if (util !== undefined && util >= 0.9) return `${Math.round(util * 100)}%`;
   return '';
 }
 
 /** The hint shown while the mouse is over a link, e.g. "Click to fail L6: Core 1 ↔ Distribution 1". */
-export function getLinkHint(topology: Topology, snapshot: Snapshot, linkId: string): string {
+export function getLinkHint(
+  topology: Topology,
+  snapshot: Snapshot,
+  linkId: string,
+  detailed: boolean = false,
+): string {
   const link = topology.links.find((l) => l.id === linkId);
   if (!link) return '';
   const name = (id: string) => topology.nodes.find((n) => n.id === id)?.name ?? id;
   const verb = snapshot.link_state[linkId] === 'down' ? 'recover' : 'fail';
-  return `Click to ${verb} ${linkId}: ${name(link.u)} ↔ ${name(link.v)} (${link.capacity} Mbps)`;
+  if (!detailed) {
+    return `Click to ${verb} ${linkId}: ${name(link.u)} ↔ ${name(link.v)} (${link.capacity} Mbps)`;
+  }
+  const util = snapshot.metrics.link_util[linkId];
+  const isDown = snapshot.link_state[linkId] === 'down';
+  const used = isDown ? 0 : util !== undefined ? Math.round(util * link.capacity) : 0;
+  const pct = isDown ? 'DOWN' : util !== undefined ? `${Math.round(util * 100)}%` : '0%';
+  return `${linkId}: ${name(link.u)} ↔ ${name(link.v)} | Cap: ${link.capacity}M | Used: ${used}M (${pct}) | Click to inspect & toggle`;
 }
 
 export const ZOOM_STEP = 1.3;
@@ -159,16 +184,26 @@ export function getEdgeElements(
   highlightedArcs: string[],
   highlightColor: string,
   flowRates: Record<string, number> = {},
+  showCapacityLabels: boolean = false,
+  selectedLinkId?: string,
 ): ElementDefinition[] {
   const maxRate = Math.max(0, ...Object.values(flowRates));
   return topology.links.map((link) => {
     const isDown = snapshot.link_state[link.id] === 'down';
     const util = snapshot.metrics.link_util[link.id];
     const isHighlighted = highlightedArcs.some((arc) => arc.startsWith(`${link.id}:`));
+    const isSelected = selectedLinkId === link.id;
 
     // Capacity scaled thickness: 2px (500M) to 7px (2000M)
     // at least 3.5 px, so a line is easy to hit with the mouse when the campus is zoomed out
     const width = Math.min(8, Math.max(3.5, Math.round((link.capacity / 2000) * 7)));
+
+    let edgeLabel = getLinkLabel(util, isDown, link.capacity, showCapacityLabels);
+    if (isSelected && !showCapacityLabels) {
+      edgeLabel = isDown
+        ? `DOWN (${link.capacity}M)`
+        : `${Math.round((util || 0) * link.capacity)}/${link.capacity}M`;
+    }
 
     return {
       group: 'edges' as const,
@@ -180,14 +215,22 @@ export function getEdgeElements(
         latency: link.latency,
         status: isDown ? 'down' : 'up',
         util: util !== undefined ? (util * 100).toFixed(0) : '0',
-        color: isHighlighted ? highlightColor : getLinkColor(util, isDown),
+        color: isSelected ? '#f59e0b' : isHighlighted ? highlightColor : getLinkColor(util, isDown),
         lineStyle: isDown ? 'dashed' : 'solid',
         // a link carrying the animated flow is as thick as its share of the flow (3.5 to 10 px)
-        width: flowRates[link.id] ? 3.5 + (6.5 * flowRates[link.id]) / maxRate : isHighlighted ? width + 2 : width,
-        label: getLinkLabel(util, isDown),
+        width: flowRates[link.id]
+          ? 3.5 + (6.5 * flowRates[link.id]) / maxRate
+          : isSelected
+          ? width + 3
+          : isHighlighted
+          ? width + 2
+          : width,
+        label: edgeLabel,
       },
       // flowing: the animated flow uses this link; lossy: and the link is overloaded, so traffic is lost here
-      classes: flowRates[link.id] && !isDown ? ((util ?? 0) > 1 ? 'flowing lossy' : 'flowing') : '',
+      classes: `${flowRates[link.id] && !isDown ? ((util ?? 0) > 1 ? 'flowing lossy' : 'flowing') : ''} ${
+        isSelected ? 'selected-edge' : ''
+      }`.trim(),
     };
   });
 }
@@ -196,6 +239,9 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
   topology,
   snapshot,
   onLinkClick,
+  onLinkSelect,
+  selectedLinkId,
+  showCapacityLabels = false,
   highlightedArcs = [],
   flowRates = {},
   highlightColor = '#38bdf8',
@@ -212,6 +258,8 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
   // by dragging did nothing.
   const onLinkClickRef = useRef(onLinkClick);
   onLinkClickRef.current = onLinkClick;
+  const onLinkSelectRef = useRef(onLinkSelect);
+  onLinkSelectRef.current = onLinkSelect;
   const onViewportChangeRef = useRef(onViewportChange);
   onViewportChangeRef.current = onViewportChange;
 
@@ -239,7 +287,15 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
         },
         position: positions[node.id],
       })),
-      ...getEdgeElements(topology, snapshot, highlightedArcs, highlightColor, flowRates),
+      ...getEdgeElements(
+        topology,
+        snapshot,
+        highlightedArcs,
+        highlightColor,
+        flowRates,
+        showCapacityLabels,
+        selectedLinkId,
+      ),
     ];
 
     const cy = cytoscape({
@@ -336,6 +392,15 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
           },
         },
         {
+          selector: 'edge.selected-edge',
+          style: {
+            'underlay-color': '#f59e0b',
+            'underlay-opacity': 0.65,
+            'underlay-padding': 6,
+            'z-index': 20,
+          },
+        },
+        {
           selector: 'edge:active',
           style: {
             'overlay-opacity': 0.2,
@@ -355,11 +420,11 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
       autoungrabify: true, // nodes locked in deterministic positions
     });
 
-    if (!readOnly && onLinkClickRef.current) {
+    if (!readOnly && (onLinkClickRef.current || onLinkSelectRef.current)) {
       cy.on('mouseover', 'edge', (evt) => {
         if (containerRef.current) containerRef.current.style.cursor = 'pointer';
         evt.target.addClass('hovered');
-        setHint(getLinkHint(topology, snapshot, evt.target.id()));
+        setHint(getLinkHint(topology, snapshot, evt.target.id(), true));
       });
       cy.on('mouseout', 'edge', (evt) => {
         if (containerRef.current) containerRef.current.style.cursor = 'default';
@@ -371,6 +436,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
         const edge = evt.target;
         const linkId = edge.id();
         const currentStatus = snapshot.link_state[linkId] === 'down' ? 'down' : 'up';
+        onLinkSelectRef.current?.(linkId);
         onLinkClickRef.current?.(linkId, currentStatus);
       });
     }
@@ -423,7 +489,16 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- callbacks are read through refs;
     // highlightedArcs is compared by value, since App builds a new array on every render
-  }, [topology, snapshot, highlightedArcs.join(','), highlightColor, readOnly, JSON.stringify(flowRates)]);
+  }, [
+    topology,
+    snapshot,
+    highlightedArcs.join(','),
+    highlightColor,
+    readOnly,
+    JSON.stringify(flowRates),
+    showCapacityLabels,
+    selectedLinkId,
+  ]);
 
   // Re-fit when the container changes size (switching to Stacked or Toggle, or resizing the
   // window): cytoscape does not notice on its own and keeps the old, smaller drawing.
