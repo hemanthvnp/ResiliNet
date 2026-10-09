@@ -1,6 +1,6 @@
 ## 1. Branch and hand-worked numbers (A, by H4)
 
-- [ ] 1.1 Create the branch `feat/add-decision-explanations` from an up-to-date `main`
+- [x] 1.1 Create the branch `feat/add-decision-explanations` from an up-to-date `main` (shipped on `feat/add-routing-policies` with the routing change, because the allocator calls the record builder)
 - [x] 1.2 A works by hand the bound, gap and cut for the BD-failed diamond, the `max_paths` 1 diamond and the blocking example, and commits them as `core/explain/tests/expected_records.json`. An agent does not produce these values
 
 ## 2. Record builder (A, H4 to H8)
@@ -29,11 +29,11 @@
 
 ## 6. Lazy mode (A, only if the A3 cut line triggers)
 
-- [ ] 6.1 Add a flag to skip the bound at route time and a replay-up-to-flow function, with a test that the lazy value equals the eager value on every fixture
+- [x] 6.1 Add a flag to skip the bound at route time and a replay-up-to-flow function, with a test that the lazy value equals the eager value on every fixture (not built, and not needed: the A3 cut line did not trigger, since recompute is under 1 second at 50 nodes and 200 flows, PR 13)
 
 ## 7. Integrate
 
-- [ ] 7.1 Run the full test suite with `pytest`, and `check_invariants` (including I11) on every fixture snapshot
-- [ ] 7.2 Rebase onto `main`
-- [ ] 7.3 Run `sh .github/scripts/check-history.sh`
-- [ ] 7.4 Open the pull request from `.github/pull_request_template.md`
+- [ ] 7.1 Run the full test suite with `pytest`, and `check_invariants` (including I11) on every fixture snapshot (the suite passes; `check_invariants` is deferred until `add-metrics-invariants` lands, tracked in issue 14)
+- [x] 7.2 Rebase onto `main`
+- [x] 7.3 Run `sh .github/scripts/check-history.sh`
+- [x] 7.4 Open the pull request from `.github/pull_request_template.md` (the same PRs as the routing change)
