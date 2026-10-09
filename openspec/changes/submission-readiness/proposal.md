@@ -1,0 +1,43 @@
+## Why
+
+The CommitCon rulebook requires README content that the cycle-1 README plan (PLAN.md §15, change `add-cli-benchmark` tasks 5.1 to 5.6) does not include:
+- team name and members, external resources, and AI-tool use (§8, §6.5)
+- the ability to explain challenges met (§9.4)
+
+Judges may also ask for a demo with different inputs (§9.5), and the UI cannot edit flows. Missing README fields fail a submission requirement outright, whatever the code quality.
+
+## What Changes
+
+- Add a **judge kit**: editable scenario files under `examples/`, each runnable with one documented command under every cycle-1 policy.
+- Write the missing README sections (D owns the README):
+  - team name and members
+  - problem statement
+  - external resources with licenses
+  - AI tools used per member, and what for
+  - Challenges
+
+## Capabilities
+
+### New Capabilities
+- `judge-kit`: ready-to-edit example scenarios that judges can change and run live.
+
+### Modified Capabilities
+None.
+
+## Owner and scope
+
+- **Owner:** D (integration and QA), who owns `ext/` and `examples/` for cycle 2 (PLAN-CYCLE2.md §7, §8).
+- **Folders:** `examples/` (new) and the README, both D's.
+- **Plan sections:** PLAN-CYCLE2.md §3.0. Rulebook §6.5, §8, §9.4, §9.5.
+- **Frozen contract:** not touched. Examples live outside `fixtures/` and use the existing `Scenario` format.
+
+## Non-goals
+
+- No UI flow editor. It is suggested to C but not required.
+- No new CLI or API behaviour. The kit uses `python -m cli run` and `POST /runs` as they are.
+
+## Impact
+
+- **New data:** `examples/*.json` and a test that runs them.
+- **Docs:** README sections, written by D.
+- **No code in any member's folder.**
