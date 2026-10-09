@@ -17,7 +17,7 @@ PLAN.md section 5 gives the pseudocode for all four policies and section 4 gives
 
 ## Decisions
 
-**One allocator function, two configurations.** S1 is `order=arrival, max_paths=1, congestion_lambda=0`; S2 is `order=class_size_desc, max_paths=3` with `congestion_lambda` set by ablation.
+**One allocator function, two configurations.** S1 is `order=arrival, max_paths=1, congestion_lambda=0`; S2 is `order=class_size_desc, max_paths=3` with `congestion_lambda` 0, as the ablation chose (below).
 *Rejected:* separate S1 and S2 implementations, because two code paths can diverge and the ablation would no longer isolate one variable.
 
 **`arrival` order ignores class; the two `class_size_*` orders sort by class first.** Arrival order is the order of the input flow list.
@@ -47,6 +47,9 @@ PLAN.md section 5 gives the pseudocode for all four policies and section 4 gives
 **The allocator emits records through the explain module.** It collects facts per flow (attempts, reference path, remaining demand, ledger state) and calls the builder in `core/explain/`.
 *Rejected:* formatting records inside the allocator, because A must be able to walk through every line of it for the judges.
 
+**The S2 defaults are the measured ones, and the congestion cost stays in the code at 0.** The ablation on 30 campus networks (50 nodes, 200 flows; `python -m core.routing.tests.ablation`) found nothing that beats `class_size_desc`, `max_paths` 3, lambda 0 and `util_cap` 1.0: `max_paths` 1 loses 1 to 7 points of DR, 2 loses at most 0.3 and 4 equals 3; every lambda above 0 lowers DR by 0.2 to 3.3 points and raises latency stretch by 7 to 30%; `util_cap` 0.9 costs 0.3 to 6 points for no delivery gain. The congestion cost therefore fails the criteria fixed beforehand.
+*Rejected:* removing it now. `PolicyConfig.congestion_lambda` is part of the frozen contract, D's benchmark toggles it, and at light load (0.5) it does move traffic off nearly-full arcs (25 down to 11 arcs at least 90% full) with no change in delivery. Decided by A on 2026-10-09: keep the code, keep the default at 0, and revisit if the four members agree to a contract change.
+
 **Determinism.** No randomness is used. Baselines process flows sorted by id; the allocator orders flows by its ordering policy with flow id as the last key. Dijkstra expands arcs in sorted arc-id order and breaks ties by `(cost, hops, node ids)`. All costs are integers. `route` reads no clock and no global.
 *Rejected:* iterating the input list or a dict as given, because the result would then depend on the order flows appear in a file.
 
@@ -56,5 +59,5 @@ PLAN.md section 5 gives the pseudocode for all four policies and section 4 gives
 - [S2 loses to S0-QoS at the H8 headline check] → Treated as a bug or greedy shortfall; A fixes it before any ablation work.
 - [S2 fails invariants at H8] → Cut line: `congestion_lambda = 0` and `max_paths = 2`, keeping splitting.
 - [Recompute exceeds 1 second (A3)] → Max-flow bounds become lazy (`add-decision-explanations`), then `max_paths = 2`.
-- [Congestion cost shows no benefit] → Remove it and report that. A smaller algorithm is preferred.
+- [Congestion cost shows no benefit] → Remove it and report that. A smaller algorithm is preferred. **Outcome:** it showed no benefit on the criteria fixed beforehand (PR 13); it is kept in the code with the default 0, not removed, for the reason under Decisions.
 - [Baseline seen as a strawman] → S0-QoS is never cut, and the single-pass bias is disclosed.

@@ -31,3 +31,9 @@ Notable changes to this project, newest first. The format follows
     counts utilization above 0.9; `mean_util` is over all available arcs;
     `compute_ms` is 0.0 in fixtures.
 - `AGENTS.md` with the rules shared by every member's coding agent.
+- S2 defaults confirmed by ablation on 30 campus networks: `class_size_desc`,
+  `max_paths` 3, `congestion_lambda` 0, `util_cap` 1.0. The congestion cost
+  (`congestion_lambda` above 0) lowered delivery by 0.2 to 3.3 points and raised
+  latency stretch by 7 to 30%, so it is not used; it stays in the code with the
+  default 0 because the field is part of the frozen contract. See
+  `core/routing/tests/ablation.py` and PR 13.
