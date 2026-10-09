@@ -32,12 +32,12 @@
 
 - [ ] 5.1 Run the ablations on ordering, `max_paths`, `congestion_lambda`, `util_cap`, one knob at a time, and record the table in the pull request description
 - [ ] 5.2 Set the S2 defaults from the data; if the congestion cost shows no benefit, remove it with its tests and say so in `CHANGELOG.md`
-- [ ] 5.3 Time the recompute at 50 nodes and 200 flows; if it is 1 second or more, apply the A3 cut line (lazy bounds, then `max_paths = 2`)
+- [x] 5.3 Time the recompute at 50 nodes and 200 flows; if it is 1 second or more, apply the A3 cut line (lazy bounds, then `max_paths = 2`)
 
 ## 6. Optional, only if core is stable at H12
 
-- [ ] 6.1 Add upstream-aware baseline delivery behind a flag (up to 50 rounds, tolerance 1e-9), with a hand-worked two-link test
-- [ ] 6.2 Add the LP reference with scipy HiGHS on 20 to 30 nodes, labelled "fractional upper bound", with a test that it is never below S2 on the diamond
+- [x] 6.1 Add upstream-aware baseline delivery behind a flag (up to 50 rounds, tolerance 1e-9), with a hand-worked two-link test
+- [x] 6.2 Add the LP reference with scipy HiGHS on 20 to 30 nodes, labelled "fractional upper bound", with a test that it is never below S2 on the diamond
 
 ## 7. Integrate
 

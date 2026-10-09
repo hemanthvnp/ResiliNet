@@ -77,3 +77,24 @@ def cut_view(record) -> list[dict]:
         {"arc": c.arc, "state": c.state, "load_by_class": {str(k): v for k, v in c.load_by_class.items()}}
         for c in record.cut
     ]
+
+
+def random_network(seed: int, nodes: int = 25, extra_links: int = 35, flows: int = 60):
+    """A connected random network with capacities 10/40/100 and flows of mixed class."""
+    rng = random.Random(seed)
+    names = [f"N{i:02d}" for i in range(nodes)]
+    edges: set[tuple[str, str]] = set()
+    for i in range(1, nodes):  # a random tree keeps the network connected
+        edges.add((names[rng.randrange(i)], names[i]))
+    while len(edges) < nodes - 1 + extra_links:
+        u, v = rng.sample(names, 2)
+        if (u, v) not in edges and (v, u) not in edges:
+            edges.add((u, v))
+    arcs: list[ArcSpec] = []
+    for k, (u, v) in enumerate(sorted(edges)):
+        arcs += link(f"L{k}", u, v, rng.choice([10, 40, 100]), rng.randint(1, 10))
+    demands = []
+    for i in range(flows):
+        src, dst = rng.sample(names, 2)
+        demands.append(FlowSpec(f"F{i:03d}", src, dst, rng.randint(1, 60), rng.choices([0, 1, 2], [1, 3, 6])[0]))
+    return arcs, demands

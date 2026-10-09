@@ -1,8 +1,12 @@
 """S0 and S0-QoS: latency-shortest routes with no admission control (PLAN.md section 5).
 
-Delivery is the single-pass model: loss upstream still counts as load downstream, so the
-baselines under-deliver slightly. Scale factors are exact fractions and only the final
+Delivery is the single-pass model by default: loss upstream still counts as load downstream,
+so the baselines under-deliver slightly. Scale factors are exact fractions and only the final
 delivery is converted to float, so 7 Mbps at scale 2/5 is 2.8 on every machine.
+
+`upstream_aware=True` switches to the iterated model of PLAN.md section 5, where traffic lost
+on an upstream arc no longer loads the arcs after it. It uses floats and stops after
+MAX_ROUNDS rounds or when no scale moves by more than TOLERANCE.
 """
 
 from collections.abc import Callable, Iterable, Sequence
@@ -21,7 +25,11 @@ from core.routing.inputs import (
 )
 from core.routing.pathfinder import shortest_path
 
-Scale = Callable[[FlowSpec, Sequence[str]], Fraction]
+MAX_ROUNDS = 50
+TOLERANCE = 1e-9
+
+Scale = Callable[[FlowSpec, Sequence[str]], Fraction | float]
+MakeScale = Callable[[dict[str, ArcSpec], dict[str, int], dict[str, dict[int, int]], Sequence[FlowSpec], dict], Scale]
 
 
 def _routes(arcs: Sequence[ArcSpec], flows: Sequence[FlowSpec]):
@@ -48,7 +56,7 @@ def _offered_load(flows: Sequence[FlowSpec], routes) -> tuple[dict[str, int], di
 def _route_baseline(
     arcs: Iterable[ArcSpec],
     flows: Sequence[FlowSpec],
-    make_scale: Callable[[dict[str, ArcSpec], dict[str, int], dict[str, dict[int, int]]], Scale],
+    make_scale: MakeScale,
     prev,
     step: int,
     failed_links: Sequence[str],
@@ -58,11 +66,12 @@ def _route_baseline(
     by_id = {a.id: a for a in arcs}
     routes = _routes(arcs, flows)
     load, by_class = _offered_load(flows, routes)
-    scale_of = make_scale(by_id, load, by_class)
+    scale_of = make_scale(by_id, load, by_class, flows, routes)
 
     outcomes: dict[str, FlowOutcome] = {}
     records = []
     paths: tuple[PathRate, ...]
+    delivered: Fraction | float
     for f in sorted(flows, key=lambda f: f.id):
         route = routes[f.id]
         if route is None:
@@ -70,7 +79,8 @@ def _route_baseline(
         else:
             scale = scale_of(f, route)
             delivered = f.rate * scale
-            cause = "OVERLOAD_LOSS" if scale < 1 else "NONE"
+            lossy = scale < 1 if isinstance(scale, Fraction) else scale < 1 - TOLERANCE
+            cause = "OVERLOAD_LOSS" if lossy else "NONE"
             paths = (PathRate(tuple(route), f.rate),) if route else ()
         outcome = FlowOutcome(f.id, paths, float(delivered), float(f.rate - delivered), cause)
         outcomes[f.id] = outcome
@@ -90,10 +100,62 @@ def _route_baseline(
     return RouteResult(outcomes, dict(sorted(load.items())), records)
 
 
-def route_s0(arcs, flows, cfg: AllocConfig | None = None, *, prev=None, step=0, failed_links=()) -> RouteResult:
-    """S0: each flow scaled by the worst min(1, capacity / load) on its path."""
+def upstream_scales(
+    by_id: dict[str, ArcSpec], flows: Sequence[FlowSpec], routes, qos: bool
+) -> tuple[dict[tuple[str, int], float], bool]:
+    """Scale factor per (arc, class) once upstream loss is taken into account, and whether the
+    iteration converged. Without `qos` all flows share one class key, so an arc scales everyone
+    by min(1, capacity / arriving load). With `qos` it serves classes in priority order.
+    """
+    ordered = sorted(flows, key=lambda f: f.id)
+    key = (lambda f: f.cls) if qos else (lambda f: 0)
+    scale = {(a, key(f)): 1.0 for f in ordered for a in routes[f.id] or ()}
+    for _ in range(MAX_ROUNDS):
+        arriving: dict[str, dict[int, float]] = {}
+        for f in ordered:
+            rate = float(f.rate)
+            for arc_id in routes[f.id] or ():
+                by_class = arriving.setdefault(arc_id, {})
+                by_class[key(f)] = by_class.get(key(f), 0.0) + rate
+                rate *= scale[(arc_id, key(f))]
+        updated = {}
+        for arc_id in sorted(arriving):
+            higher = 0.0
+            for cls in sorted(arriving[arc_id]):
+                offered = arriving[arc_id][cls]
+                available = max(0.0, by_id[arc_id].capacity - higher)
+                updated[(arc_id, cls)] = min(1.0, available / offered) if offered else 1.0
+                higher += offered
+        moved = max((abs(updated[k] - scale[k]) for k in scale), default=0.0)
+        scale = updated
+        if moved <= TOLERANCE:
+            return scale, True
+    return scale, False
 
-    def make_scale(by_id, load, by_class):
+
+def _upstream_make_scale(qos: bool):
+    def make_scale(by_id, load, by_class, flows, routes):
+        arc_scale, _ = upstream_scales(by_id, flows, routes, qos)
+
+        def scale(flow: FlowSpec, route: Sequence[str]) -> float:
+            result = 1.0
+            for arc_id in route:
+                result *= arc_scale[(arc_id, flow.cls if qos else 0)]
+            return result
+
+        return scale
+
+    return make_scale
+
+
+def route_s0(
+    arcs, flows, cfg: AllocConfig | None = None, *, prev=None, step=0, failed_links=(), upstream_aware=False
+) -> RouteResult:
+    """S0: each flow scaled by the worst min(1, capacity / load) on its path."""
+    if upstream_aware:
+        return _route_baseline(arcs, flows, _upstream_make_scale(False), prev, step, failed_links)
+
+    def make_scale(by_id, load, by_class, flows, routes):
         def scale(flow: FlowSpec, route: Sequence[str]) -> Fraction:
             return min(
                 (min(Fraction(1), Fraction(by_id[a].capacity, load[a])) for a in route if load[a] > 0),
@@ -105,10 +167,14 @@ def route_s0(arcs, flows, cfg: AllocConfig | None = None, *, prev=None, step=0, 
     return _route_baseline(arcs, flows, make_scale, prev, step, failed_links)
 
 
-def route_s0_qos(arcs, flows, cfg: AllocConfig | None = None, *, prev=None, step=0, failed_links=()) -> RouteResult:
+def route_s0_qos(
+    arcs, flows, cfg: AllocConfig | None = None, *, prev=None, step=0, failed_links=(), upstream_aware=False
+) -> RouteResult:
     """S0-QoS: the S0 routes, with each arc serving classes in strict priority order."""
+    if upstream_aware:
+        return _route_baseline(arcs, flows, _upstream_make_scale(True), prev, step, failed_links)
 
-    def make_scale(by_id, load, by_class):
+    def make_scale(by_id, load, by_class, flows, routes):
         arc_scale: dict[tuple[str, int], Fraction] = {}
         for arc_id, classes in by_class.items():
             higher = 0
