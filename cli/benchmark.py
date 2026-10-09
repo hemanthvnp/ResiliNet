@@ -56,6 +56,7 @@ BUDGET_SECONDS = 30 * 60
 # without this factor was 118 s and the run took 220 s, an efficiency of 0.54; 0.5 keeps the projection honest.
 PARALLEL_EFFICIENCY = 0.5
 DEFAULT_SEEDS = 30
+H4_REPEATS = 5
 CLASSES = (0, 1, 2)
 UNSERVED_CAUSES = tuple(c for c in Cause.__args__ if c != "NONE")  # type: ignore[attr-defined]
 CONFIG_COLUMNS = ("order", "max_paths", "congestion_lambda", "util_cap")
@@ -240,6 +241,10 @@ def run_benchmark(seeds: int = DEFAULT_SEEDS, *, processes: int | None = None, a
         raise ValueError(f"unknown policy {unknown[0]!r}; expected one of {', '.join(sorted(POLICIES))}")
     processes = processes or min(8, os.cpu_count() or 1)
     started = time.perf_counter()
+    h4 = None
+    if "S2" in policies:  # H4 is measured first, on its own, before any worker process shares the machine
+        h4 = {"median": round(median_compute_ms(H4_REPEATS, topology_spec=topology_spec, traffic_spec=traffic_spec), 2),
+              "repeats": H4_REPEATS, "case": "uplink", "load_factor": 1.0, "policy": "S2"}
     full_groups = ABLATION_GROUPS if ablations else ()
     full = {"topology_spec": topology_spec, "traffic_spec": traffic_spec, "load_factors": tuple(load_factors),
             "policies": tuple(policies), "ablation_groups": full_groups, "check": check}
@@ -271,7 +276,7 @@ def run_benchmark(seeds: int = DEFAULT_SEEDS, *, processes: int | None = None, a
         "topology_spec": topology_spec.model_dump(), "traffic_spec": traffic_spec.model_dump(),
         "rows": len(rows), "processes": processes, "first_seed_seconds": round(first_seconds, 2),
         "projected_seconds": round(plan.projected_seconds, 1), "wall_seconds": round(time.perf_counter() - started, 1),
-        "check_invariants": check, "git": git_state(), "python": sys.version.split()[0],
+        "h4_compute_ms": h4, "check_invariants": check, "git": git_state(), "python": sys.version.split()[0],
         "not_reproducible_columns": list(NOT_REPRODUCIBLE),
     }
     return Result(rows, summary)

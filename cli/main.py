@@ -120,6 +120,15 @@ def cmd_benchmark(args: argparse.Namespace) -> None:
     print(f"wrote {csv_path} and {summary_path}")
 
 
+def cmd_report(args: argparse.Namespace) -> None:
+    from cli.report import write_report
+
+    tables, hypotheses, verdicts = write_report(Path(args.dir))
+    for verdict in verdicts:
+        print(verdict.line())
+    print(f"wrote {tables} and {hypotheses}")
+
+
 def parser() -> argparse.ArgumentParser:
     shared = argparse.ArgumentParser(add_help=False)
     shared.add_argument("--scenario", required=True, help="scenario JSON file or built-in id, e.g. 07_diamond")
@@ -146,6 +155,9 @@ def parser() -> argparse.ArgumentParser:
     bench.add_argument("--flows", type=int, help="number of flows (default 200)")
     bench.add_argument("--check", action="store_true", help="assert the invariants on every snapshot (slower)")
     bench.set_defaults(func=cmd_benchmark)
+    report = sub.add_parser("report", help="tables and hypothesis verdicts from a benchmark folder")
+    report.add_argument("--dir", default="results", help="the folder with benchmark.csv and summary.json")
+    report.set_defaults(func=cmd_report)
     return top
 
 
