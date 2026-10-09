@@ -8,6 +8,29 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- Routing policies and decision records (`core/routing/`, `core/explain/`): S0
+  (latency shortest path, proportional loss), S0-QoS (the same routes with strict
+  priority on each arc), S1 and S2 (one allocator: flows placed in order on the
+  residual graph by repeated least-cost pushes, split over at most `max_paths`
+  paths) as `RoutingPolicy` objects selected with `get_policy(name)`. One
+  `DecisionRecord` per flow: reference path and status, each push, the residual
+  cut, the max-flow bound and the greedy gap, and a one-line explanation from a
+  fixed template. All four policies reproduce the frozen diamond snapshots and the
+  builder reproduces the section 10 record. Optional: upstream-aware baseline
+  delivery (`upstream_aware=True` on `route_s0` and `route_s0_qos`) and an LP
+  reference (`core/routing/lp_reference.py`, needs scipy). Measured on the campus
+  generator at 50 nodes and 200 flows: S2 recompute 126 to 377 ms (worst 458 ms),
+  P0 greedy gap zero on 180 of 180 runs. Behaviours a caller must know:
+  - `route` takes an optional `step=` keyword; without it every record says step 0.
+  - A record's `failed_links` are the down links that flow's previous paths
+    crossed, so `prev` must be passed for a record to show `INVALID: <link> down`.
+  - Duplicate flow ids, negative rates, `max_paths` below 1, a negative
+    `congestion_lambda` and a `util_cap` outside (0, 1] raise `ValueError`.
+  - Class isolation (I10) holds only under a class-first `order`.
+  - `check_invariants` (I1 to I4, I6 to I9, I11) and the I10 helper report nothing
+    for the four policies on the diamond fixtures, the campus template and 30
+    generated networks, healthy and with the uplink failed (272 snapshots);
+    `core/routing/tests/test_invariants_on_policies.py` keeps running it.
 - Campus network for the demo and the benchmark (`core/gen/`): the hand-drawn
   campus template (15 nodes, primary uplink L6, two single-link hostels) and its
   traffic (19 flows, load factor 0.5) as fixtures; a seeded campus generator

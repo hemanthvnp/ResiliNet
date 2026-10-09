@@ -41,7 +41,7 @@
 
 ## 7. Integrate
 
-- [ ] 7.1 Run the full test suite with `pytest`, and `check_invariants` on every fixture snapshot under all four policies
-- [ ] 7.2 Rebase onto `main`
-- [ ] 7.3 Run `sh .github/scripts/check-history.sh`
-- [ ] 7.4 Open the pull request from `.github/pull_request_template.md`
+- [x] 7.1 Run the full test suite with `pytest`, and `check_invariants` on every fixture snapshot under all four policies (done: B's `check_invariants` found no violation in 272 snapshots of A's four policies on 35 networks, and `core/routing/tests/test_invariants_on_policies.py` keeps running it; issue 14)
+- [x] 7.2 Rebase onto `main`
+- [x] 7.3 Run `sh .github/scripts/check-history.sh`
+- [x] 7.4 Open the pull request from `.github/pull_request_template.md` (PRs 2, 3, 4, 6, 7, 8, 10 and 13, merged one by one as the work became possible)

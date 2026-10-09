@@ -2,7 +2,7 @@
 
 from collections.abc import Sequence
 
-from core.model.types import Allocation, DecisionRecord, Flow, PolicyConfig, RoutingPolicy, Topology
+from core.model.types import Allocation, DecisionRecord, Flow, PolicyConfig, Topology
 from core.routing.allocator import allocate
 from core.routing.baselines import route_s0, route_s0_qos
 
@@ -54,10 +54,13 @@ class S2:
         return allocate(topo, flows, prev, cfg, step=step)
 
 
-POLICIES: dict[str, RoutingPolicy] = {p.name: p for p in (S0(), S0QoS(), S1(), S2())}
+# Each is a RoutingPolicy; the union keeps the optional `step` keyword visible to type checkers.
+Policy = S0 | S0QoS | S1 | S2
+
+POLICIES: dict[str, Policy] = {p.name: p for p in (S0(), S0QoS(), S1(), S2())}
 
 
-def get_policy(name: str) -> RoutingPolicy:
+def get_policy(name: str) -> Policy:
     try:
         return POLICIES[name]
     except KeyError:
