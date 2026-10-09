@@ -17,8 +17,8 @@
 
 ## 4. Demo-network tuning (B, H8 to H10)
 
-- [ ] 4.1 Run S0, S0-QoS and S2 on the template with the uplink failed and record `DR`, `DR_P1`, `DR_P0` in the pull request description
-- [ ] 4.2 If S2 only ties S0-QoS, all four members agree to a second, longer path with spare capacity; then update the template fixture and its traffic, keeping the path-check test passing
+- [x] 4.1 Run S0, S0-QoS and S2 on the template with the uplink failed and record `DR`, `DR_P1`, `DR_P0` in the pull request description
+- [x] 4.2 If S2 only ties S0-QoS, all four members agree to a second, longer path with spare capacity; then update the template fixture and its traffic, keeping the path-check test passing
 
 ## 5. Campus generator and load scaling (B, H8 to H12)
 
@@ -29,7 +29,7 @@
 
 ## 6. Integrate
 
-- [ ] 6.1 Run the full test suite with `pytest`, and `check_invariants` on a snapshot of the template and of one generated network under each policy
-- [ ] 6.2 Rebase onto `main`
-- [ ] 6.3 Run `sh .github/scripts/check-history.sh`
-- [ ] 6.4 Open the pull request from `.github/pull_request_template.md`
+- [x] 6.1 Run the full test suite with `pytest`, and `check_invariants` on a snapshot of the template and of one generated network under each policy
+- [x] 6.2 Rebase onto `main`
+- [x] 6.3 Run `sh .github/scripts/check-history.sh`
+- [x] 6.4 Open the pull request from `.github/pull_request_template.md`
