@@ -2,12 +2,12 @@
 
 from collections.abc import Sequence
 
-from core.routing.inputs import FlowSpec
+from core.model.types import Flow
 
 ORDERS = ("arrival", "class_size_desc", "class_size_asc")
 
 
-def order_flows(flows: Sequence[FlowSpec], order: str) -> list[FlowSpec]:
+def order_flows(flows: Sequence[Flow], order: str) -> list[Flow]:
     """`arrival` keeps the input order and ignores class. The others sort by class (P0 first),
     then rate, then flow id, so equal flows never depend on input order."""
     if order == "arrival":

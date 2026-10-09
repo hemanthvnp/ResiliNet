@@ -5,12 +5,13 @@ fraction, so no integer, path-limited or greedy allocation (S1, S2) can deliver 
 scipy, which is optional and imported only when `lp_upper_bound` is called.
 """
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from dataclasses import dataclass
-from fractions import Fraction
-from math import floor
 
-from core.routing.inputs import ArcSpec, FlowSpec, validate_flows
+from core.model.arcs import available_arcs
+from core.model.ledger import effective_capacity
+from core.model.types import Flow, PolicyConfig, Topology
+from core.routing.checks import validate_inputs
 
 
 @dataclass(frozen=True)
@@ -21,7 +22,7 @@ class LpBound:
     by_class: dict[int, float]  # most each class can deliver if it were alone in the network
 
 
-def lp_upper_bound(arcs: Iterable[ArcSpec], flows: Sequence[FlowSpec], util_cap: float = 1.0) -> LpBound:
+def lp_upper_bound(topo: Topology, flows: Sequence[Flow], util_cap: float = 1.0) -> LpBound:
     """Fractional upper bound on delivered traffic, from a multi-commodity flow LP (HiGHS).
 
     One variable per (flow, available arc) plus the delivered amount of each flow, with flow
@@ -34,12 +35,11 @@ def lp_upper_bound(arcs: Iterable[ArcSpec], flows: Sequence[FlowSpec], util_cap:
     from scipy.optimize import linprog
     from scipy.sparse import coo_matrix
 
-    validate_flows(flows)
-    available = sorted((a for a in arcs if a.up), key=lambda a: a.id)
-    rho = Fraction(repr(util_cap))
-    capacity = [floor(rho * a.capacity) for a in available]
+    validate_inputs(flows, PolicyConfig(util_cap=util_cap))
+    available = available_arcs(topo)
+    capacity = [effective_capacity(a.capacity, util_cap) for a in available]
     endpoints = {f.src for f in flows} | {f.dst for f in flows}
-    nodes = sorted({a.u for a in available} | {a.v for a in available} | endpoints)
+    nodes = sorted({a.src for a in available} | {a.dst for a in available} | endpoints)
     node_index = {n: i for i, n in enumerate(nodes)}
 
     free = sum(f.rate for f in flows if f.src == f.dst)  # needs no network
@@ -64,7 +64,7 @@ def lp_upper_bound(arcs: Iterable[ArcSpec], flows: Sequence[FlowSpec], util_cap:
     eq_rows, eq_cols, eq_vals = [], [], []
     for i, f in enumerate(routed):
         for j, a in enumerate(available):
-            eq_rows += [i * len(nodes) + node_index[a.u], i * len(nodes) + node_index[a.v]]
+            eq_rows += [i * len(nodes) + node_index[a.src], i * len(nodes) + node_index[a.dst]]
             eq_cols += [x(i, j), x(i, j)]
             eq_vals += [1.0, -1.0]  # leaves u, enters v
         eq_rows += [i * len(nodes) + node_index[f.src], i * len(nodes) + node_index[f.dst]]

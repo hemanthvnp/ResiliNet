@@ -1,9 +1,11 @@
 import json
 import random
+from collections.abc import Callable, Iterable, Sequence
+from dataclasses import dataclass
 from pathlib import Path
 
 from core.explain.template import arc_nodes
-from core.routing.inputs import AllocConfig, ArcSpec, FlowSpec
+from core.model.types import Allocation, DecisionRecord, Flow, FlowResult, Link, Node, PolicyConfig, Topology
 
 EXPECTED = json.loads((Path(__file__).parent / "expected_diamond.json").read_text(encoding="utf-8"))
 CASES = json.loads((Path(__file__).parent / "expected_cases.json").read_text(encoding="utf-8"))
@@ -11,24 +13,67 @@ RECORDS = json.loads(
     (Path(__file__).parents[2] / "explain" / "tests" / "expected_records.json").read_text(encoding="utf-8")
 )
 
-F1 = FlowSpec("F1", "A", "D", 15, 0)
-F2 = FlowSpec("F2", "A", "D", 10, 2)
+F1 = Flow(id="F1", src="A", dst="D", rate=15, cls=0)
+F2 = Flow(id="F2", src="A", dst="D", rate=10, cls=2)
 
 
-def link(link_id: str, u: str, v: str, capacity: int, latency: int, up: bool = True) -> list[ArcSpec]:
-    return [
-        ArcSpec(f"{link_id}:{u}>{v}", u, v, capacity, latency, up),
-        ArcSpec(f"{link_id}:{v}>{u}", v, u, capacity, latency, up),
-    ]
+def flow(flow_id: str, src: str, dst: str, rate: int, cls: int) -> Flow:
+    return Flow(id=flow_id, src=src, dst=dst, rate=rate, cls=cls)
 
 
-def diamond(down: tuple[str, ...] = ()) -> list[ArcSpec]:
-    """PLAN.md section 4: AB 10/1, BD 10/1, AC 10/2, CD 10/2, each direction."""
-    arcs = []
-    links = [("L_AB", "A", "B", 1), ("L_BD", "B", "D", 1), ("L_AC", "A", "C", 2), ("L_CD", "C", "D", 2)]
-    for link_id, u, v, latency in links:
-        arcs += link(link_id, u, v, 10, latency, up=link_id not in down)
-    return arcs
+def loaded(arc_load: dict[str, int]) -> dict[str, int]:
+    """The arcs of an arc_load that carry something (the contract lists every available arc)."""
+    return {arc: value for arc, value in arc_load.items() if value}
+
+
+def link(link_id: str, u: str, v: str, capacity: int, latency: int, up: bool = True) -> list[Link]:
+    """One link, as a list so that tests can add lists of links together."""
+    return [Link(id=link_id, u=u, v=v, capacity=capacity, latency=latency, status="up" if up else "down")]
+
+
+def topology(links: Iterable[Link], extra_nodes: Iterable[str] = ()) -> Topology:
+    links = list(links)
+    names = sorted({n for lk in links for n in (lk.u, lk.v)} | set(extra_nodes))
+    return Topology(nodes=[Node(id=n, type="router", name=n) for n in names], links=links)
+
+
+def diamond(down: tuple[str, ...] = ()) -> list[Link]:
+    """PLAN.md section 4: AB 10/1, BD 10/1, AC 10/2, CD 10/2 (capacity/latency)."""
+    links: list[Link] = []
+    spec = [("L_AB", "A", "B", 1), ("L_BD", "B", "D", 1), ("L_AC", "A", "C", 2), ("L_CD", "C", "D", 2)]
+    for link_id, u, v, latency in spec:
+        links += link(link_id, u, v, 10, latency, up=link_id not in down)
+    return links
+
+
+@dataclass
+class Run:
+    """What a policy returned, with the names the tests use."""
+
+    allocation: Allocation
+    records: list[DecisionRecord]
+
+    @property
+    def outcomes(self) -> dict[str, FlowResult]:
+        return self.allocation.results
+
+    @property
+    def arc_load(self) -> dict[str, int]:
+        return self.allocation.arc_load
+
+
+def run(
+    policy: Callable,
+    links: Topology | Iterable[Link],
+    flows: Sequence[Flow],
+    cfg: PolicyConfig | None = None,
+    prev: Allocation | None = None,
+    **kwargs,
+) -> Run:
+    """Call a policy function (topo, flows, prev, cfg, ...) and wrap what it returns."""
+    topo = links if isinstance(links, Topology) else topology(links)
+    allocation, records = policy(topo, flows, prev, cfg or PolicyConfig(), **kwargs)
+    return Run(allocation, records)
 
 
 def nodes(arcs) -> list[str]:
@@ -45,30 +90,32 @@ def random_case(seed: int):
     """A small random topology (some links down), flows and config, fully determined by `seed`."""
     rng = random.Random(seed)
     names = "ABCDEFG"[: rng.randint(4, 7)]
-    arcs: list[ArcSpec] = []
+    links: list[Link] = []
     for i, u in enumerate(names):
         for v in names[i + 1:]:
             if rng.random() < 0.5:
-                arcs += link(f"L{u}{v}", u, v, rng.randint(1, 12), rng.randint(1, 5), up=rng.random() > 0.2)
+                links += link(f"L{u}{v}", u, v, rng.randint(1, 12), rng.randint(1, 5), up=rng.random() > 0.2)
     flows = [
-        FlowSpec(f"F{i}", rng.choice(names), rng.choice(names), rng.randint(0, 20), rng.randint(0, 2))
+        Flow(id=f"F{i}", src=rng.choice(names), dst=rng.choice(names), rate=rng.randint(0, 20), cls=rng.randint(0, 2))
         for i in range(rng.randint(1, 8))
     ]
-    cfg = AllocConfig(
+    cfg = PolicyConfig(
         order=rng.choice(["arrival", "class_size_desc", "class_size_asc"]),
         max_paths=rng.randint(1, 4),
         congestion_lambda=rng.randint(0, 5),
         util_cap=rng.choice([1.0, 0.9]),
     )
-    return arcs, flows, cfg
+    return topology(links, extra_nodes=names), flows, cfg
 
 
-def blocking_arcs() -> list[ArcSpec]:
-    return [ArcSpec(i, u, v, cap, lat) for i, u, v, cap, lat in CASES["blocking"]["arcs"]]
+def blocking_links() -> list[Link]:
+    return [
+        Link(id=i, u=u, v=v, capacity=cap, latency=lat, status="up") for i, u, v, cap, lat in CASES["blocking"]["links"]
+    ]
 
 
-def blocking_flow() -> FlowSpec:
-    return FlowSpec(**CASES["blocking"]["flow"])
+def blocking_flow() -> Flow:
+    return Flow(**CASES["blocking"]["flow"])
 
 
 def cut_view(record) -> list[dict]:
@@ -90,11 +137,13 @@ def random_network(seed: int, nodes: int = 25, extra_links: int = 35, flows: int
         u, v = rng.sample(names, 2)
         if (u, v) not in edges and (v, u) not in edges:
             edges.add((u, v))
-    arcs: list[ArcSpec] = []
+    links: list[Link] = []
     for k, (u, v) in enumerate(sorted(edges)):
-        arcs += link(f"L{k}", u, v, rng.choice([10, 40, 100]), rng.randint(1, 10))
+        links += link(f"L{k}", u, v, rng.choice([10, 40, 100]), rng.randint(1, 10))
     demands = []
     for i in range(flows):
         src, dst = rng.sample(names, 2)
-        demands.append(FlowSpec(f"F{i:03d}", src, dst, rng.randint(1, 60), rng.choices([0, 1, 2], [1, 3, 6])[0]))
-    return arcs, demands
+        demands.append(
+            Flow(id=f"F{i:03d}", src=src, dst=dst, rate=rng.randint(1, 60), cls=rng.choices([0, 1, 2], [1, 3, 6])[0])
+        )
+    return topology(links), demands
