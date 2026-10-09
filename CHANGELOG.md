@@ -8,6 +8,12 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- Command line (`python -m cli`): `run --scenario <file|id> --policy <name>` writes
+  the snapshot sequence as JSON, and `compare --scenario <file|id> [--policies ...]`
+  prints the headline metrics per step and policy. `compare --out` writes the same
+  body as `POST /compare`, which the frontend plays back offline. Policy knobs are
+  flags: `--order`, `--max-paths`, `--lambda` and `--util-cap`. It never imports
+  the API, so it works with no server running.
 - Simulation engine (`core/sim/`): `Simulation` builds step 0 from a scenario and
   a policy, applies fail and recover events (links or a node) atomically with a
   full recompute, lists affected flows, times the route call and can check every
