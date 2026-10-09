@@ -102,6 +102,24 @@ def cmd_compare(args: argparse.Namespace) -> None:
         })
 
 
+def cmd_benchmark(args: argparse.Namespace) -> None:
+    from cli.benchmark import run_benchmark, write_results
+    from core.gen.campus import DEFAULT_TOPOLOGY, DEFAULT_TRAFFIC
+
+    topology = DEFAULT_TOPOLOGY if args.buildings is None else DEFAULT_TOPOLOGY.model_copy(
+        update={"buildings": args.buildings})
+    traffic = DEFAULT_TRAFFIC if args.flows is None else DEFAULT_TRAFFIC.model_copy(update={"n_flows": args.flows})
+    result = run_benchmark(args.seeds, processes=args.processes, ablations=not args.no_ablations,
+                           topology_spec=topology, traffic_spec=traffic, check=args.check)
+    csv_path, summary_path = write_results(result, Path(args.out))
+    s = result.summary
+    print(f"{s['rows']} rows for {s['seeds_run']} seeds in {s['wall_seconds']} s "
+          f"(first seed {s['first_seed_seconds']} s, projected {s['projected_seconds']} s, {s['processes']} processes)")
+    if s["reduction"] != "none":
+        print(f"matrix reduced: {s['reduction']}")
+    print(f"wrote {csv_path} and {summary_path}")
+
+
 def parser() -> argparse.ArgumentParser:
     shared = argparse.ArgumentParser(add_help=False)
     shared.add_argument("--scenario", required=True, help="scenario JSON file or built-in id, e.g. 07_diamond")
@@ -119,6 +137,15 @@ def parser() -> argparse.ArgumentParser:
     compare = sub.add_parser("compare", parents=[shared], help="run several policies on one scenario")
     compare.add_argument("--policies", nargs="+", default=DEFAULT_POLICIES)
     compare.set_defaults(func=cmd_compare)
+    bench = sub.add_parser("benchmark", help="run the seeded benchmark matrix, write the CSV and a summary")
+    bench.add_argument("--seeds", type=int, default=30, help="number of benchmark seeds (default 30)")
+    bench.add_argument("--out", default="results", help="output folder (default results/)")
+    bench.add_argument("--no-ablations", action="store_true", help="skip the one-knob S2 ablations")
+    bench.add_argument("--processes", type=int, help="worker processes (default: up to 8)")
+    bench.add_argument("--buildings", type=int, help="campus size in buildings (default 37, about 50 nodes)")
+    bench.add_argument("--flows", type=int, help="number of flows (default 200)")
+    bench.add_argument("--check", action="store_true", help="assert the invariants on every snapshot (slower)")
+    bench.set_defaults(func=cmd_benchmark)
     return top
 
 

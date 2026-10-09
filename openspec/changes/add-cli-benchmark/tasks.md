@@ -14,11 +14,11 @@
 
 ## 3. Benchmark runner (D, H8 to H12)
 
-- [ ] 3.1 Add per-seed case generation (`healthy`, `uplink`, `multi`, `recovered`) with failures drawn from a per-purpose seeded RNG over sorted link ids, with tests: the same seed gives the same failure set, every policy sees the same failed links and total demand
-- [ ] 3.2 Add the load-factor sweep and the one-knob ablation variants, with tests: six factors per policy, each variant differs from the default in exactly one knob
-- [ ] 3.3 Write the long-format CSV (sorted rows) and the summary JSON (config, commit hash, reductions), with a test that a 2-seed benchmark is reproducible and has every policy for every case
-- [ ] 3.4 Time the first seed and apply the matrix-sizing rule, with a test that a projected overrun cuts the ablations and records it
-- [ ] 3.5 Measure the median `compute_ms` at demo size for H4 and report it to A (assumption A3)
+- [x] 3.1 Add per-seed case generation (`healthy`, `uplink`, `multi`, `recovered`) with failures drawn from a per-purpose seeded RNG over sorted link ids, with tests: the same seed gives the same failure set, every policy sees the same failed links and total demand
+- [x] 3.2 Add the load-factor sweep and the one-knob ablation variants, with tests: six factors per policy, each variant differs from the default in exactly one knob
+- [x] 3.3 Write the long-format CSV (sorted rows) and the summary JSON (config, commit hash, reductions), with a test that a 2-seed benchmark is reproducible and has every policy for every case
+- [x] 3.4 Time the first seed and apply the matrix-sizing rule, with a test that a projected overrun cuts the ablations and records it
+- [x] 3.5 Measure the median `compute_ms` at demo size for H4 and report it to A (assumption A3)
 
 ## 4. Statistics and hypotheses (D, H12 to H16)
 
