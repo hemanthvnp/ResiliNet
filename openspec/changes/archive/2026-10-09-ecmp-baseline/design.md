@@ -41,13 +41,15 @@ Properties:
 - *Rejected: ordering by node id only.* Two parallel links to the same neighbour would tie, and the order would depend on the data structure.
 
 **Delivery reuses the cycle-1 formulas, applied per path.**
-- If A exposes the S0 and S0-QoS delivery functions for multi-path allocations (request in PLAN-CYCLE2.md §7), `ext/ecmp.py` calls them.
-- Otherwise it repeats the two formulas, about 15 lines, and a test checks them against the S0 and S0-QoS diamond numbers.
+- A's formulas in `core/routing/baselines.py` are closures inside the single-path route functions, so they cannot be called on a multi-path allocation.
+- `ext/ecmp.py` repeats the two formulas, using `Fraction` as A does so the results are exact. A test checks them against `route_s0` and `route_s0_qos` on the diamond.
+- Decision records are built with `core.explain.records.build_record`, as the baselines do.
 - *Rejected: a new delivery model.* ECMP and S0 would then differ in two ways at once.
 
 **Registration through `ext`, not `core/routing/`.**
-- `ext/__init__.py` registers `ECMP` and `ECMP-QoS` when it is imported.
-- `python -m ext run|compare` imports `ext`, then passes its arguments to the cycle-1 CLI.
+- `ext.register()` adds `ECMP` and `ECMP-QoS` to the `POLICIES` dict in `core/routing/registry.py` with `setdefault`. No line of A's code changes.
+- Importing `ext` registers nothing. Registering at import time would leak the policies into every other test in the same pytest process.
+- `python -m ext run|compare` calls `ext.register()`, then passes its arguments to the cycle-1 CLI.
 - *Rejected: adding the policies to `core/routing/`.* That folder is A's, and after H16 any edit there is a feature change to frozen code.
 
 **Determinism.**
@@ -60,5 +62,5 @@ Properties:
 
 - **[Judges say it is not real ECMP]** → It is labelled "ECMP-style, idealised equal split per next hop", and the README states that routers hash flows (PLAN-CYCLE2.md §4).
 - **[ECMP-QoS delivers more than S2 on some topology]** → Expected and kept as a regression test. Delivery and overload are always reported separately, and S2 is also reported at `max_paths` 8. S2's decision log explains its own shortfall (`PATH_LIMIT`, greedy gap).
-- **[The cycle-1 registry or CLI cannot be extended from outside]** → The fallbacks in PLAN-CYCLE2.md §7: wrap the lookup, or run the CLI as a subprocess.
+- **[A turns `POLICIES` into an immutable mapping, or D's CLI cannot be called as a function]** → `ext` wraps `get_policy`, or runs the CLI as a subprocess (PLAN-CYCLE2.md §7).
 - **[The single-pass delivery bias]** (PLAN.md §5: upstream loss still counts downstream) → It applies to ECMP exactly as to S0 and S0-QoS, and is disclosed the same way.
