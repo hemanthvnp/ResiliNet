@@ -8,6 +8,12 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- Judge kit (`examples/`): editable scenarios `custom-flow.json` (an added P0 flow
+  from Admin to Engineering), `custom-failure.json` (L6, L11 and L13 fail, then L6
+  recovers) and `overload.json` (40 generated flows at load factor 1.5). Each
+  runs with `python -m cli run --scenario examples/<file>.json --policy S2` under
+  all four policies with every invariant checked. Edited classes and ids take
+  effect on the next run, and a mistyped id is rejected by name.
 - `README.md`: problem and solution, how to run the backend, frontend, command
   line and tests (checked on a fresh clone), demo steps, reproducing a run from a
   seed, the model, the allocator pseudocode, the diamond worked example, an

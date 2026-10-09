@@ -156,6 +156,33 @@ The generator retries the next seed if a network fails the check described under
 
 All randomness goes through an explicit `random.Random(seed)`. Iteration is sorted by id, and path costs are integers with a fixed tie-break.
 
+### Try your own input
+
+The `examples/` folder holds scenario files meant to be edited. Each runs with one command:
+
+| File | What it is | Command |
+|---|---|---|
+| `examples/custom-flow.json` | The campus template plus one P0 flow, `F20`, from Admin (`B4`) to Engineering (`B1`) | `python -m cli run --scenario examples/custom-flow.json --policy S2` |
+| `examples/custom-failure.json` | The campus template; links `L6`, `L11` and `L13` fail at step 1 and `L6` recovers at step 2 | `python -m cli run --scenario examples/custom-failure.json --policy S2` |
+| `examples/overload.json` | The campus template with 40 generated flows at 1.5 times the normal load | `python -m cli run --scenario examples/overload.json --policy S2` |
+
+Swap `run ... --policy S2` for `compare` to see all four policies side by side. A file can also be posted to `POST /runs` as an inline `scenario`.
+
+What to edit:
+- **A flow, in `traffic`:**
+  - `src` and `dst`: node ids `B1` to `B5` (buildings), `H1` and `H2` (hostels), or `AUTH`, `EMRG`, `LMS`, `INET` (services);
+  - `rate`: integer Mbps;
+  - `cls`: 0, 1 or 2 for P0, P1 or P2.
+- **A failure, in `events`:**
+  - `links`: link ids `L1` to `L21`; L6 is the primary uplink;
+  - `node`: instead of `links`, fails every link attached to that node;
+  - `kind`: `fail` or `recover`;
+  - `step`: the order in which events are applied.
+- **The load, in `overload.json`:** `traffic.load_factor` and `traffic.n_flows`.
+- **The policy settings, in `config`:** `max_paths`, `order`, `congestion_lambda` and `util_cap`.
+
+An unknown node or link id stops the run with an error naming that id.
+
 ## The model
 
 - **Fluid and steady-state.** Flows are constant-rate demands in Mbps. There are no packets, queues or protocol convergence.
@@ -379,5 +406,7 @@ Every member is responsible for understanding and explaining the code they submi
 | `frontend/` | React app |
 | `fixtures/` | Frozen contract fixtures and the eight scenario fixtures with their hand-worked expectations |
 | `tests/` | Cross-module API, CLI and property tests |
+| `examples/` | Editable scenarios for trying your own input |
+| `ext/` | Cycle 2 additions: extra policies and analyses that build on `core/` without changing it |
 | `openspec/` | Proposals, designs, specs and tasks for each change |
 | `PLAN.md` | The full design and plan; the source of truth |

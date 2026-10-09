@@ -8,7 +8,7 @@
 
 ## 1. Branch
 
-- [ ] 1.1 Create the branch `feat/submission-readiness` from an up-to-date `main` after the cycle-2 plan PR is merged. Verify that `git log -1 main` matches `origin/main`.
+- [x] 1.1 Create the branch `feat/submission-readiness` from an up-to-date `main` after the cycle-2 plan PR is merged. Verify that `git log -1 main` matches `origin/main`.
 
 ## 2. README sections (D, can start at any time)
 
@@ -24,12 +24,12 @@
 
 ## 3. Judge kit
 
-- [ ] 3.1 Add `examples/custom-flow.json` (`01_normal` plus one P0 flow between two named buildings), `examples/custom-failure.json` (three named links fail in one event, then one recovers) and `examples/overload.json` (campus template at load factor 1.5, explicit seed). Add a test that loads each one with `load_scenario`. Verify the files-validate scenario.
-- [ ] 3.2 Add the test that runs every example under S0, S0-QoS, S1 and S2 with `check_invariants`. I4 applies to S1 and S2 only, and `Simulation(..., check=True)` handles that. Verify that the all-examples scenario (12 runs) passes.
-- [ ] 3.3 Add the edited-priority test (the added flow changed to P2 is reported with class 2 under S2) and the mistyped-link test (a non-zero exit, with the error naming the bad id). Verify that both pass.
-- [ ] 3.4 Write the "Try your own input" README section: one `python -m cli run --scenario examples/<file>.json --policy S2` command per example, and which fields to edit. Verify that every documented command runs as written.
+- [x] 3.1 Add `examples/custom-flow.json` (`01_normal` plus one P0 flow between two named buildings), `examples/custom-failure.json` (three named links fail in one event, then one recovers) and `examples/overload.json` (campus template at load factor 1.5, explicit seed). Add a test that loads each one with `load_scenario`. Verify the files-validate scenario.
+- [x] 3.2 Add the test that runs every example under S0, S0-QoS, S1 and S2 with `check_invariants`. I4 applies to S1 and S2 only, and `Simulation(..., check=True)` handles that. Verify that the all-examples scenario (12 runs) passes.
+- [x] 3.3 Add the edited-priority test (the added flow changed to P2 is reported with class 2 under S2) and the mistyped-link test (a non-zero exit, with the error naming the bad id). Verify that both pass.
+- [x] 3.4 Write the "Try your own input" README section: one `python -m cli run --scenario examples/<file>.json --policy S2` command per example, and which fields to edit. Verify that every documented command runs as written.
 
 ## 4. Integrate
 
-- [ ] 4.1 Run the full suite with `pytest`. Verify that it passes.
+- [x] 4.1 Run the full suite with `pytest`. Verify that it passes.
 - [ ] 4.2 Rebase onto `main`, run `sh .github/scripts/check-history.sh`, and open the pull request from `.github/pull_request_template.md`.
