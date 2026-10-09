@@ -26,7 +26,7 @@
 - [x] 4.5 Handle `src == dst` and zero-rate flows, with a test for each
 - [x] 4.6 Collect per-flow facts and call the record builder in `core/explain/`, with a test that one record is returned per flow
 - [x] 4.7 Register `S1` and `S2` as configurations of the allocator, with tests: S1 never splits, `prev` is ignored, class isolation when P2 is removed
-- [ ] 4.8 Run the H8 headline check with the team (S0, S0-QoS, S2 on the campus template, uplink failed) and record `DR`, `DR_P1`, `DR_P0` in the pull request description
+- [x] 4.8 Run the H8 headline check with the team (S0, S0-QoS, S2 on the campus template, uplink failed) and record `DR`, `DR_P1`, `DR_P0` in the pull request description
 
 ## 5. Ablation and tuning (A, H8 to H16)
 
