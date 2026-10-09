@@ -53,6 +53,15 @@ describe('Deterministic Topology Layout (Task 1.4 & Task 2.2)', () => {
     expect(Object.entries(pos).every(([id, p]) => id === 'C1' || p.y > pos['C1'].y)).toBe(true);
   });
 
+  it('orders generated ids by number within a row: N2 left of N10', () => {
+    const pos = getDeterministicPositions({
+      nodes: [node('C1', 'core'), node('N10', 'building'), node('N2', 'building'), node('N3', 'building')],
+      links: [],
+    });
+    expect(pos['N2'].x).toBeLessThan(pos['N3'].x);
+    expect(pos['N3'].x).toBeLessThan(pos['N10'].x);
+  });
+
   it('draws a single-row topology such as the diamond on a circle', () => {
     const pos = getDeterministicPositions(diamond);
     expect(new Set(Object.values(pos).map((p) => p.y)).size).toBeGreaterThan(1);

@@ -38,7 +38,8 @@ const MAX_PER_ROW = 12; // a wider layer (e.g. 37 generated buildings) wraps ont
  * A topology whose nodes all share one row (e.g. the diamond) is drawn on a circle instead.
  */
 export function getDeterministicPositions(topology: Topology): Record<string, { x: number; y: number }> {
-  const sortedNodes = [...topology.nodes].sort((a, b) => a.id.localeCompare(b.id));
+  // numeric-aware, so generated ids run N2, N3 ... N10 rather than N10, N11, N2
+  const sortedNodes = [...topology.nodes].sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
   const layerOf = (type: string) => LAYER_OF_TYPE[type] ?? 4;
   const rows = new Map<number, string[]>();
   for (const node of sortedNodes) {
