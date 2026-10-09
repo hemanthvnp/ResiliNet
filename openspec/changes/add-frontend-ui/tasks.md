@@ -1,27 +1,27 @@
 ## 1. Branch and scaffold (C, H0 to H1.5)
 
-- [ ] 1.1 Create the branch `feat/add-frontend-ui` from an up-to-date `main`
-- [ ] 1.2 Add the Vite + React + TypeScript project in `frontend/` with Cytoscape.js, Recharts and a test runner, with one render test so the frontend build and tests pass
+- [x] 1.1 Create the branch `feat/add-frontend-ui` from an up-to-date `main`
+- [x] 1.2 Add the Vite + React + TypeScript project in `frontend/` with Cytoscape.js, Recharts and a test runner, with one render test so the frontend build and tests pass
 - [ ] 1.3 Add the script that generates the typed client from the committed OpenAPI file, with a check that the generated types compile
-- [ ] 1.4 Add the graph component rendering a topology from a fixture with a fixed-seed layout, with a test that the same topology gives the same node positions
-- [ ] 1.5 Fetch a mocked snapshot from the API and render it (H1.5 exit criterion), with a test against a mocked response
+- [x] 1.4 Add the graph component rendering a topology from a fixture with a fixed-seed layout, with a test that the same topology gives the same node positions
+- [x] 1.5 Fetch a mocked snapshot from the API and render it (H1.5 exit criterion), with a test against a mocked response
 
 ## 2. Vertical slice (C, H1.5 to H4)
 
-- [ ] 2.1 Add the store (scenario, topology, flows, event history, per-panel run id and snapshot, shared selection), with reducer tests for each action
-- [ ] 2.2 Colour edges from `metrics.link_util` (sequential scale, overload colour above 1.0, dashed red for `down`, thickness by capacity), with tests: 0.2 and 0.95 map to the two ends, 2.5 gets the overload colour, a down link is dashed whatever its utilization
-- [ ] 2.3 Add click-to-fail and click-to-recover with a loading state and a click lock while in flight, with tests: an up link sends `fail`, a down link sends `recover`, a click during a request is ignored
-- [ ] 2.4 Add the flow table (class colour, service, demand, delivered, status) sorted by class then id, with a test of an unserved row
-- [ ] 2.5 Show request errors while keeping the last good snapshot, with a test of a failed event request
+- [x] 2.1 Add the store (scenario, topology, flows, event history, per-panel run id and snapshot, shared selection), with reducer tests for each action
+- [x] 2.2 Colour edges from `metrics.link_util` (sequential scale, overload colour above 1.0, dashed red for `down`, thickness by capacity), with tests: 0.2 and 0.95 map to the two ends, 2.5 gets the overload colour, a down link is dashed whatever its utilization
+- [x] 2.3 Add click-to-fail and click-to-recover with a loading state and a click lock while in flight, with tests: an up link sends `fail`, a down link sends `recover`, a click during a request is ignored
+- [x] 2.4 Add the flow table (class colour, service, demand, delivered, status) sorted by class then id, with a test of an unserved row
+- [x] 2.5 Show request errors while keeping the last good snapshot, with a test of a failed event request
 - [ ] 2.6 M1 check at H4 with the team: click a link and see both baselines reroute with metrics
 
 ## 3. Comparison view (C, H4 to H8)
 
-- [ ] 3.1 Create two runs per scenario, send each event to both and commit both snapshots together, with tests: both panels show the same step, a step mismatch shows the error banner
-- [ ] 3.2 Render two panels from the one graph component with shared positions and synchronised pan and zoom, with a test that both panels receive the same positions
-- [ ] 3.3 Add the baseline selector (S0-QoS default, S0) with history replay on switch, with tests: default is S0-QoS, switching after two events lands on the same step
-- [ ] 3.4 Add the KPI strip per panel (DR, DR_P0, DR_P1, overloaded links, unserved by cause, in a fixed order), with a test that each strip shows its own snapshot's values
-- [ ] 3.5 If behind at H8: ship stacked panels or a policy toggle with the same graph component
+- [x] 3.1 Create two runs per scenario, send each event to both and commit both snapshots together, with tests: both panels show the same step, a step mismatch shows the error banner
+- [x] 3.2 Render two panels from the one graph component with shared positions and synchronised pan and zoom, with a test that both panels receive the same positions
+- [x] 3.3 Add the baseline selector (S0-QoS default, S0) with history replay on switch, with tests: default is S0-QoS, switching after two events lands on the same step
+- [x] 3.4 Add the KPI strip per panel (DR, DR_P0, DR_P1, overloaded links, unserved by cause, in a fixed order), with a test that each strip shows its own snapshot's values
+- [x] 3.5 If behind at H8: ship stacked panels or a policy toggle with the same graph component
 
 ## 4. Inspection and generation (C, H8 to H12)
 
