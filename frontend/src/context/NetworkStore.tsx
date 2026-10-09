@@ -61,7 +61,7 @@ export type NetworkAction =
   | { type: 'APPLY_EVENT_FAILURE'; payload: { error: string } }
   | { type: 'CLEAR_ERROR' }
   | { type: 'SELECT_FLOW'; payload: string | null }
-  | { type: 'RESET'; payload: { left: Snapshot; right: Snapshot } };
+  | { type: 'RESET' | 'SHOW_SNAPSHOTS'; payload: { left: Snapshot; right: Snapshot } };
 
 // Shown until the API answers: no network, no traffic, nothing claimed.
 export const EMPTY_SNAPSHOT: Snapshot = {
@@ -231,7 +231,8 @@ export function networkReducer(state: NetworkState, action: NetworkAction): Netw
       };
     }
 
-    case 'RESET': {
+    case 'RESET':
+    case 'SHOW_SNAPSHOTS': {
       const { left, right } = action.payload;
       return {
         ...state,

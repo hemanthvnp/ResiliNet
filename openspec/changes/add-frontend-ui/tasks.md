@@ -35,7 +35,7 @@
 ## 5. Charts and polish (C, H12 to H16)
 
 - [ ] 5.1 Add the benchmark chart (DR against load factor for S0-QoS and S2, from the benchmark CSV), with a test on a small CSV
-- [ ] 5.2 Add loading a saved run file with no server, with a test that both panels render the saved snapshots
+- [x] 5.2 Add loading a saved run file with no server, with a test that both panels render the saved snapshots
 - [ ] 5.3 Add the utilization legend and text labels, and check contrast and non-colour cues on the projector
 - [x] 5.4 Add the demo-mode layout (large KPIs, hidden secondary labels)
 

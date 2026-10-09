@@ -313,4 +313,49 @@ describe('App Component (Phase 1 & Phase 2)', () => {
       window.history.pushState({}, '', '/');
     }
   });
+
+  it('plays back a saved comparison with no server (Task 5.2)', async () => {
+    render(<App />);
+    await screen.findByTestId('quick-fail-btn');
+    vi.mocked(apiClient.applyEvent).mockClear();
+
+    const saved = {
+      scenario: { id: 'campus-template', seed: 7, topology: { template: 'campus' }, traffic: INITIAL_FLOWS, events: [], config: {} },
+      topology: CAMPUS_TOPOLOGY,
+      flows: INITIAL_FLOWS,
+      table: [],
+      snapshots: {
+        'S0-QoS': [MOCK_STEP0_SNAPSHOT, MOCK_STEP1_S0_QOS_SNAPSHOT],
+        S2: [MOCK_STEP0_SNAPSHOT, MOCK_STEP1_S2_SNAPSHOT],
+      },
+    };
+    const file = new File([JSON.stringify(saved)], 'fallback-run.json', { type: 'application/json' });
+    fireEvent.change(screen.getByTestId('saved-run-input'), { target: { files: [file] } });
+
+    expect(await screen.findByTestId('saved-run-bar')).toHaveTextContent('1 / 2');
+    expect(screen.getByText('7')).toBeInTheDocument(); // the saved scenario's seed
+    expect(screen.getAllByText('Step 0')).toHaveLength(2);
+
+    fireEvent.click(screen.getByLabelText('Next step'));
+
+    // Each panel now shows its own saved step-1 snapshot
+    await waitFor(() => expect(screen.getAllByText('Step 1')).toHaveLength(2));
+    const overloads = screen.getAllByTestId('kpi-strip').map((k) => k.textContent);
+    expect(overloads[0]).toContain(String(MOCK_STEP1_S0_QOS_SNAPSHOT.metrics.overloaded_arcs));
+    expect(overloads[0]).not.toEqual(overloads[1]);
+    // Live controls are off and nothing went to the API
+    expect(screen.getByTestId('baseline-selector')).toBeDisabled();
+    expect(apiClient.applyEvent).not.toHaveBeenCalled();
+  });
+
+  it('rejects a file that is not a saved comparison (Task 5.2)', async () => {
+    render(<App />);
+    await screen.findByTestId('quick-fail-btn');
+
+    const file = new File(['{"snapshots": {}}'], 'wrong.json', { type: 'application/json' });
+    fireEvent.change(screen.getByTestId('saved-run-input'), { target: { files: [file] } });
+
+    expect(await screen.findByTestId('error-banner')).toHaveTextContent('Cannot load wrong.json: Not a saved comparison');
+    expect(screen.queryByTestId('saved-run-bar')).not.toBeInTheDocument();
+  });
 });

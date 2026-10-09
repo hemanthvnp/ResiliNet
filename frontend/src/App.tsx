@@ -6,9 +6,18 @@ import { FlowTable, CLASS_COLORS } from './components/FlowTable';
 import { DecisionPanel } from './components/DecisionPanel';
 import { apiClient } from './api/client';
 import { BaselinePolicy, NetworkProvider, useNetwork } from './context/NetworkStore';
-import { Event, ScenarioInfo, Snapshot } from './types/contract';
+import { CompareResponse, Event, ScenarioInfo, Snapshot } from './types/contract';
 
 export type ViewLayoutMode = 'side-by-side' | 'stacked' | 'toggle';
+
+// FileReader rather than file.text(): same result in browsers, and it also runs under jsdom in tests
+const readText = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsText(file);
+  });
 
 export const ResiliNetDashboard: React.FC = () => {
   const { state, dispatch } = useNetwork();
@@ -48,6 +57,46 @@ export const ResiliNetDashboard: React.FC = () => {
 
   const [scenarios, setScenarios] = useState<ScenarioInfo[]>([]);
 
+  // A saved `compare --out` file, played back with no server (task 5.2): the demo's fallback
+  const [saved, setSaved] = useState<{ name: string; left: Snapshot[]; right: Snapshot[] } | null>(null);
+  const [savedIndex, setSavedIndex] = useState(0);
+  const locked = inFlight || saved !== null; // live controls are off while a saved run plays
+  const displayStep = saved ? rightPanel.snapshot.step : currentStep;
+
+  const showSaved = (run: { left: Snapshot[]; right: Snapshot[] }, index: number) => {
+    setSavedIndex(index);
+    dispatch({ type: 'SHOW_SNAPSHOTS', payload: { left: run.left[index], right: run.right[index] } });
+  };
+
+  const loadSavedRun = async (file: File) => {
+    try {
+      const run: CompareResponse = JSON.parse(await readText(file));
+      const right = run.snapshots?.['S2'];
+      const baseline = (['S0-QoS', 'S0'] as const).find((p) => run.snapshots?.[p]?.length);
+      if (!run.topology || !run.flows || !right?.length || !baseline) {
+        throw new Error('Not a saved comparison: it needs topology, flows and snapshots for S2 and S0-QoS or S0');
+      }
+      const left = run.snapshots[baseline];
+      if (left.length !== right.length) throw new Error('The saved baseline and S2 runs have different step counts');
+      dispatch({
+        type: 'INIT_SCENARIO',
+        payload: {
+          scenarioId: run.scenario.id,
+          seed: run.scenario.seed,
+          scenarioEvents: run.scenario.events,
+          topology: run.topology,
+          flows: run.flows,
+          left: { policy: baseline, runId: '', snapshot: left[0] },
+          right: { policy: 'S2', runId: '', snapshot: right[0] },
+        },
+      });
+      setSaved({ name: file.name, left, right });
+      setSavedIndex(0);
+    } catch (err: any) {
+      dispatch({ type: 'APPLY_EVENT_FAILURE', payload: { error: `Cannot load ${file.name}: ${err.message}` } });
+    }
+  };
+
   // Two runs per scenario, one per panel (Task 3.1); the baseline panel keeps its chosen policy
   const loadScenario = async (scenario_id: string, baseline: BaselinePolicy) => {
     try {
@@ -77,8 +126,8 @@ export const ResiliNetDashboard: React.FC = () => {
     }
   };
 
-  // Load the first listed scenario on mount
-  useEffect(() => {
+  // Load the first listed scenario from the API (on mount, and when leaving a saved run)
+  const loadLive = () =>
     apiClient
       .getScenarios()
       .then((list) => {
@@ -87,6 +136,9 @@ export const ResiliNetDashboard: React.FC = () => {
         return loadScenario(list[0].id, 'S0-QoS');
       })
       .catch((err) => dispatch({ type: 'APPLY_EVENT_FAILURE', payload: { error: err.message } }));
+
+  useEffect(() => {
+    loadLive();
   }, [dispatch]);
 
   // Click-to-fail / Click-to-recover handler with click lock (Task 2.3 & 3.1)
@@ -96,6 +148,7 @@ export const ResiliNetDashboard: React.FC = () => {
 
   // One event to both panels; several links fail together as one simultaneous event
   const handleLinksEvent = async (links: string[], kind: 'fail' | 'recover') => {
+    if (saved) return; // a saved run is played back, not edited
     // Click lock. `inFlight` only updates on the next render, so a fast double click could
     // pass it and send the event twice; the ref is set synchronously.
     if (inFlight || eventLock.current) {
@@ -232,7 +285,7 @@ export const ResiliNetDashboard: React.FC = () => {
             className="panel-selector"
             value={scenarioId}
             onChange={(e) => loadScenario(e.target.value, leftPanel.policy as BaselinePolicy)}
-            disabled={inFlight}
+            disabled={locked}
             data-testid="scenario-select"
             aria-label="Scenario"
           >
@@ -255,13 +308,13 @@ export const ResiliNetDashboard: React.FC = () => {
               color: inFlight ? '#f87171' : '#34d399',
             }}
           >
-            <span>{inFlight ? 'In Flight...' : `Step: ${currentStep}`}</span>
+            <span>{inFlight ? 'In Flight...' : `Step: ${displayStep}`}</span>
           </div>
 
           <button
             className="btn-secondary"
             onClick={handleReset}
-            disabled={inFlight}
+            disabled={locked}
             title="Reset both panels to Step 0"
           >
             Reset
@@ -275,6 +328,56 @@ export const ResiliNetDashboard: React.FC = () => {
           >
             Demo mode
           </button>
+
+          <label className="btn-secondary" data-testid="saved-run-label">
+            Load saved run
+            <input
+              type="file"
+              accept="application/json,.json"
+              hidden
+              disabled={inFlight}
+              data-testid="saved-run-input"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) loadSavedRun(file);
+                e.target.value = ''; // the same file can be loaded again
+              }}
+            />
+          </label>
+
+          {saved && (
+            <div className="badge-seed" data-testid="saved-run-bar">
+              <span>Saved run {saved.name}</span>
+              <button
+                className="btn-secondary"
+                onClick={() => showSaved(saved, savedIndex - 1)}
+                disabled={savedIndex === 0}
+                aria-label="Previous step"
+              >
+                ◀
+              </button>
+              <strong>
+                {savedIndex + 1} / {saved.right.length}
+              </strong>
+              <button
+                className="btn-secondary"
+                onClick={() => showSaved(saved, savedIndex + 1)}
+                disabled={savedIndex === saved.right.length - 1}
+                aria-label="Next step"
+              >
+                ▶
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={() => {
+                  setSaved(null);
+                  loadLive();
+                }}
+              >
+                Back to live
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
@@ -306,7 +409,7 @@ export const ResiliNetDashboard: React.FC = () => {
             <button
               className={`btn-failure-quick ${scriptedDown ? 'btn-recover' : 'btn-fail'}`}
               onClick={() => handleLinksEvent(scriptedFailure, scriptedDown ? 'recover' : 'fail')}
-              disabled={inFlight}
+              disabled={locked}
               data-testid="quick-fail-btn"
             >
               {scriptedDown
@@ -322,7 +425,7 @@ export const ResiliNetDashboard: React.FC = () => {
               className="panel-selector"
               value={targetLink}
               onChange={(e) => setSelectedLinkToToggle(e.target.value)}
-              disabled={inFlight}
+              disabled={locked}
               data-testid="link-select"
             >
               {topology.links.map((link) => {
@@ -340,7 +443,7 @@ export const ResiliNetDashboard: React.FC = () => {
                 const curStatus = rightPanel.snapshot.link_state[targetLink] === 'down' ? 'down' : 'up';
                 handleLinkClick(targetLink, curStatus);
               }}
-              disabled={inFlight || !targetLink}
+              disabled={locked || !targetLink}
               data-testid="toggle-link-btn"
             >
               {rightPanel.snapshot.link_state[targetLink] === 'down'
@@ -390,7 +493,7 @@ export const ResiliNetDashboard: React.FC = () => {
                     onChange={(e) =>
                       handleBaselinePolicyChange(e.target.value as 'S0-QoS' | 'S0')
                     }
-                    disabled={inFlight}
+                    disabled={locked}
                     data-testid="baseline-selector"
                   >
                     <option value="S0-QoS">S0-QoS (Priority Queues)</option>
@@ -402,7 +505,7 @@ export const ResiliNetDashboard: React.FC = () => {
               <KpiStrip
                 metrics={leftPanel.snapshot.metrics}
                 policyName={leftPanel.policy}
-                label={`Step ${currentStep}`}
+                label={`Step ${displayStep}`}
               />
 
               <div className="graph-viewport-wrapper">
@@ -413,7 +516,7 @@ export const ResiliNetDashboard: React.FC = () => {
                   onLinkClick={handleLinkClick}
                   highlightedArcs={arcsFor(leftPanel.snapshot)}
                   highlightColor={highlightColor}
-                  readOnly={inFlight}
+                  readOnly={locked}
                   viewport={sharedViewport}
                   onViewportChange={setSharedViewport}
                 />
@@ -440,7 +543,7 @@ export const ResiliNetDashboard: React.FC = () => {
               <KpiStrip
                 metrics={rightPanel.snapshot.metrics}
                 policyName="S2-Resilient"
-                label={`Step ${currentStep}`}
+                label={`Step ${displayStep}`}
               />
 
               <div className="graph-viewport-wrapper">
@@ -451,7 +554,7 @@ export const ResiliNetDashboard: React.FC = () => {
                   onLinkClick={handleLinkClick}
                   highlightedArcs={arcsFor(rightPanel.snapshot)}
                   highlightColor={highlightColor}
-                  readOnly={inFlight}
+                  readOnly={locked}
                   viewport={sharedViewport}
                   onViewportChange={setSharedViewport}
                 />

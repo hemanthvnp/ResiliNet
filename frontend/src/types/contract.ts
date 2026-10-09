@@ -191,6 +191,8 @@ export interface CompareRow {
 
 export interface CompareResponse {
   scenario: Scenario;
+  topology: Topology; // resolved, so a saved file renders with no server (task 5.2)
+  flows: Flow[];
   table: CompareRow[];
   snapshots: Record<string, Snapshot[]>;
 }
