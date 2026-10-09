@@ -4,6 +4,7 @@ import { KpiStrip } from './components/KpiStrip';
 import { Legend } from './components/Legend';
 import { FlowTable, CLASS_COLORS } from './components/FlowTable';
 import { DecisionPanel } from './components/DecisionPanel';
+import { BenchmarkChart, BenchmarkRow, parseBenchmarkCsv } from './components/BenchmarkChart';
 import { apiClient } from './api/client';
 import { BaselinePolicy, NetworkProvider, useNetwork } from './context/NetworkStore';
 import { CompareResponse, Event, Scenario, ScenarioInfo, Snapshot } from './types/contract';
@@ -59,6 +60,14 @@ export const ResiliNetDashboard: React.FC = () => {
   const scriptedDown = scriptedFailure.length > 0 && scriptedFailure.every((l) => rightPanel.snapshot.link_state[l] === 'down');
 
   const [scenarios, setScenarios] = useState<ScenarioInfo[]>([]);
+  const [bench, setBench] = useState<{ rows: BenchmarkRow[]; source: string } | null>(null);
+  const loadBenchmark = async (file: File) => {
+    try {
+      setBench({ rows: parseBenchmarkCsv(await readText(file)), source: file.name });
+    } catch (err: any) {
+      dispatch({ type: 'APPLY_EVENT_FAILURE', payload: { error: `Cannot load ${file.name}: ${err.message}` } });
+    }
+  };
   const [isMock, setIsMock] = useState(false); // the API answered from fixtures (X-Mock header)
 
   // Generate-network form (task 4.4). Defaults are B's campus generator defaults (about 50 nodes).
@@ -674,6 +683,23 @@ export const ResiliNetDashboard: React.FC = () => {
           selectedFlowId={selectedFlowId}
           onSelectFlow={(id) => dispatch({ type: 'SELECT_FLOW', payload: id })}
         />
+
+        {/* Benchmark chart from the benchmark's CSV, loaded from a file (task 5.1) */}
+        <label className="btn-secondary" data-testid="benchmark-label">
+          Load benchmark CSV
+          <input
+            type="file"
+            accept=".csv,text/csv"
+            hidden
+            data-testid="benchmark-input"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) loadBenchmark(file);
+              e.target.value = '';
+            }}
+          />
+        </label>
+        {bench && <BenchmarkChart key={bench.source} rows={bench.rows} source={bench.source} />}
       </main>
     </div>
   );

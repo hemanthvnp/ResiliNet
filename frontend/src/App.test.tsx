@@ -428,4 +428,16 @@ describe('App Component (Phase 1 & Phase 2)', () => {
       }),
     );
   });
+
+  it('shows the benchmark chart from a loaded CSV (Task 5.1)', async () => {
+    render(<App />);
+    await screen.findByTestId('quick-fail-btn');
+    const csv = 'seed,case,load_factor,policy,variant,dr\n0,uplink,1.0,S0-QoS,default,0.7\n0,uplink,1.0,S2,default,1.0\n';
+
+    fireEvent.change(screen.getByTestId('benchmark-input'), {
+      target: { files: [new File([csv], 'bench.csv', { type: 'text/csv' })] },
+    });
+
+    expect(await screen.findByTestId('benchmark-chart')).toHaveTextContent('Source: bench.csv');
+  });
 });
