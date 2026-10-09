@@ -35,7 +35,7 @@ def fixture_snapshot(policy):
 
 
 def new_run(client, policy="S2"):
-    res = client.post("/runs", json={"scenario_id": "diamond", "policy": policy})
+    res = client.post("/runs", json={"scenario_id": "07_diamond", "policy": policy})
     assert res.status_code == 200, res.text
     return res.json()
 
@@ -65,7 +65,7 @@ def test_live_mode_answers_501_until_the_simulation_lands():
     ("post", "/runs", {"scenario_id": "nope", "policy": "S2"}),
     ("post", "/runs/nope/events", {"kind": "fail", "links": ["L7"]}),
     ("post", "/runs/nope/reset", None),
-    ("post", "/compare", {"scenario_id": "diamond", "policies": ["S2"]}),
+    ("post", "/compare", {"scenario_id": "07_diamond", "policies": ["S2"]}),
     ("get", "/runs/nope/flows/F1/decision", None),
 ])
 def test_mock_responses_are_marked_including_errors(mock, method, path, body):
@@ -79,13 +79,13 @@ def test_mock_header_is_readable_cross_origin(mock):
 
 
 def test_mock_rejects_a_non_default_config(mock):
-    body = {"scenario_id": "diamond", "policy": "S2", "config": {"max_paths": 1}}
+    body = {"scenario_id": "07_diamond", "policy": "S2", "config": {"max_paths": 1}}
     assert mock.post("/runs", json=body).status_code == 422
     assert mock.post("/runs", json={**body, "config": {}}).status_code == 200
 
 
 def test_mock_lists_the_diamond(mock):
-    assert [s["id"] for s in mock.get("/scenarios").json()] == ["diamond"]
+    assert [s["id"] for s in mock.get("/scenarios").json()] == ["07_diamond"]
 
 
 @pytest.mark.parametrize("policy", POLICIES)
@@ -98,7 +98,7 @@ def test_mock_run_returns_the_step0_fixture_for_its_policy(mock, policy):
 
 
 def test_unknown_policy_is_422_and_named(mock):
-    res = mock.post("/runs", json={"scenario_id": "diamond", "policy": "S9"})
+    res = mock.post("/runs", json={"scenario_id": "07_diamond", "policy": "S9"})
     assert res.status_code == 422
     assert "S9" in res.json()["detail"]
 
@@ -107,13 +107,13 @@ def test_unknown_scenario_is_404(mock):
     assert mock.post("/runs", json={"scenario_id": "nope", "policy": "S2"}).status_code == 404
 
 
-@pytest.mark.parametrize("body", [{"policy": "S2"}, {"scenario_id": "diamond", "scenario": {}, "policy": "S2"}])
+@pytest.mark.parametrize("body", [{"policy": "S2"}, {"scenario_id": "07_diamond", "scenario": {}, "policy": "S2"}])
 def test_scenario_id_and_scenario_are_exclusive(mock, body):
     assert mock.post("/runs", json=body).status_code == 422
 
 
 def test_unknown_request_field_is_rejected(mock):
-    assert mock.post("/runs", json={"scenario_id": "diamond", "policy": "S2", "seed": 1}).status_code == 422
+    assert mock.post("/runs", json={"scenario_id": "07_diamond", "policy": "S2", "seed": 1}).status_code == 422
 
 
 def test_fail_a_link(mock):
@@ -167,7 +167,7 @@ def test_two_runs_are_isolated(mock):
 
 
 def test_compare_has_one_row_per_policy_in_request_order(mock):
-    res = mock.post("/compare", json={"scenario_id": "diamond", "policies": POLICIES})
+    res = mock.post("/compare", json={"scenario_id": "07_diamond", "policies": POLICIES})
     body = CompareResponse.model_validate(res.json())
     assert [row.policy for row in body.table] == POLICIES
     assert sorted(body.snapshots) == sorted(POLICIES)
@@ -179,12 +179,12 @@ def test_compare_has_one_row_per_policy_in_request_order(mock):
 
 @pytest.mark.parametrize("policies", [[], ["S2", "S2"]])
 def test_compare_rejects_an_empty_or_repeated_policy_list(mock, policies):
-    res = mock.post("/compare", json={"scenario_id": "diamond", "policies": policies})
+    res = mock.post("/compare", json={"scenario_id": "07_diamond", "policies": policies})
     assert res.status_code == 422
 
 
 def test_compare_carries_topology_and_flows_for_offline_rendering(mock):
-    body = CompareResponse.model_validate(mock.post("/compare", json={"scenario_id": "diamond", "policies": ["S2"]}).json())
+    body = CompareResponse.model_validate(mock.post("/compare", json={"scenario_id": "07_diamond", "policies": ["S2"]}).json())
     assert sorted(l.id for l in body.topology.links) == ["L2", "L5", "L6", "L7"]
     assert [f.id for f in body.flows] == ["F1", "F2"]
 
