@@ -458,6 +458,8 @@ export const ResiliNetDashboard: React.FC = () => {
         )}
 
         {/* Interactive Failure Injection Toolbar */}
+        {/* The two control bars stack normally and share one row in demo mode (task 5.4) */}
+        <div className="controls-row">
         <form
           className="failure-toolbar generate-form"
           data-testid="generate-form"
@@ -560,6 +562,7 @@ export const ResiliNetDashboard: React.FC = () => {
                 : '⚡ Fail Link'}
             </button>
           </div>
+        </div>
         </div>
 
         {/* Toggle Mode Selector Bar (when in toggle layout mode) */}

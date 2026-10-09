@@ -606,7 +606,7 @@ body {
 
 /* Demo mode (task 5.4): readable from the back of the room, nothing secondary on screen */
 .demo-mode .kpi-value {
-  font-size: 2.2rem;
+  font-size: 1.9rem;
 }
 
 .demo-mode .kpi-title {
@@ -636,4 +636,32 @@ body {
 
 .generate-form input {
   width: 64px;
+}
+
+/* Demo mode at projector height (1366x768): both control bars on one row, one-line KPI titles
+   and a slightly shorter graph, so the whole campus stays above the fold */
+.demo-mode .controls-row {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.demo-mode .controls-row > * {
+  flex: 1 1 auto;
+  margin-bottom: 0;
+}
+
+.demo-mode .kpi-title {
+  white-space: nowrap;
+  font-size: 0.78rem;
+}
+
+.topology-graph-container {
+  min-height: 380px;
+}
+
+.demo-mode .graph-viewport-wrapper,
+.demo-mode .topology-graph-container {
+  /* whatever the screen leaves below the header, bars and KPIs (about 420 px), within 260 to 400 px */
+  min-height: clamp(260px, calc(100vh - 420px), 400px);
 }

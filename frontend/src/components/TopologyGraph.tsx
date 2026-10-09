@@ -340,7 +340,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
     <div
       ref={containerRef}
       className={`topology-graph-container ${className}`}
-      style={{ width: '100%', height: '100%', minHeight: '380px', position: 'relative' }}
+      style={{ width: '100%', height: '100%', position: 'relative' }} // min-height in .topology-graph (index.css)
       data-testid="topology-graph"
     />
   );
