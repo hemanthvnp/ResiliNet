@@ -37,6 +37,14 @@ export type NetworkAction =
       };
     }
   | { type: 'SET_BASELINE_POLICY'; payload: BaselinePolicy }
+  | {
+      type: 'REPLAY_BASELINE_SUCCESS';
+      payload: {
+        policy: BaselinePolicy;
+        runId: string;
+        snapshot: Snapshot;
+      };
+    }
   | { type: 'SET_IN_FLIGHT'; payload: boolean }
   | {
       type: 'APPLY_EVENT_SUCCESS';
@@ -112,6 +120,31 @@ export function networkReducer(state: NetworkState, action: NetworkAction): Netw
       };
     }
 
+    case 'REPLAY_BASELINE_SUCCESS': {
+      const { policy, runId, snapshot } = action.payload;
+      if (snapshot.step !== state.rightPanel.snapshot.step) {
+        return {
+          ...state,
+          error: `Step mismatch on replay: baseline is at step ${snapshot.step} while right panel is at step ${state.rightPanel.snapshot.step}`,
+          inFlight: false,
+        };
+      }
+      return {
+        ...state,
+        leftPanel: {
+          policy,
+          runId,
+          snapshot,
+        },
+        lastGoodSnapshots: {
+          ...state.lastGoodSnapshots,
+          left: snapshot,
+        },
+        error: null,
+        inFlight: false,
+      };
+    }
+
     case 'SET_IN_FLIGHT': {
       return {
         ...state,
@@ -121,6 +154,16 @@ export function networkReducer(state: NetworkState, action: NetworkAction): Netw
 
     case 'APPLY_EVENT_SUCCESS': {
       const { event, leftSnapshot, rightSnapshot } = action.payload;
+
+      // Check step mismatch (Task 3.1)
+      if (leftSnapshot.step !== rightSnapshot.step) {
+        return {
+          ...state,
+          error: `Step mismatch: left panel is at step ${leftSnapshot.step} while right panel is at step ${rightSnapshot.step}`,
+          inFlight: false,
+        };
+      }
+
       return {
         ...state,
         eventHistory: [...state.eventHistory, event],

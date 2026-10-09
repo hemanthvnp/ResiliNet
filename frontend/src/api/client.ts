@@ -61,10 +61,38 @@ export class ApiClient {
   async applyEvent(runId: string, event: Omit<Event, 'step'>, policy?: string): Promise<Snapshot> {
     if (this.useMock) {
       const isS0 = policy === 'S0' || policy === 'S0-QoS';
-      if (event.kind === 'fail' && event.links.includes('L_DC_PRI')) {
-        return JSON.parse(JSON.stringify(isS0 ? MOCK_STEP1_S0_QOS_SNAPSHOT : MOCK_STEP1_S2_SNAPSHOT));
+      const failedLink = event.links[0];
+
+      // Clone base snapshot
+      const baseSnap = event.kind === 'fail' ? 
+        (failedLink === 'L_DC_PRI' ? (isS0 ? MOCK_STEP1_S0_QOS_SNAPSHOT : MOCK_STEP1_S2_SNAPSHOT) : MOCK_STEP0_SNAPSHOT)
+        : MOCK_STEP0_SNAPSHOT;
+
+      const newSnap: Snapshot = JSON.parse(JSON.stringify(baseSnap));
+      newSnap.step = event.kind === 'fail' ? 1 : 0;
+      
+      // Update link state for the targeted link
+      if (failedLink) {
+        newSnap.link_state[failedLink] = event.kind === 'fail' ? 'down' : 'up';
+        if (event.kind === 'fail') {
+          newSnap.metrics.link_util[failedLink] = 0;
+          if (failedLink !== 'L_DC_PRI') {
+            // General link failure mock metrics
+            newSnap.affected_flows = ['F02', 'F03'];
+            if (isS0) {
+              newSnap.metrics.overloaded_arcs = 1;
+              newSnap.metrics.max_util = 1.35;
+              newSnap.metrics.dr = 0.82;
+            } else {
+              newSnap.metrics.overloaded_arcs = 0;
+              newSnap.metrics.max_util = 0.92;
+              newSnap.metrics.dr = 0.99;
+            }
+          }
+        }
       }
-      return JSON.parse(JSON.stringify(MOCK_STEP0_SNAPSHOT));
+
+      return newSnap;
     }
     const res = await fetch(`${this.baseUrl}/runs/${runId}/events`, {
       method: 'POST',

@@ -107,4 +107,52 @@ describe('App Component (Phase 1 & Phase 2)', () => {
       expect(screen.queryByTestId('error-banner')).not.toBeInTheDocument();
     });
   });
+
+  it('defaults baseline selector to S0-QoS and switches layout modes (Task 3.3 & Task 3.5)', async () => {
+    render(<App />);
+
+    // Baseline selector should default to S0-QoS
+    const selector = await screen.findByTestId('baseline-selector') as HTMLSelectElement;
+    expect(selector.value).toBe('S0-QoS');
+
+    // Layout switcher should toggle between side-by-side, stacked, and toggle
+    const stackedBtn = screen.getByText('Stacked');
+    fireEvent.click(stackedBtn);
+    expect(stackedBtn).toHaveClass('layout-btn-active');
+
+    const toggleBtn = screen.getByText('Toggle');
+    fireEvent.click(toggleBtn);
+    expect(toggleBtn).toHaveClass('layout-btn-active');
+    expect(screen.getByTestId('toggle-policy-bar')).toBeInTheDocument();
+  });
+
+  it('replays event history when baseline policy is switched (Task 3.3)', async () => {
+    const createRunSpy = vi.spyOn(apiClient, 'createRun');
+    const applyEventSpy = vi.spyOn(apiClient, 'applyEvent');
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect((global as any).__mockCytoscapeTapEdge).toBeDefined();
+    });
+
+    // 1. Simulate first failure event
+    const mockEvent = { target: { id: () => 'L_DC_PRI' } };
+    await waitFor(async () => {
+      (global as any).__mockCytoscapeTapEdge(mockEvent);
+    });
+
+    await waitFor(() => {
+      expect(applyEventSpy).toHaveBeenCalled();
+    });
+
+    // 2. Now switch baseline to S0
+    const selector = screen.getByTestId('baseline-selector');
+    fireEvent.change(selector, { target: { value: 'S0' } });
+
+    // Should create new run for S0 and replay the event
+    await waitFor(() => {
+      expect(createRunSpy).toHaveBeenCalledWith(expect.objectContaining({ policy: 'S0' }));
+    });
+  });
 });

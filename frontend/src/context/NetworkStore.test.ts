@@ -64,6 +64,40 @@ describe('Network Reducer (Task 2.1)', () => {
     expect(nextState.inFlight).toBe(false);
   });
 
+  it('detects step mismatch between panels on APPLY_EVENT_SUCCESS (Task 3.1)', () => {
+    const event = { step: 1, kind: 'fail' as const, links: ['L_DC_PRI'] };
+    const mismatchSnapshot = { ...MOCK_STEP1_S2_SNAPSHOT, step: 2 }; // step 2 vs step 1
+
+    const nextState = networkReducer(initialNetworkState, {
+      type: 'APPLY_EVENT_SUCCESS',
+      payload: {
+        event,
+        leftSnapshot: MOCK_STEP1_S0_QOS_SNAPSHOT, // step 1
+        rightSnapshot: mismatchSnapshot,         // step 2
+      },
+    });
+
+    expect(nextState.error).toContain('Step mismatch: left panel is at step 1 while right panel is at step 2');
+    expect(nextState.inFlight).toBe(false);
+  });
+
+  it('updates baseline policy and snapshot on REPLAY_BASELINE_SUCCESS (Task 3.3)', () => {
+    const replayedSnapshot = { ...MOCK_STEP1_S0_QOS_SNAPSHOT, step: 0 };
+    const nextState = networkReducer(initialNetworkState, {
+      type: 'REPLAY_BASELINE_SUCCESS',
+      payload: {
+        policy: 'S0',
+        runId: 'run-s0-replayed',
+        snapshot: replayedSnapshot,
+      },
+    });
+
+    expect(nextState.leftPanel.policy).toBe('S0');
+    expect(nextState.leftPanel.runId).toBe('run-s0-replayed');
+    expect(nextState.leftPanel.snapshot).toEqual(replayedSnapshot);
+    expect(nextState.error).toBeNull();
+  });
+
   it('retains last good snapshots on APPLY_EVENT_FAILURE (Task 2.5)', () => {
     // Start with a valid state at step 0
     const stateWithGoodSnapshot: NetworkState = {

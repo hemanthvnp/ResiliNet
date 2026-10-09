@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react';
-import { TopologyGraph } from './components/TopologyGraph';
+import React, { useState, useEffect } from 'react';
+import { TopologyGraph, ViewportState } from './components/TopologyGraph';
 import { KpiStrip } from './components/KpiStrip';
 import { FlowTable } from './components/FlowTable';
 import { apiClient } from './api/client';
 import { NetworkProvider, useNetwork } from './context/NetworkStore';
 import { Event } from './types/contract';
 import { MOCK_STEP0_SNAPSHOT } from './fixtures/mockData';
+
+export type ViewLayoutMode = 'side-by-side' | 'stacked' | 'toggle';
 
 export const ResiliNetDashboard: React.FC = () => {
   const { state, dispatch } = useNetwork();
@@ -23,32 +25,56 @@ export const ResiliNetDashboard: React.FC = () => {
 
   const currentStep = eventHistory.length;
 
-  // Initialize initial sessions on mount
+  // Viewport synchronization across panels (Task 3.2)
+  const [sharedViewport, setSharedViewport] = useState<ViewportState | undefined>(undefined);
+
+  // Layout mode (Task 3.5 cut-line fallback)
+  const [layoutMode, setLayoutMode] = useState<ViewLayoutMode>('side-by-side');
+  const [activeTogglePolicy, setActiveTogglePolicy] = useState<'baseline' | 's2'>('s2');
+
+  // Interactive failure injection controls
+  const [selectedLinkToToggle, setSelectedLinkToToggle] = useState<string>('L_DC_PRI');
+
+  // Initialize initial sessions on mount (Task 3.1: two runs per scenario)
   useEffect(() => {
     async function loadInitial() {
       try {
         dispatch({ type: 'SET_IN_FLIGHT', payload: true });
-        const { snapshot } = await apiClient.createRun({ policy: 'S2', seed });
+        const [leftRes, rightRes] = await Promise.all([
+          apiClient.createRun({ policy: 'S0-QoS', seed }),
+          apiClient.createRun({ policy: 'S2', seed }),
+        ]);
+
         dispatch({
           type: 'INIT_SCENARIO',
           payload: {
             seed,
             topology,
             flows,
-            initialSnapshot: snapshot,
+            initialSnapshot: rightRes.snapshot,
+          },
+        });
+
+        // Initialize separate run IDs
+        dispatch({
+          type: 'REPLAY_BASELINE_SUCCESS',
+          payload: {
+            policy: 'S0-QoS',
+            runId: leftRes.run_id,
+            snapshot: leftRes.snapshot,
           },
         });
       } catch (err: any) {
         dispatch({
           type: 'APPLY_EVENT_FAILURE',
-          payload: { error: err.message || 'Failed to initialize session' },
+          payload: { error: err.message || 'Failed to initialize sessions' },
         });
       }
     }
     loadInitial();
   }, [seed, dispatch, topology, flows]);
 
-  // Click-to-fail / Click-to-recover handler with click lock (Task 2.3)
+  // Click-to-fail / Click-to-recover handler with click lock (Task 2.3 & 3.1)
   const handleLinkClick = async (linkId: string, currentStatus: 'up' | 'down') => {
     if (inFlight) {
       console.warn('Click ignored: request in flight');
@@ -60,7 +86,7 @@ export const ResiliNetDashboard: React.FC = () => {
     const event: Event = { step: currentStep + 1, kind, links: [linkId] };
 
     try {
-      // Parallel dispatch to both baseline and S2 engines
+      // Parallel dispatch to both baseline and S2 engines (Task 3.1)
       const [leftSnapshot, rightSnapshot] = await Promise.all([
         apiClient.applyEvent(leftPanel.runId, event, leftPanel.policy),
         apiClient.applyEvent(rightPanel.runId, event, rightPanel.policy),
@@ -78,6 +104,41 @@ export const ResiliNetDashboard: React.FC = () => {
       dispatch({
         type: 'APPLY_EVENT_FAILURE',
         payload: { error: err.message || `Failed to apply ${kind} event for link ${linkId}` },
+      });
+    }
+  };
+
+  // Baseline Policy Switch with History Replay (Task 3.3)
+  const handleBaselinePolicyChange = async (newPolicy: 'S0-QoS' | 'S0') => {
+    if (inFlight || newPolicy === leftPanel.policy) return;
+
+    dispatch({ type: 'SET_IN_FLIGHT', payload: true });
+    try {
+      // Create new session for the selected baseline policy
+      const { run_id, snapshot: initSnapshot } = await apiClient.createRun({
+        policy: newPolicy,
+        seed,
+      });
+
+      let currentSnapshot = initSnapshot;
+
+      // Replay all previous events in order onto the new baseline run
+      for (const pastEvent of eventHistory) {
+        currentSnapshot = await apiClient.applyEvent(run_id, pastEvent, newPolicy);
+      }
+
+      dispatch({
+        type: 'REPLAY_BASELINE_SUCCESS',
+        payload: {
+          policy: newPolicy,
+          runId: run_id,
+          snapshot: currentSnapshot,
+        },
+      });
+    } catch (err: any) {
+      dispatch({
+        type: 'APPLY_EVENT_FAILURE',
+        payload: { error: err.message || 'Failed to replay event history on baseline switch' },
       });
     }
   };
@@ -119,6 +180,31 @@ export const ResiliNetDashboard: React.FC = () => {
         </div>
 
         <div className="header-controls">
+          {/* Layout switcher (Task 3.5) */}
+          <div className="layout-switcher-group" data-testid="layout-switcher">
+            <button
+              className={`layout-btn ${layoutMode === 'side-by-side' ? 'layout-btn-active' : ''}`}
+              onClick={() => setLayoutMode('side-by-side')}
+              title="Side-by-side view"
+            >
+              Side-by-Side
+            </button>
+            <button
+              className={`layout-btn ${layoutMode === 'stacked' ? 'layout-btn-active' : ''}`}
+              onClick={() => setLayoutMode('stacked')}
+              title="Stacked panels"
+            >
+              Stacked
+            </button>
+            <button
+              className={`layout-btn ${layoutMode === 'toggle' ? 'layout-btn-active' : ''}`}
+              onClick={() => setLayoutMode('toggle')}
+              title="Toggle between policies"
+            >
+              Toggle
+            </button>
+          </div>
+
           <div className="badge-seed">
             <span>Seed:</span>
             <strong>{seed}</strong>
@@ -147,11 +233,11 @@ export const ResiliNetDashboard: React.FC = () => {
 
       {/* Main Dashboard */}
       <main className="dashboard-main">
-        {/* Error Notification Banner (Task 2.5) */}
+        {/* Error Notification Banner (Task 2.5 & Task 3.1) */}
         {error && (
           <div className="error-banner" data-testid="error-banner">
             <div className="error-message-text">
-              <strong>Request Error:</strong> {error}
+              <strong>Error:</strong> {error}
             </div>
             <button
               className="btn-secondary error-dismiss-btn"
@@ -162,6 +248,67 @@ export const ResiliNetDashboard: React.FC = () => {
           </div>
         )}
 
+        {/* Interactive Failure Injection Toolbar */}
+        <div className="failure-toolbar" data-testid="failure-toolbar">
+          <div className="failure-toolbar-title">
+            <span className="failure-icon">⚡</span>
+            <span>Failure Injection:</span>
+          </div>
+
+          <button
+            className={`btn-failure-quick ${
+              rightPanel.snapshot.link_state['L_DC_PRI'] === 'down' ? 'btn-recover' : 'btn-fail'
+            }`}
+            onClick={() =>
+              handleLinkClick(
+                'L_DC_PRI',
+                rightPanel.snapshot.link_state['L_DC_PRI'] === 'down' ? 'down' : 'up'
+              )
+            }
+            disabled={inFlight}
+            data-testid="quick-fail-btn"
+          >
+            {rightPanel.snapshot.link_state['L_DC_PRI'] === 'down'
+              ? '↺ Recover Primary DC Uplink (L_DC_PRI)'
+              : '⚡ Fail Primary DC Uplink (L_DC_PRI)'}
+          </button>
+
+          <div className="failure-select-group">
+            <label htmlFor="link-select">Or target link:</label>
+            <select
+              id="link-select"
+              className="panel-selector"
+              value={selectedLinkToToggle}
+              onChange={(e) => setSelectedLinkToToggle(e.target.value)}
+              disabled={inFlight}
+              data-testid="link-select"
+            >
+              {topology.links.map((link) => {
+                const status = rightPanel.snapshot.link_state[link.id] || 'up';
+                return (
+                  <option key={link.id} value={link.id}>
+                    {link.id} ({link.u} ↔ {link.v}) [{status.toUpperCase()}]
+                  </option>
+                );
+              })}
+            </select>
+            <button
+              className="btn-secondary"
+              onClick={() => {
+                const curStatus =
+                  rightPanel.snapshot.link_state[selectedLinkToToggle] === 'down' ? 'down' : 'up';
+                handleLinkClick(selectedLinkToToggle, curStatus);
+              }}
+              disabled={inFlight}
+              data-testid="toggle-link-btn"
+            >
+              {rightPanel.snapshot.link_state[selectedLinkToToggle] === 'down'
+                ? '↺ Recover Link'
+                : '⚡ Fail Link'}
+            </button>
+          </div>
+        </div>
+
         {/* Active Flow Decision Banner */}
         {selectedDecision && (
           <div className="decision-banner" data-testid="decision-banner">
@@ -170,112 +317,144 @@ export const ResiliNetDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Side-by-Side Comparison Grid */}
-        <div className="comparison-grid">
-          {/* Left Panel: Baseline */}
-          <div className="panel-card" data-testid="baseline-panel">
-            <div className="panel-header">
-              <div className="panel-title-area">
-                <span className="panel-title">Baseline Network</span>
-                <select
-                  className="panel-selector"
-                  value={leftPanel.policy}
-                  onChange={(e) =>
-                    dispatch({
-                      type: 'SET_BASELINE_POLICY',
-                      payload: e.target.value as 'S0-QoS' | 'S0',
-                    })
-                  }
-                  disabled={inFlight}
-                >
-                  <option value="S0-QoS">S0-QoS (Priority Queues)</option>
-                  <option value="S0">S0 (Naive Dijkstra)</option>
-                </select>
-              </div>
-            </div>
-
-            <KpiStrip
-              metrics={leftPanel.snapshot.metrics}
-              policyName={leftPanel.policy}
-              label={currentStep > 0 ? 'Post-Failure (Overloaded)' : 'Steady State'}
-            />
-
-            <div className="graph-viewport-wrapper">
-              <div className="graph-instruction-banner">Click any link to fail / recover</div>
-              <TopologyGraph
-                topology={topology}
-                snapshot={leftPanel.snapshot}
-                onLinkClick={handleLinkClick}
-                highlightedArcs={highlightedArcs}
-                highlightColor="#f59e0b"
-                readOnly={inFlight}
-              />
-            </div>
-
-            <div className="legend-strip">
-              <div className="legend-item">
-                <div className="legend-color-box" style={{ background: '#10b981' }} />
-                <span>Util &lt; 50%</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color-box" style={{ background: '#f59e0b' }} />
-                <span>Util 50-90%</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color-box" style={{ background: '#d946ef' }} />
-                <span>Overload &gt; 100%</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color-box" style={{ background: '#ef4444', border: '1px dashed #ffffff' }} />
-                <span>Failed Link</span>
-              </div>
-            </div>
+        {/* Toggle Mode Selector Bar (when in toggle layout mode) */}
+        {layoutMode === 'toggle' && (
+          <div className="toggle-policy-bar" data-testid="toggle-policy-bar">
+            <button
+              className={`btn-secondary ${activeTogglePolicy === 'baseline' ? 'btn-primary' : ''}`}
+              onClick={() => setActiveTogglePolicy('baseline')}
+            >
+              Baseline ({leftPanel.policy})
+            </button>
+            <button
+              className={`btn-secondary ${activeTogglePolicy === 's2' ? 'btn-primary' : ''}`}
+              onClick={() => setActiveTogglePolicy('s2')}
+            >
+              S2 Resilient (Ours)
+            </button>
           </div>
+        )}
+
+        {/* Comparison Grid (Side-by-side vs Stacked vs Toggle) */}
+        <div
+          className={`comparison-grid ${
+            layoutMode === 'stacked'
+              ? 'comparison-grid-stacked'
+              : layoutMode === 'toggle'
+              ? 'comparison-grid-single'
+              : ''
+          }`}
+        >
+          {/* Left Panel: Baseline */}
+          {(layoutMode !== 'toggle' || activeTogglePolicy === 'baseline') && (
+            <div className="panel-card" data-testid="baseline-panel">
+              <div className="panel-header">
+                <div className="panel-title-area">
+                  <span className="panel-title">Baseline Network</span>
+                  <select
+                    className="panel-selector"
+                    value={leftPanel.policy}
+                    onChange={(e) =>
+                      handleBaselinePolicyChange(e.target.value as 'S0-QoS' | 'S0')
+                    }
+                    disabled={inFlight}
+                    data-testid="baseline-selector"
+                  >
+                    <option value="S0-QoS">S0-QoS (Priority Queues)</option>
+                    <option value="S0">S0 (Naive Dijkstra)</option>
+                  </select>
+                </div>
+              </div>
+
+              <KpiStrip
+                metrics={leftPanel.snapshot.metrics}
+                policyName={leftPanel.policy}
+                label={currentStep > 0 ? 'Post-Failure (Overloaded)' : 'Steady State'}
+              />
+
+              <div className="graph-viewport-wrapper">
+                <div className="graph-instruction-banner">Click any link to fail / recover</div>
+                <TopologyGraph
+                  topology={topology}
+                  snapshot={leftPanel.snapshot}
+                  onLinkClick={handleLinkClick}
+                  highlightedArcs={highlightedArcs}
+                  highlightColor="#f59e0b"
+                  readOnly={inFlight}
+                  viewport={sharedViewport}
+                  onViewportChange={setSharedViewport}
+                />
+              </div>
+
+              <div className="legend-strip">
+                <div className="legend-item">
+                  <div className="legend-color-box" style={{ background: '#10b981' }} />
+                  <span>Util &lt; 50%</span>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-color-box" style={{ background: '#f59e0b' }} />
+                  <span>Util 50-90%</span>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-color-box" style={{ background: '#d946ef' }} />
+                  <span>Overload &gt; 100%</span>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-color-box" style={{ background: '#ef4444', border: '1px dashed #ffffff' }} />
+                  <span>Failed Link</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Right Panel: S2 Improved */}
-          <div className="panel-card" data-testid="s2-panel">
-            <div className="panel-header">
-              <div className="panel-title-area">
-                <span className="panel-title">S2 Priority Residual Routing (Ours)</span>
-                <span className="policy-badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399' }}>
-                  Splitting m=3
-                </span>
+          {(layoutMode !== 'toggle' || activeTogglePolicy === 's2') && (
+            <div className="panel-card" data-testid="s2-panel">
+              <div className="panel-header">
+                <div className="panel-title-area">
+                  <span className="panel-title">S2 Priority Residual Routing (Ours)</span>
+                  <span className="policy-badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399' }}>
+                    Splitting m=3
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <KpiStrip
-              metrics={rightPanel.snapshot.metrics}
-              policyName="S2-Resilient"
-              label={currentStep > 0 ? 'Capacity Protected' : 'Optimal Initial'}
-            />
-
-            <div className="graph-viewport-wrapper">
-              <div className="graph-instruction-banner">Synchronized parallel view</div>
-              <TopologyGraph
-                topology={topology}
-                snapshot={rightPanel.snapshot}
-                onLinkClick={handleLinkClick}
-                highlightedArcs={highlightedArcs}
-                highlightColor="#38bdf8"
-                readOnly={inFlight}
+              <KpiStrip
+                metrics={rightPanel.snapshot.metrics}
+                policyName="S2-Resilient"
+                label={currentStep > 0 ? 'Capacity Protected' : 'Optimal Initial'}
               />
-            </div>
 
-            <div className="legend-strip">
-              <div className="legend-item">
-                <div className="legend-color-box" style={{ background: '#38bdf8' }} />
-                <span>Active Route Path</span>
+              <div className="graph-viewport-wrapper">
+                <div className="graph-instruction-banner">Synchronized parallel view</div>
+                <TopologyGraph
+                  topology={topology}
+                  snapshot={rightPanel.snapshot}
+                  onLinkClick={handleLinkClick}
+                  highlightedArcs={highlightedArcs}
+                  highlightColor="#38bdf8"
+                  readOnly={inFlight}
+                  viewport={sharedViewport}
+                  onViewportChange={setSharedViewport}
+                />
               </div>
-              <div className="legend-item">
-                <div className="legend-color-box" style={{ background: '#10b981' }} />
-                <span>Safe Margin</span>
-              </div>
-              <div className="legend-item">
-                <div className="legend-color-box" style={{ background: '#d946ef' }} />
-                <span>Overload (0 in S2)</span>
+
+              <div className="legend-strip">
+                <div className="legend-item">
+                  <div className="legend-color-box" style={{ background: '#38bdf8' }} />
+                  <span>Active Route Path</span>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-color-box" style={{ background: '#10b981' }} />
+                  <span>Safe Margin</span>
+                </div>
+                <div className="legend-item">
+                  <div className="legend-color-box" style={{ background: '#d946ef' }} />
+                  <span>Overload (0 in S2)</span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Flow Inspection Table */}

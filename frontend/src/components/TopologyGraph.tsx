@@ -2,6 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import cytoscape, { Core, ElementDefinition, LayoutOptions } from 'cytoscape';
 import { Topology, Snapshot } from '../types/contract';
 
+export interface ViewportState {
+  zoom: number;
+  pan: { x: number; y: number };
+}
+
 export interface TopologyGraphProps {
   topology: Topology;
   snapshot: Snapshot;
@@ -10,6 +15,8 @@ export interface TopologyGraphProps {
   highlightColor?: string;
   className?: string;
   readOnly?: boolean;
+  viewport?: ViewportState;
+  onViewportChange?: (viewport: ViewportState) => void;
 }
 
 /**
@@ -100,6 +107,8 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
   highlightColor = '#38bdf8',
   className = '',
   readOnly = false,
+  viewport,
+  onViewportChange,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<Core | null>(null);
@@ -203,12 +212,16 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
             'curve-style': 'bezier',
             'opacity': 0.88,
             'target-arrow-shape': 'none',
+            'underlay-color': '#38bdf8',
+            'underlay-padding': 6,
+            'underlay-opacity': 0,
           },
         },
         {
           selector: 'edge:active',
           style: {
-            'overlay-opacity': 0,
+            'overlay-opacity': 0.2,
+            'overlay-color': '#ef4444',
           },
         },
       ],
@@ -222,6 +235,13 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
     });
 
     if (!readOnly && onLinkClick) {
+      cy.on('mouseover', 'edge', () => {
+        if (containerRef.current) containerRef.current.style.cursor = 'pointer';
+      });
+      cy.on('mouseout', 'edge', () => {
+        if (containerRef.current) containerRef.current.style.cursor = 'default';
+      });
+
       cy.on('tap', 'edge', (evt) => {
         const edge = evt.target;
         const linkId = edge.id();
@@ -230,12 +250,43 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
       });
     }
 
+    // Synchronized pan/zoom event dispatch
+    if (onViewportChange) {
+      cy.on('pan zoom', () => {
+        const curZoom = cy.zoom();
+        const curPan = cy.pan();
+        onViewportChange({ zoom: curZoom, pan: { x: curPan.x, y: curPan.y } });
+      });
+    }
+
+    // Apply external viewport if provided
+    if (viewport) {
+      cy.viewport({ zoom: viewport.zoom, pan: viewport.pan });
+    }
+
     cyRef.current = cy;
 
     return () => {
       cy.destroy();
     };
-  }, [topology, snapshot, highlightedArcs, highlightColor, readOnly, onLinkClick]);
+  }, [topology, snapshot, highlightedArcs, highlightColor, readOnly, onLinkClick, onViewportChange]);
+
+  // Synchronize viewport updates when received from partner panel
+  useEffect(() => {
+    if (!cyRef.current || !viewport) return;
+    const cy = cyRef.current;
+    const currentZoom = cy.zoom();
+    const currentPan = cy.pan();
+
+    // Only update if difference exceeds threshold to avoid jitter
+    if (
+      Math.abs(currentZoom - viewport.zoom) > 0.001 ||
+      Math.abs(currentPan.x - viewport.pan.x) > 1 ||
+      Math.abs(currentPan.y - viewport.pan.y) > 1
+    ) {
+      cy.viewport({ zoom: viewport.zoom, pan: viewport.pan });
+    }
+  }, [viewport]);
 
   return (
     <div
