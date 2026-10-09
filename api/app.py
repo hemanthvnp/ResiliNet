@@ -32,7 +32,8 @@ class LiveBackend:
 
 def create_app(mock: bool = False) -> FastAPI:
     app = FastAPI(title="Network Rerouter API", version="0.1.0")
-    app.add_middleware(CORSMiddleware, allow_origins=DEV_ORIGINS, allow_methods=["*"], allow_headers=["*"])
+    app.add_middleware(CORSMiddleware, allow_origins=DEV_ORIGINS, allow_methods=["*"], allow_headers=["*"],
+                       expose_headers=["X-Mock"])
     backend = MockBackend() if mock else LiveBackend()
 
     if mock:

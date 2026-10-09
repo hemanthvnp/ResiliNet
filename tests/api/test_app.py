@@ -73,6 +73,11 @@ def test_mock_responses_are_marked_including_errors(mock, method, path, body):
     assert res.headers["X-Mock"] == "true", res.status_code
 
 
+def test_mock_header_is_readable_cross_origin(mock):
+    res = mock.get("/scenarios", headers={"Origin": "http://localhost:5173"})
+    assert "x-mock" in res.headers["access-control-expose-headers"].lower()
+
+
 def test_mock_rejects_a_non_default_config(mock):
     body = {"scenario_id": "diamond", "policy": "S2", "config": {"max_paths": 1}}
     assert mock.post("/runs", json=body).status_code == 422
