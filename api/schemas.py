@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
 from core.model.types import Flow, Metrics, PolicyConfig, Scenario, Snapshot, Topology
 
@@ -60,6 +60,17 @@ class EventRequest(_Body):
 class CompareRequest(_ScenarioChoice):
     policies: list[str]
     config: PolicyConfig | None = None
+
+    @field_validator("policies")
+    @classmethod
+    def _distinct(cls, policies: list[str]) -> list[str]:
+        """One table row and one snapshot sequence per policy, so an empty or repeated list is rejected."""
+        if not policies:
+            raise ValueError("give at least one policy")
+        repeated = sorted({p for p in policies if policies.count(p) > 1})
+        if repeated:
+            raise ValueError(f"repeated policy {', '.join(repeated)}")
+        return policies
 
 
 class CompareRow(_Body):

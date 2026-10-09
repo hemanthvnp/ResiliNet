@@ -60,8 +60,23 @@ def test_live_mode_answers_501_until_the_simulation_lands():
 
 # --- mock mode (1.4) -----------------------------------------------------------
 
-def test_mock_responses_are_marked(mock):
-    assert mock.get("/scenarios").headers["X-Mock"] == "true"
+@pytest.mark.parametrize("method, path, body", [
+    ("get", "/scenarios", None),
+    ("post", "/runs", {"scenario_id": "nope", "policy": "S2"}),
+    ("post", "/runs/nope/events", {"kind": "fail", "links": ["L7"]}),
+    ("post", "/runs/nope/reset", None),
+    ("post", "/compare", {"scenario_id": "diamond", "policies": ["S2"]}),
+    ("get", "/runs/nope/flows/F1/decision", None),
+])
+def test_mock_responses_are_marked_including_errors(mock, method, path, body):
+    res = mock.request(method.upper(), path, json=body)
+    assert res.headers["X-Mock"] == "true", res.status_code
+
+
+def test_mock_rejects_a_non_default_config(mock):
+    body = {"scenario_id": "diamond", "policy": "S2", "config": {"max_paths": 1}}
+    assert mock.post("/runs", json=body).status_code == 422
+    assert mock.post("/runs", json={**body, "config": {}}).status_code == 200
 
 
 def test_mock_lists_the_diamond(mock):
@@ -128,6 +143,10 @@ def test_event_on_unknown_run_is_404(mock):
     assert mock.post("/runs/nope/events", json={"kind": "fail", "links": ["L7"]}).status_code == 404
 
 
+def test_unknown_run_is_404_even_with_an_unknown_link(mock):
+    assert mock.post("/runs/nope/events", json={"kind": "fail", "links": ["L99"]}).status_code == 404
+
+
 def test_reset_returns_the_original_step0(mock):
     run = new_run(mock, "S0-QoS")
     mock.post(f"/runs/{run['run_id']}/events", json={"kind": "fail", "links": ["L2", "L7"]})
@@ -148,6 +167,15 @@ def test_compare_has_one_row_per_policy_in_request_order(mock):
     assert [row.policy for row in body.table] == POLICIES
     assert sorted(body.snapshots) == sorted(POLICIES)
     assert next(r for r in body.table if r.policy == "S2").metrics.overloaded_arcs == 0
+    for row in body.table:
+        assert row.metrics == body.snapshots[row.policy][-1].metrics, row.policy
+        assert body.snapshots[row.policy][-1] == fixture_snapshot(row.policy)
+
+
+@pytest.mark.parametrize("policies", [[], ["S2", "S2"]])
+def test_compare_rejects_an_empty_or_repeated_policy_list(mock, policies):
+    res = mock.post("/compare", json={"scenario_id": "diamond", "policies": policies})
+    assert res.status_code == 422
 
 
 def test_compare_carries_topology_and_flows_for_offline_rendering(mock):

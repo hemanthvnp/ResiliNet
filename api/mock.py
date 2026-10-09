@@ -68,6 +68,8 @@ class MockBackend:
             raise HTTPException(422, "mock mode serves built-in scenarios only; use scenario_id 'diamond'")
         if req.scenario_id != "diamond":
             raise HTTPException(404, f"unknown scenario {req.scenario_id!r}")
+        if req.config not in (None, PolicyConfig()):
+            raise HTTPException(422, "mock mode serves the default config only; fixtures are not recomputed")
 
     def _check_policy(self, policy: str) -> None:
         if policy not in self.step0:
@@ -86,17 +88,17 @@ class MockBackend:
         )
 
     def apply_event(self, run_id: str, event: EventRequest) -> Snapshot:
-        link_ids = {l.id for l in self.topology.links}
-        unknown = sorted(set(event.links) - link_ids)
-        if unknown:
-            raise HTTPException(422, f"unknown link {', '.join(unknown)}")
-        targets = set(event.links)
-        if event.node is not None:
-            if event.node not in {n.id for n in self.topology.nodes}:
-                raise HTTPException(422, f"unknown node {event.node!r}")
-            targets |= {l.id for l in self.topology.links if event.node in (l.u, l.v)}
-        status = "down" if event.kind == "fail" else "up"
-        with self.sessions.locked(run_id) as session:
+        with self.sessions.locked(run_id) as session:  # unknown run is 404 before any 422 on the body
+            link_ids = {l.id for l in self.topology.links}
+            unknown = sorted(set(event.links) - link_ids)
+            if unknown:
+                raise HTTPException(422, f"unknown link {', '.join(unknown)}")
+            targets = set(event.links)
+            if event.node is not None:
+                if event.node not in {n.id for n in self.topology.nodes}:
+                    raise HTTPException(422, f"unknown node {event.node!r}")
+                targets |= {l.id for l in self.topology.links if event.node in (l.u, l.v)}
+            status = "down" if event.kind == "fail" else "up"
             policy, current = session.state
             link_state = {**current.link_state, **{l: status for l in targets}}
             nxt = current.model_copy(update={"step": current.step + 1, "link_state": link_state})
