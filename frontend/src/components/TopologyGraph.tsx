@@ -109,6 +109,16 @@ function interpolateColor(color1: string, color2: string, factor: number): strin
 }
 
 /** Cytoscape edge data per link; a link on any highlighted arc takes the highlight colour. */
+/**
+ * Text on the edge, so a failed link, a full link and an overloaded one can be told apart
+ * without colour (a link at 100% and a failed link are both red; task 5.3).
+ */
+export function getLinkLabel(util: number | undefined, isDown: boolean): string {
+  if (isDown) return 'DOWN';
+  if (util !== undefined && util >= 0.9) return `${Math.round(util * 100)}%`;
+  return '';
+}
+
 export function getEdgeElements(
   topology: Topology,
   snapshot: Snapshot,
@@ -136,6 +146,7 @@ export function getEdgeElements(
         color: isHighlighted ? highlightColor : getLinkColor(util, isDown),
         lineStyle: isDown ? 'dashed' : 'solid',
         width: isHighlighted ? width + 2 : width,
+        label: getLinkLabel(util, isDown),
       },
     };
   });
@@ -233,6 +244,13 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
             'underlay-color': '#38bdf8',
             'underlay-padding': 6,
             'underlay-opacity': 0,
+            'label': 'data(label)',
+            'font-size': '10px',
+            'font-weight': 700 as any,
+            'color': '#f8fafc',
+            'text-background-color': '#0f172a',
+            'text-background-opacity': 0.85,
+            'text-background-padding': '2px' as any,
           },
         },
         {

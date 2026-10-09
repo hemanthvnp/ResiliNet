@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getDeterministicPositions, getEdgeElements, getLinkColor, getLinkLineStyle } from './TopologyGraph';
+import { getDeterministicPositions, getEdgeElements, getLinkColor, getLinkLabel, getLinkLineStyle } from './TopologyGraph';
 import { CAMPUS_TOPOLOGY, MOCK_STEP1_S2_SNAPSHOT } from '../fixtures/mockData';
 import { Topology } from '../types/contract';
 
@@ -84,5 +84,14 @@ describe('Selected flow route highlight (Task 4.1)', () => {
     }
     expect(colourOf('L_DC_PRI')).not.toBe('#60a5fa');
     expect(colourOf('L_HST_DIST')).not.toBe('#60a5fa');
+  });
+
+  it('labels links so state does not depend on colour alone (Task 5.3)', () => {
+    expect(getLinkLabel(0.95, true)).toBe('DOWN'); // a failed link, whatever its last load
+    expect(getLinkLabel(1.0, false)).toBe('100%'); // same red as DOWN, told apart by text
+    expect(getLinkLabel(2.5, false)).toBe('250%');
+    expect(getLinkLabel(0.9, false)).toBe('90%');
+    expect(getLinkLabel(0.5, false)).toBe('');
+    expect(getLinkLabel(undefined, false)).toBe('');
   });
 });

@@ -595,3 +595,11 @@ body {
 }
 
 
+
+.legend-dashed {
+  border: 1px dashed #ffffff;
+}
+
+.legend-gradient {
+  width: 48px;
+}

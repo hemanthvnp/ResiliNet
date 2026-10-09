@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TopologyGraph, ViewportState } from './components/TopologyGraph';
 import { KpiStrip } from './components/KpiStrip';
+import { Legend } from './components/Legend';
 import { FlowTable, CLASS_COLORS } from './components/FlowTable';
 import { DecisionPanel } from './components/DecisionPanel';
 import { apiClient } from './api/client';
@@ -407,24 +408,7 @@ export const ResiliNetDashboard: React.FC = () => {
 
               <DecisionPanel decision={decisionFor(leftPanel.snapshot)} />
 
-              <div className="legend-strip">
-                <div className="legend-item">
-                  <div className="legend-color-box" style={{ background: '#10b981' }} />
-                  <span>Util &lt; 50%</span>
-                </div>
-                <div className="legend-item">
-                  <div className="legend-color-box" style={{ background: '#f59e0b' }} />
-                  <span>Util 50-90%</span>
-                </div>
-                <div className="legend-item">
-                  <div className="legend-color-box" style={{ background: '#d946ef' }} />
-                  <span>Overload &gt; 100%</span>
-                </div>
-                <div className="legend-item">
-                  <div className="legend-color-box" style={{ background: '#ef4444', border: '1px dashed #ffffff' }} />
-                  <span>Failed Link</span>
-                </div>
-              </div>
+              <Legend />
             </div>
           )}
 
@@ -462,20 +446,7 @@ export const ResiliNetDashboard: React.FC = () => {
 
               <DecisionPanel decision={decisionFor(rightPanel.snapshot)} />
 
-              <div className="legend-strip">
-                <div className="legend-item">
-                  <div className="legend-color-box" style={{ background: highlightColor ?? '#38bdf8' }} />
-                  <span>Selected Flow Route (class colour)</span>
-                </div>
-                <div className="legend-item">
-                  <div className="legend-color-box" style={{ background: '#10b981' }} />
-                  <span>Safe Margin</span>
-                </div>
-                <div className="legend-item">
-                  <div className="legend-color-box" style={{ background: '#d946ef' }} />
-                  <span>Overload (0 in S2)</span>
-                </div>
-              </div>
+              <Legend />
             </div>
           )}
         </div>
