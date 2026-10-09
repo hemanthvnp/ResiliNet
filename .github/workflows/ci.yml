@@ -22,8 +22,7 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: sh .github/scripts/check-history.sh "$BASE" HEAD
 
-  # The backend and frontend jobs skip their steps until the project skeleton exists
-  # (PLAN.md section 12, H0 to 1.5). Replace the install lines with the real ones then.
+  # The backend and frontend jobs skip their steps until their project files exist.
   backend:
     runs-on: ubuntu-latest
     steps:
@@ -41,9 +40,7 @@ jobs:
         if: steps.detect.outputs.present == 'true'
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -f pyproject.toml ]; then pip install -e .; fi
-          pip install pytest hypothesis
+          pip install -e ".[dev]"
       - name: Test
         if: steps.detect.outputs.present == 'true'
         run: pytest

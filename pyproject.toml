@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "network-rerouter"
+version = "0.0.0"
+description = "Steady-state fluid simulator of a campus network with a centralized routing controller"
+requires-python = ">=3.11"
+# Pinned exactly: networkx tie-breaking and pydantic serialization must not drift
+# between members' machines (PLAN.md section 13, non-determinism risk).
+dependencies = [
+    "pydantic==2.12.5",
+    "networkx==3.5",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.4.2",
+    "hypothesis==6.135.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["core*"]
+
+[tool.pytest.ini_options]
+# Unit tests live beside each module in core/<module>/tests/; importlib mode lets
+# several tests/ folders coexist without __init__.py files.
+addopts = "--import-mode=importlib"
