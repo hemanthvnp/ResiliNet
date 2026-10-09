@@ -21,21 +21,21 @@
 
 ## 4. Invariant checker (B, H4 to H8)
 
-- [ ] 4.1 Add the violation type, `check_invariants` returning a sorted list, and a raising wrapper, with a test that the valid diamond fixtures report nothing
-- [ ] 4.2 Add I1 and I2 (path validity), with one deliberately broken snapshot per invariant
-- [ ] 4.3 Add I3 (demand accounting, tolerance 1e-9), with tests: 2.8 plus 4.2 of 7 passes, 11 of 10 is reported
-- [ ] 4.4 Add I4 (capacity, S1 and S2 only) and I6 (arc load consistency), with tests: load 11 on capacity 10 is reported under S2 and not under S0
-- [ ] 4.5 Add I7 with an independent connectivity query, with tests: false disconnection, missing cause
-- [ ] 4.6 Add I9 (recompute metrics and compare), with a tampered-`dr` test
-- [ ] 4.7 Add the I8 comparison helper and the I10 class-isolation helper, with a test for each; add the I5 ledger test
+- [x] 4.1 Add the violation type, `check_invariants` returning a sorted list, and a raising wrapper, with a test that the valid diamond fixtures report nothing
+- [x] 4.2 Add I1 and I2 (path validity), with one deliberately broken snapshot per invariant
+- [x] 4.3 Add I3 (demand accounting, tolerance 1e-9), with tests: 2.8 plus 4.2 of 7 passes, 11 of 10 is reported
+- [x] 4.4 Add I4 (capacity, S1 and S2 only) and I6 (arc load consistency), with tests: load 11 on capacity 10 is reported under S2 and not under S0
+- [x] 4.5 Add I7 with an independent connectivity query, with tests: false disconnection, missing cause
+- [x] 4.6 Add I9 (recompute metrics and compare), with a tampered-`dr` test
+- [x] 4.7 Add the I8 comparison helper and the I10 class-isolation helper, with a test for each; add the I5 ledger test
 
 ## 5. I11 (B, H8 to H12)
 
-- [ ] 5.1 Add I11 once decision records carry the cut and the bound, with tests: a cut under `PATH_LIMIT` and a negative gap are reported
+- [x] 5.1 Add I11 once decision records carry the cut and the bound, with tests: a cut under `PATH_LIMIT` and a negative gap are reported
 
 ## 6. Integrate
 
-- [ ] 6.1 Run the full test suite with `pytest`, and `check_invariants` on every fixture snapshot under all four policies
-- [ ] 6.2 Rebase onto `main`
-- [ ] 6.3 Run `sh .github/scripts/check-history.sh`
-- [ ] 6.4 Open the pull request from `.github/pull_request_template.md`
+- [x] 6.1 Run the full test suite with `pytest`, and `check_invariants` on every fixture snapshot under all four policies
+- [x] 6.2 Rebase onto `main`
+- [x] 6.3 Run `sh .github/scripts/check-history.sh`
+- [x] 6.4 Open the pull request from `.github/pull_request_template.md`
