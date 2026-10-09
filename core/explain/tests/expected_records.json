@@ -5,8 +5,18 @@
     "maxflow_bound": 10,
     "greedy_gap": 0.0,
     "cut": [
-      {"arc": "L_AC:A>C", "state": "saturated", "load_by_class": {"0": 10}},
-      {"arc": "L_BD:B>D", "state": "down", "load_by_class": {}}
+      {
+        "arc": "L_AC:A>C",
+        "state": "saturated",
+        "load_by_class": {
+          "0": 10
+        }
+      },
+      {
+        "arc": "L_BD:B>D",
+        "state": "down",
+        "load_by_class": {}
+      }
     ]
   },
   "path_limit_F1": {
@@ -16,21 +26,54 @@
     "cut": []
   },
   "blocking": {
-    "description": "The blocking example of expected_cases.json. Bound 2, delivered 1.",
-    "maxflow_bound": 2,
+    "description": "The blocking example of expected_cases.json. Bound 3 (max flow), delivered 2, cut = the minimum cut {S,A}|{C,E,T}.",
+    "maxflow_bound": 3,
     "greedy_gap": 1.0,
     "cut": [
-      {"arc": "L1:S>A", "state": "saturated", "load_by_class": {"0": 1}},
-      {"arc": "L3:B>T", "state": "saturated", "load_by_class": {"0": 1}}
-    ]
+      {
+        "arc": "L1:S>C",
+        "state": "saturated",
+        "load_by_class": {
+          "0": 1
+        }
+      },
+      {
+        "arc": "L2:A>C",
+        "state": "saturated",
+        "load_by_class": {
+          "0": 1
+        }
+      },
+      {
+        "arc": "L3:A>T",
+        "state": "saturated",
+        "load_by_class": {
+          "0": 1
+        }
+      }
+    ],
+    "explanation": "X (P0, 3 Mbps): path S-C-A-T limited by L1 (saturated). Placed 1 Mbps to S-C-A-T (latency 4 ms). Placed 1 Mbps to S-A-C-E-T (latency 10 ms). 1 Mbps unserved, of which 1 Mbps could have been routed (heuristic or path limit)."
   },
   "healthy_F2": {
     "description": "Healthy diamond, F1 (P0, 15) then F2 (P2, 10). F2 sees 5 free on A-C-D and gets it. Reachable set is {A}.",
     "maxflow_bound": 5,
     "greedy_gap": 0.0,
     "cut": [
-      {"arc": "L_AB:A>B", "state": "saturated", "load_by_class": {"0": 10}},
-      {"arc": "L_AC:A>C", "state": "saturated", "load_by_class": {"0": 5, "2": 5}}
+      {
+        "arc": "L_AB:A>B",
+        "state": "saturated",
+        "load_by_class": {
+          "0": 10
+        }
+      },
+      {
+        "arc": "L_AC:A>C",
+        "state": "saturated",
+        "load_by_class": {
+          "0": 5,
+          "2": 5
+        }
+      }
     ]
   }
 }

@@ -4,64 +4,61 @@ Every call starts from an empty ledger. `prev` is copied into the decision recor
 read by the placement loop.
 """
 
-from collections.abc import Callable, Iterable, Mapping, Sequence
+from collections.abc import Sequence
 
-from core.explain.data import Attempt
-from core.explain.records import FlowFacts, build_record, reference_arcs
-from core.routing.cost import arc_cost
-from core.routing.inputs import (
-    AllocConfig,
-    ArcSpec,
-    FlowOutcome,
-    FlowSpec,
-    PathRate,
-    RouteResult,
-    validate_flows,
+from core.explain.records import FlowFacts, build_record, failed_links_of, reference_arcs
+from core.model.arcs import all_arcs, available_arcs
+from core.model.ledger import Ledger
+from core.model.types import (
+    Allocation,
+    Attempt,
+    Cause,
+    DecisionRecord,
+    Flow,
+    FlowResult,
+    PathAlloc,
+    PolicyConfig,
+    Topology,
 )
-from core.routing.ledger_standin import SimpleLedger
+from core.routing.checks import validate_inputs
+from core.routing.cost import arc_cost
 from core.routing.ordering import order_flows
 from core.routing.pathfinder import connected_components, residual_reachable, shortest_path
 
-LedgerFactory = Callable[[Sequence[ArcSpec], float], SimpleLedger]
-
 
 def allocate(
-    arcs: Iterable[ArcSpec],
-    flows: Sequence[FlowSpec],
-    cfg: AllocConfig,
+    topo: Topology,
+    flows: Sequence[Flow],
+    prev: Allocation | None,
+    cfg: PolicyConfig,
     *,
-    prev: Mapping[str, Sequence[PathRate]] | None = None,
     step: int = 0,
-    failed_links: Sequence[str] = (),
-    ledger_factory: LedgerFactory = SimpleLedger,
-) -> RouteResult:
-    validate_flows(flows)
-    arcs = sorted(arcs, key=lambda a: a.id)
-    available = [a for a in arcs if a.up]
-    by_id = {a.id: a for a in arcs}
-    down_arcs = tuple((a.id, a.u, a.v) for a in arcs if not a.up)
-    ledger = ledger_factory(arcs, cfg.util_cap)
+) -> tuple[Allocation, list[DecisionRecord]]:
+    validate_inputs(flows, cfg)
+    available = available_arcs(topo)
+    by_id = {a.id: a for a in available}
+    down_arcs = tuple((a.id, a.src, a.dst) for a in all_arcs(topo) if a.id not in by_id)
+    link_status = {link.id: link.status for link in topo.links}
+    every_arc = all_arcs(topo)
+    ledger = Ledger(topo, cfg.util_cap)
 
-    nodes = {a.u for a in arcs} | {a.v for a in arcs} | {f.src for f in flows} | {f.dst for f in flows}
+    nodes = {n.id for n in topo.nodes} | {f.src for f in flows} | {f.dst for f in flows}
     component = {
         node: index
-        for index, members in enumerate(connected_components(nodes, [(a.id, a.u, a.v, 0) for a in available]))
+        for index, members in enumerate(connected_components(nodes, [(a.id, a.src, a.dst, 0) for a in available]))
         for node in members
     }
 
-    def load(arc_id: str) -> int:
-        return sum(ledger.class_breakdown([arc_id]).values())
-
     def residual_arcs() -> list[tuple[str, str, str, int]]:
-        return [(a.id, a.u, a.v, ledger.residual(a.id)) for a in available]
+        return [(a.id, a.src, a.dst, ledger.residual(a.id)) for a in available]
 
-    outcomes: dict[str, FlowOutcome] = {}
-    records = []
+    results: dict[str, FlowResult] = {}
+    records: list[DecisionRecord] = []
     for f in order_flows(flows, cfg.order):
-        paths: list[PathRate] = []
+        paths: list[PathAlloc] = []
         attempts: list[Attempt] = []
         remaining = f.rate
-        cause = "NONE"
+        cause: Cause = "NONE"
         pre_residual = {a.id: ledger.residual(a.id) for a in available}
 
         if f.rate == 0 or f.src == f.dst:
@@ -71,36 +68,50 @@ def allocate(
         else:
             while remaining > 0 and len(paths) < cfg.max_paths:
                 weighted = [
-                    (a.id, a.u, a.v, arc_cost(a.latency, load(a.id), a.capacity, cfg.congestion_lambda))
+                    (a.id, a.src, a.dst, arc_cost(a.latency, ledger.load(a.id), a.capacity, cfg.congestion_lambda))
                     for a in available
                     if ledger.residual(a.id) > 0
                 ]
                 path = shortest_path(weighted, f.src, f.dst)
                 if path is None:
                     break
-                bottleneck = ledger.bottleneck(path.arcs)
+                arcs = list(path.arcs)
+                bottleneck = ledger.bottleneck(arcs)
                 pushed = min(remaining, bottleneck)
-                ledger.reserve(path.arcs, pushed, f.cls)
-                paths.append(PathRate(path.arcs, pushed))
-                latency = sum(by_id[a].latency for a in path.arcs)
-                attempts.append(Attempt(len(attempts) + 1, path.arcs, path.cost, latency, bottleneck, pushed))
+                ledger.reserve(arcs, pushed, f.cls)
+                paths.append(PathAlloc(arcs=arcs, rate=pushed))
+                latency = sum(by_id[a].latency for a in arcs)
+                attempts.append(
+                    Attempt(
+                        iter=len(attempts) + 1,
+                        arcs=arcs,
+                        cost=path.cost,
+                        latency=latency,
+                        bottleneck=bottleneck,
+                        pushed=pushed,
+                    )
+                )
                 remaining -= pushed
             if remaining > 0:
                 reachable = residual_reachable(residual_arcs(), f.src)
                 cause = "PATH_LIMIT" if f.dst in reachable else "INSUFFICIENT_CAPACITY"
 
-        outcome = FlowOutcome(f.id, tuple(paths), float(f.rate - remaining), float(remaining), cause)
-        outcomes[f.id] = outcome
+        result = FlowResult(
+            flow_id=f.id, paths=paths, delivered=float(f.rate - remaining), unserved=float(remaining), cause=cause
+        )
+        results[f.id] = result
+        previous = tuple(prev.results[f.id].paths) if prev and f.id in prev.results else ()
+        failed = failed_links_of(previous, link_status)
         facts = FlowFacts(
             flow=f,
             step=step,
-            failed_links=tuple(failed_links),
-            previous=tuple((prev or {}).get(f.id, ())),
-            reference_arcs=reference_arcs(arcs, f.src, f.dst, failed_links) if f.src != f.dst else (),
+            failed_links=failed,
+            previous=previous,
+            reference_arcs=reference_arcs(every_arc, link_status, f.src, f.dst, failed) if f.src != f.dst else (),
             paths=tuple(paths),
             attempts=tuple(attempts),
-            delivered=outcome.delivered,
-            unserved=outcome.unserved,
+            delivered=result.delivered,
+            unserved=result.unserved,
             cause=cause,
             is_allocator=True,
             pre_residual=pre_residual,
@@ -110,5 +121,5 @@ def allocate(
         )
         records.append(build_record(facts))
 
-    arc_load = {a.id: load(a.id) for a in available if load(a.id) > 0}
-    return RouteResult(outcomes, arc_load, records)
+    arc_load = {arc_id: ledger.load(arc_id) for arc_id in ledger.arcs}  # every available arc, as in fixtures/
+    return Allocation(results=results, arc_load=arc_load), records

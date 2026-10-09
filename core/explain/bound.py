@@ -2,12 +2,12 @@
 
 from collections.abc import Iterable
 
-from core.routing.inputs import PathRate
+from core.model.types import PathAlloc
 from core.routing.pathfinder import Arc, max_flow_value
 
 
 def maxflow_bound(
-    post_residuals: Iterable[Arc], own_paths: Iterable[PathRate], src: str, dst: str, rate: int
+    post_residuals: Iterable[Arc], own_paths: Iterable[PathAlloc], src: str, dst: str, rate: int
 ) -> int:
     """min(rate, max flow) on the residuals as they were before this flow was placed.
 

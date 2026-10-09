@@ -1,34 +1,63 @@
-"""Policies selectable by name (PLAN.md section 14). The callables work on plain inputs;
-the adapter over core/model types wraps them once B's contract is merged."""
+"""The four policies as RoutingPolicy objects, selectable by name (PLAN.md sections 7 and 14)."""
 
-from collections.abc import Callable
-from dataclasses import replace
+from collections.abc import Sequence
 
+from core.model.types import Allocation, DecisionRecord, Flow, PolicyConfig, RoutingPolicy, Topology
 from core.routing.allocator import allocate
 from core.routing.baselines import route_s0, route_s0_qos
-from core.routing.inputs import AllocConfig, RouteResult
+
+Result = tuple[Allocation, list[DecisionRecord]]
 
 
-def route_s1(arcs, flows, cfg: AllocConfig | None = None, **kwargs) -> RouteResult:
-    """S1: arrival order, one path, latency-only cost. Only `util_cap` is read from `cfg`."""
-    cfg = cfg or AllocConfig()
-    return allocate(arcs, flows, replace(cfg, order="arrival", max_paths=1, congestion_lambda=0), **kwargs)
+class S0:
+    """Latency-shortest path, no admission control, proportional loss."""
+
+    name = "S0"
+
+    def route(
+        self, topo: Topology, flows: Sequence[Flow], prev: Allocation | None, cfg: PolicyConfig, *, step: int = 0
+    ) -> Result:
+        return route_s0(topo, flows, prev, cfg, step=step)
 
 
-def route_s2(arcs, flows, cfg: AllocConfig | None = None, **kwargs) -> RouteResult:
-    """S2: the allocator exactly as configured (class-first order and splitting by default)."""
-    return allocate(arcs, flows, cfg or AllocConfig(), **kwargs)
+class S0QoS:
+    """The S0 routes with strict priority on each arc."""
+
+    name = "S0-QoS"
+
+    def route(
+        self, topo: Topology, flows: Sequence[Flow], prev: Allocation | None, cfg: PolicyConfig, *, step: int = 0
+    ) -> Result:
+        return route_s0_qos(topo, flows, prev, cfg, step=step)
 
 
-POLICIES: dict[str, Callable[..., RouteResult]] = {
-    "S0": route_s0,
-    "S0-QoS": route_s0_qos,
-    "S1": route_s1,
-    "S2": route_s2,
-}
+class S1:
+    """Arrival order, one path, latency-only cost. Only `util_cap` is read from the config."""
+
+    name = "S1"
+
+    def route(
+        self, topo: Topology, flows: Sequence[Flow], prev: Allocation | None, cfg: PolicyConfig, *, step: int = 0
+    ) -> Result:
+        s1 = cfg.model_copy(update={"order": "arrival", "max_paths": 1, "congestion_lambda": 0})
+        return allocate(topo, flows, prev, s1, step=step)
 
 
-def get_policy(name: str) -> Callable[..., RouteResult]:
+class S2:
+    """The allocator exactly as configured (class-first order and splitting by default)."""
+
+    name = "S2"
+
+    def route(
+        self, topo: Topology, flows: Sequence[Flow], prev: Allocation | None, cfg: PolicyConfig, *, step: int = 0
+    ) -> Result:
+        return allocate(topo, flows, prev, cfg, step=step)
+
+
+POLICIES: dict[str, RoutingPolicy] = {p.name: p for p in (S0(), S0QoS(), S1(), S2())}
+
+
+def get_policy(name: str) -> RoutingPolicy:
     try:
         return POLICIES[name]
     except KeyError:
