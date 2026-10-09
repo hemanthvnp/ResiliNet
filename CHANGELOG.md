@@ -8,6 +8,24 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- Judge kit (`examples/`): editable scenarios `custom-flow.json` (an added P0 flow
+  from Admin to Engineering), `custom-failure.json` (L6, L11 and L13 fail, then L6
+  recovers) and `overload.json` (40 generated flows at load factor 1.5). Each
+  runs with `python -m cli run --scenario examples/<file>.json --policy S2` under
+  all four policies with every invariant checked. Edited classes and ids take
+  effect on the next run, and a mistyped id is rejected by name.
+- README sections for submission: scope (a simulation of the controller, with an
+  SDN island as the deployment path), a licence for every direct dependency read
+  from its own LICENSE file, AI use for every member, a challenges list, and
+  "Try your own input" for the judge kit.
+
+- `README.md`: problem and solution, how to run the backend, frontend, command
+  line and tests (checked on a fresh clone), demo steps, reproducing a run from a
+  seed, the model, the allocator pseudocode, the diamond worked example, an
+  architecture diagram, how correctness is checked, the results measured so far,
+  limitations, technical contribution, future work, external resources and the AI
+  use disclosure, the team (Claude Maxxers) and the official problem statement.
+  The 30-seed benchmark results are still to be added.
 - Single-link sensitivity sweep (`python -m ext sweep --scenario <file|id>`,
   `ext/sweep.py`): fails each link alone from the healthy state, per policy (S2
   and S0-QoS by default), and reports post-failure DR_P0, DR, overloaded arcs and

@@ -1,0 +1,20 @@
+{
+  "id": "overload",
+  "seed": 1,
+  "topology": {
+    "template": "campus"
+  },
+  "traffic": {
+    "generator": "campus",
+    "n_flows": 40,
+    "load_factor": 1.5,
+    "class_mix": {
+      "0": 0.1,
+      "1": 0.4,
+      "2": 0.5
+    },
+    "seed": 1
+  },
+  "events": [],
+  "config": {}
+}

@@ -12,7 +12,7 @@
 - [x] 2.3 Add the config flags (`--order`, `--max-paths`, `--lambda`, `--util-cap`), with a test that a path limit of 1 reports F1 as `PATH_LIMIT`
 - [x] 2.4 Add a test that two runs of the same generator spec and seed write identical output once `compute_ms` is masked, and a test that `cli/` does not import `api`
 
-## 3. Benchmark runner (D, H8 to H12)
+## 3. Benchmark runner (A, H8 to H12; handed over by D in #24, delivered in #26)
 
 - [x] 3.1 Add per-seed case generation (`healthy`, `uplink`, `multi`, `recovered`) with failures drawn from a per-purpose seeded RNG over sorted link ids, with tests: the same seed gives the same failure set, every policy sees the same failed links and total demand
 - [x] 3.2 Add the load-factor sweep and the one-knob ablation variants, with tests: six factors per policy, each variant differs from the default in exactly one knob
@@ -20,7 +20,7 @@
 - [x] 3.4 Time the first seed and apply the matrix-sizing rule, with a test that a projected overrun cuts the ablations and records it
 - [x] 3.5 Measure the median `compute_ms` at demo size for H4 and report it to A (assumption A3)
 
-## 4. Statistics and hypotheses (D, H12 to H16)
+## 4. Statistics and hypotheses (A, H12 to H16; handed over by D in #24, delivered in #26 and #29; 4.5 and 4.6 back with D)
 
 - [x] 4.1 D writes a tiny CSV by hand with its expected mean, median and paired difference, committed as `tests/cli/expected_stats.json`. An agent does not produce these values
 - [x] 4.2 Add mean, median and the seeded 95% bootstrap interval in `cli/stats.py`, with tests from `expected_stats.json` and a test that the interval is identical on repeat
@@ -31,8 +31,8 @@
 
 ## 5. README and demo deliverables (D, H16 to H22)
 
-- [ ] 5.1 Write the README setup (one command for the backend, one for the frontend) and verify it on a clean machine
-- [ ] 5.2 Write the model, assumptions, algorithm with pseudocode and architecture diagram sections
+- [x] 5.1 Write the README setup (one command for the backend, one for the frontend) and verify it on a clean machine
+- [x] 5.2 Write the model, assumptions, algorithm with pseudocode and architecture diagram sections
 - [ ] 5.3 Write "reproduce a run from a seed" and the benchmark results with the stress-case mapping
 - [ ] 5.4 Write the limitations section (ties and losses against S0-QoS, the single-pass baseline bias, greedy sub-optimality), the technical-contribution paragraph and future work
 - [ ] 5.5 Fill the demo script with numbers from the final run and save the fallback run JSON with `compare --out`
