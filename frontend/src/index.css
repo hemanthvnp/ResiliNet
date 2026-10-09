@@ -665,3 +665,55 @@ body {
   /* whatever the screen leaves below the header, bars and KPIs (about 420 px), within 260 to 400 px */
   min-height: clamp(260px, calc(100vh - 420px), 400px);
 }
+
+/* Graph wrapper: the canvas, the hover hint and the zoom buttons */
+.topology-graph-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.graph-hover-hint {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid #38bdf8;
+  color: #f8fafc;
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.graph-zoom-controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.graph-zoom-controls button {
+  min-width: 36px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: rgba(15, 23, 42, 0.9);
+  color: #f8fafc;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.graph-zoom-controls button:hover {
+  border-color: #38bdf8;
+}
+
+/* Stacked and toggle layouts give each graph the full width, so give it real height too */
+.comparison-grid-stacked .graph-viewport-wrapper,
+.comparison-grid-stacked .topology-graph-container,
+.comparison-grid-single .graph-viewport-wrapper,
+.comparison-grid-single .topology-graph-container {
+  min-height: 640px;
+}
