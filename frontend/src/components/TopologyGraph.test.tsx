@@ -1,6 +1,21 @@
 import { describe, it, expect } from 'vitest';
 import { getDeterministicPositions, getEdgeElements, getLinkColor, getLinkLineStyle } from './TopologyGraph';
 import { CAMPUS_TOPOLOGY, MOCK_STEP1_S2_SNAPSHOT } from '../fixtures/mockData';
+import { Topology } from '../types/contract';
+
+// Node ids and types of B's campus template (fixtures/topologies/campus.json on main).
+// ponytail: inline until this branch is rebased onto main; then import the fixture itself.
+const node = (id: string, type: string) => ({ id, type, name: id });
+const campusTemplate: Topology = {
+  nodes: [
+    node('C1', 'core'), node('C2', 'core'), node('AUTH', 'service'), node('EMRG', 'service'),
+    node('LMS', 'service'), node('INET', 'service'), node('D1', 'distribution'), node('D2', 'distribution'),
+    node('B1', 'building'), node('B2', 'building'), node('B3', 'building'), node('B4', 'building'),
+    node('B5', 'building'), node('H1', 'hostel'), node('H2', 'hostel'),
+  ],
+  links: [],
+};
+const diamond: Topology = { nodes: ['A', 'B', 'C', 'D'].map((id) => node(id, 'switch')), links: [] };
 
 describe('Deterministic Topology Layout (Task 1.4 & Task 2.2)', () => {
   it('computes identical, deterministic coordinates for the same topology across multiple runs', () => {
@@ -8,11 +23,25 @@ describe('Deterministic Topology Layout (Task 1.4 & Task 2.2)', () => {
     const run2 = getDeterministicPositions(CAMPUS_TOPOLOGY);
 
     expect(run1).toEqual(run2);
+  });
 
-    // Verify critical campus hubs have designated coordinates
-    expect(run1['N_DC']).toEqual({ x: 400, y: 50 });
-    expect(run1['N_CORE1']).toEqual({ x: 260, y: 160 });
-    expect(run1['N_CORE2']).toEqual({ x: 540, y: 160 });
+  it("lays out B's campus template in rows: services, core, distribution, then buildings and hostels", () => {
+    const pos = getDeterministicPositions(campusTemplate);
+    const rowOf = (id: string) => pos[id].y;
+
+    expect(Object.keys(pos)).toHaveLength(15);
+    expect(rowOf('AUTH')).toBeLessThan(rowOf('C1'));
+    expect(rowOf('C1')).toBe(rowOf('C2'));
+    expect(rowOf('C1')).toBeLessThan(rowOf('D1'));
+    expect(rowOf('D1')).toBeLessThan(rowOf('B1'));
+    expect(rowOf('B1')).toBe(rowOf(campusTemplate.nodes.find((n) => n.type === 'hostel')!.id));
+    // no two nodes on the same spot
+    expect(new Set(Object.values(pos).map((p) => `${p.x},${p.y}`)).size).toBe(15);
+  });
+
+  it('draws a single-row topology such as the diamond on a circle', () => {
+    const pos = getDeterministicPositions(diamond);
+    expect(new Set(Object.values(pos).map((p) => p.y)).size).toBeGreaterThan(1);
   });
 
   it('colours edges according to utilization rules (Task 2.2)', () => {

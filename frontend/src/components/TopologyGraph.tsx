@@ -19,41 +19,50 @@ export interface TopologyGraphProps {
   onViewportChange?: (viewport: ViewportState) => void;
 }
 
+// Rows of the campus hierarchy, top to bottom; a type not listed here goes on a last row.
+const LAYER_OF_TYPE: Record<string, number> = {
+  service: 0,
+  core: 1,
+  distribution: 2,
+  building: 3,
+  access: 3,
+  hostel: 3,
+};
+const WIDTH = 800;
+const ROW_GAP = 120;
+
 /**
- * Deterministic node coordinate generator.
- * Gives identical, stable positions for any topology with the same node list.
+ * Deterministic node coordinates: nodes are placed in rows by type (services, core,
+ * distribution, then buildings and hostels), sorted by id within a row and spread evenly.
+ * A topology whose nodes all share one row (e.g. the diamond) is drawn on a circle instead.
  */
 export function getDeterministicPositions(topology: Topology): Record<string, { x: number; y: number }> {
-  // Pre-mapped coordinates for known campus roles
-  const campusLayout: Record<string, { x: number; y: number }> = {
-    N_DC: { x: 400, y: 50 },
-    N_CORE1: { x: 260, y: 160 },
-    N_CORE2: { x: 540, y: 160 },
-    N_DIST_N: { x: 200, y: 280 },
-    N_DIST_S: { x: 600, y: 280 },
-    N_CS_ENG: { x: 100, y: 400 },
-    N_LIB: { x: 280, y: 400 },
-    N_ADMIN: { x: 520, y: 400 },
-    N_HOSTEL: { x: 700, y: 400 },
-  };
+  const sortedNodes = [...topology.nodes].sort((a, b) => a.id.localeCompare(b.id));
+  const layerOf = (type: string) => LAYER_OF_TYPE[type] ?? 4;
+  const rows = new Map<number, string[]>();
+  for (const node of sortedNodes) {
+    const layer = layerOf(node.type);
+    rows.set(layer, [...(rows.get(layer) ?? []), node.id]);
+  }
 
   const positions: Record<string, { x: number; y: number }> = {};
-  const sortedNodes = [...topology.nodes].sort((a, b) => a.id.localeCompare(b.id));
-
-  sortedNodes.forEach((node, idx) => {
-    if (campusLayout[node.id]) {
-      positions[node.id] = { ...campusLayout[node.id] };
-    } else {
-      // Deterministic circle layout fallback for arbitrary topologies
+  if (rows.size <= 1) {
+    sortedNodes.forEach((node, idx) => {
       const angle = (2 * Math.PI * idx) / sortedNodes.length;
-      const radius = 220;
       positions[node.id] = {
-        x: 400 + Math.round(radius * Math.cos(angle)),
-        y: 240 + Math.round(radius * Math.sin(angle)),
+        x: WIDTH / 2 + Math.round(220 * Math.cos(angle)),
+        y: 240 + Math.round(220 * Math.sin(angle)),
       };
-    }
-  });
+    });
+    return positions;
+  }
 
+  [...rows.keys()].sort((a, b) => a - b).forEach((layer, rowIdx) => {
+    const ids = rows.get(layer)!;
+    ids.forEach((id, i) => {
+      positions[id] = { x: Math.round(((i + 1) * WIDTH) / (ids.length + 1)), y: 60 + rowIdx * ROW_GAP };
+    });
+  });
   return positions;
 }
 
