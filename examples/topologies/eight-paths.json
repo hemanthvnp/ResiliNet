@@ -1,0 +1,184 @@
+{
+  "nodes": [
+    {
+      "id": "S",
+      "type": "switch",
+      "name": "S"
+    },
+    {
+      "id": "R1",
+      "type": "switch",
+      "name": "R1"
+    },
+    {
+      "id": "R2",
+      "type": "switch",
+      "name": "R2"
+    },
+    {
+      "id": "R3",
+      "type": "switch",
+      "name": "R3"
+    },
+    {
+      "id": "R4",
+      "type": "switch",
+      "name": "R4"
+    },
+    {
+      "id": "R5",
+      "type": "switch",
+      "name": "R5"
+    },
+    {
+      "id": "R6",
+      "type": "switch",
+      "name": "R6"
+    },
+    {
+      "id": "R7",
+      "type": "switch",
+      "name": "R7"
+    },
+    {
+      "id": "R8",
+      "type": "switch",
+      "name": "R8"
+    },
+    {
+      "id": "T",
+      "type": "switch",
+      "name": "T"
+    }
+  ],
+  "links": [
+    {
+      "id": "L1",
+      "u": "S",
+      "v": "R1",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L2",
+      "u": "R1",
+      "v": "T",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L3",
+      "u": "S",
+      "v": "R2",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L4",
+      "u": "R2",
+      "v": "T",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L5",
+      "u": "S",
+      "v": "R3",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L6",
+      "u": "R3",
+      "v": "T",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L7",
+      "u": "S",
+      "v": "R4",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L8",
+      "u": "R4",
+      "v": "T",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L9",
+      "u": "S",
+      "v": "R5",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L10",
+      "u": "R5",
+      "v": "T",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L11",
+      "u": "S",
+      "v": "R6",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L12",
+      "u": "R6",
+      "v": "T",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L13",
+      "u": "S",
+      "v": "R7",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L14",
+      "u": "R7",
+      "v": "T",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L15",
+      "u": "S",
+      "v": "R8",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L16",
+      "u": "R8",
+      "v": "T",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    }
+  ]
+}

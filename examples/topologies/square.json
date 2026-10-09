@@ -1,0 +1,58 @@
+{
+  "nodes": [
+    {
+      "id": "A",
+      "type": "switch",
+      "name": "A"
+    },
+    {
+      "id": "B",
+      "type": "switch",
+      "name": "B"
+    },
+    {
+      "id": "C",
+      "type": "switch",
+      "name": "C"
+    },
+    {
+      "id": "D",
+      "type": "switch",
+      "name": "D"
+    }
+  ],
+  "links": [
+    {
+      "id": "L1",
+      "u": "A",
+      "v": "B",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L2",
+      "u": "B",
+      "v": "D",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L3",
+      "u": "A",
+      "v": "C",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    },
+    {
+      "id": "L4",
+      "u": "C",
+      "v": "D",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    }
+  ]
+}

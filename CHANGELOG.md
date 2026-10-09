@@ -8,6 +8,16 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- ECMP-style baselines (`ECMP`, `ECMP-QoS`; `ext/ecmp.py`): an idealised equal
+  split over equal-cost next hops per router, with integer path rates and at most
+  8 next hops, delivered with the S0 and S0-QoS formulas per path. They run through
+  `python -m ext run|compare`, which also registers the small example topologies
+  `examples/square.json`, `shared-prefix.json` and `eight-paths.json`. On eight
+  equal routes ECMP-QoS delivers 80 against S2's 30 at `max_paths` 3 (S2's log
+  reports `PATH_LIMIT` with a greedy gap of 50); with `--max-paths 8`, S2 delivers
+  80 with no overload. Importing `ext` changes nothing; `ext.register()` adds the
+  policies, so cycle-1 tests never see them. The sweep's default policies now
+  include ECMP-QoS, as the cycle 2 plan says.
 - Benchmark results (`results/`): the 30-seed run on commit `f45c9c0` (3960
   rows, no matrix reduction, 88 s), the summary, the tables and the hypothesis
   verdicts. H1 passed: S2 delivers 14.0 points more than S0-QoS under stress, 95%

@@ -1,0 +1,24 @@
+{
+  "id": "shared-prefix",
+  "seed": 0,
+  "topology": {
+    "template": "shared-prefix"
+  },
+  "events": [],
+  "config": {
+    "order": "class_size_desc",
+    "max_paths": 3,
+    "congestion_lambda": 0,
+    "util_cap": 1.0
+  },
+  "traffic": [
+    {
+      "id": "F1",
+      "src": "S",
+      "dst": "D",
+      "rate": 120,
+      "cls": 0,
+      "service": "critical"
+    }
+  ]
+}

@@ -267,6 +267,32 @@ The diamond: links A-B and B-D have capacity 10 and latency 1; A-C and C-D have 
 
 While a second path exists, S2 beats the QoS baseline by using capacity the shortest path leaves idle. When only one path is left, rerouting cannot create capacity, and S2 and S0-QoS deliver the same.
 
+### ECMP-style baseline (cycle 2)
+
+"Why not just ECMP?" is the obvious question, so there is a third pair of baselines: `ECMP`, which loses traffic proportionally like S0, and `ECMP-QoS`, which uses strict priority like S0-QoS.
+
+**How it routes:**
+- At each router, the traffic arriving for a destination is split equally over the equal-cost next hops: the neighbours on a latency-shortest path. There are at most 8 next hops, ordered by neighbour id and then link id.
+- Path rates stay whole Mbps: a 15 Mbps flow over two next hops sends 8 one way and 7 the other.
+- This is an **idealised** equal split. Real routers hash whole flows onto next hops, so they never split one flow's rate exactly.
+
+**Results on hand-worked topologies:**
+
+| Topology | S0-QoS | ECMP-QoS | S2 |
+|---|---|---|---|
+| Square: two equal paths of capacity 10; a P0 flow of 15 and a P2 flow of 10 | DR 0.40, 2 overloaded arcs | DR 0.80, 4 overloaded arcs | DR 0.80, 0 overloaded |
+| Eight equal routes of capacity 10; one P0 flow of 100 | delivers 10 | delivers 80, 16 overloaded arcs | delivers 30 at the default `max_paths` 3; **80 at `--max-paths 8`**, 0 overloaded |
+
+ECMP-QoS can deliver more than S2. On the eight routes, S2's default limit of 3 paths per flow leaves 70 Mbps unserved, and its decision log says so itself: cause `PATH_LIMIT`, and a greedy gap of 50 Mbps that could have been routed. With `--max-paths 8`, S2 delivers the same 80 Mbps and overloads nothing. So comparisons with ECMP are always reported at both path limits, with delivery and overload as separate outcomes, never combined into one score.
+
+```bash
+python -m ext compare --scenario examples/square.json --policies S0-QoS ECMP-QoS S2
+python -m ext compare --scenario examples/eight-paths.json --policies S0-QoS ECMP-QoS S2
+python -m ext run --scenario examples/eight-paths.json --policy S2 --max-paths 8
+```
+
+`python -m ext run` and `compare` are the cycle-1 commands with ECMP added. The ECMP examples (`square`, `shared-prefix`, `eight-paths`) need `python -m ext`, because their small topologies are registered there and not in the frozen `fixtures/`.
+
 ## Architecture
 
 ```mermaid
