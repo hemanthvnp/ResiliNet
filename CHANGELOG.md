@@ -27,8 +27,10 @@ Notable changes to this project, newest first. The format follows
   - Duplicate flow ids, negative rates, `max_paths` below 1, a negative
     `congestion_lambda` and a `util_cap` outside (0, 1] raise `ValueError`.
   - Class isolation (I10) holds only under a class-first `order`.
-  - Not yet run: `check_invariants` on these policies (waits for
-    `add-metrics-invariants`; tracked in issue 14).
+  - `check_invariants` (I1 to I4, I6 to I9, I11) and the I10 helper report nothing
+    for the four policies on the diamond fixtures, the campus template and 30
+    generated networks, healthy and with the uplink failed (272 snapshots);
+    `core/routing/tests/test_invariants_on_policies.py` keeps running it.
 - Campus network for the demo and the benchmark (`core/gen/`): the hand-drawn
   campus template (15 nodes, primary uplink L6, two single-link hostels) and its
   traffic (19 flows, load factor 0.5) as fixtures; a seeded campus generator

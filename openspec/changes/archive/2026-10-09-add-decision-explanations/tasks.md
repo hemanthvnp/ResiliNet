@@ -33,7 +33,7 @@
 
 ## 7. Integrate
 
-- [ ] 7.1 Run the full test suite with `pytest`, and `check_invariants` (including I11) on every fixture snapshot (the suite passes; `check_invariants` is deferred until `add-metrics-invariants` lands, tracked in issue 14)
+- [x] 7.1 Run the full test suite with `pytest`, and `check_invariants` (including I11) on every fixture snapshot (done: B's `check_invariants` found no violation in 272 snapshots of A's four policies on 35 networks, and `core/routing/tests/test_invariants_on_policies.py` keeps running it; issue 14)
 - [x] 7.2 Rebase onto `main`
 - [x] 7.3 Run `sh .github/scripts/check-history.sh`
 - [x] 7.4 Open the pull request from `.github/pull_request_template.md` (the same PRs as the routing change)
