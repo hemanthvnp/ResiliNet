@@ -398,15 +398,26 @@ body {
 .font-mono { font-family: var(--font-mono); }
 
 /* Decision Banner */
-.decision-banner {
+.decision-panel {
   padding: 12px 18px;
   background: rgba(56, 189, 248, 0.08);
   border: 1px solid var(--border-highlight);
   border-radius: 8px;
   font-size: 0.85rem;
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.decision-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.decision-cut {
+  margin: 0;
+  padding-left: 18px;
 }
 
 /* Failure Injection Toolbar */

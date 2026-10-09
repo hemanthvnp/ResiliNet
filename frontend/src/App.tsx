@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TopologyGraph, ViewportState } from './components/TopologyGraph';
 import { KpiStrip } from './components/KpiStrip';
 import { FlowTable, CLASS_COLORS } from './components/FlowTable';
+import { DecisionPanel } from './components/DecisionPanel';
 import { apiClient } from './api/client';
 import { NetworkProvider, useNetwork } from './context/NetworkStore';
 import { Event, Snapshot } from './types/contract';
@@ -164,8 +165,8 @@ export const ResiliNetDashboard: React.FC = () => {
     }
   };
 
-  // Find active decision for the selected flow in S2
-  const selectedDecision = rightPanel.snapshot.decisions?.find((d) => d.flow_id === selectedFlowId);
+  // Each panel explains its own decision for the selected flow, when that flow was rerouted
+  const decisionFor = (snapshot: Snapshot) => snapshot.decisions.find((d) => d.flow_id === selectedFlowId);
 
   // Each panel highlights its own routes for the selected flow, in the flow's class colour
   const arcsFor = (snapshot: Snapshot) =>
@@ -306,14 +307,6 @@ export const ResiliNetDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Active Flow Decision Banner */}
-        {selectedDecision && (
-          <div className="decision-banner" data-testid="decision-banner">
-            <strong style={{ color: '#38bdf8' }}>Flow Explanation:</strong>
-            <span>{selectedDecision.explanation}</span>
-          </div>
-        )}
-
         {/* Toggle Mode Selector Bar (when in toggle layout mode) */}
         {layoutMode === 'toggle' && (
           <div className="toggle-policy-bar" data-testid="toggle-policy-bar">
@@ -383,6 +376,8 @@ export const ResiliNetDashboard: React.FC = () => {
                 />
               </div>
 
+              <DecisionPanel decision={decisionFor(leftPanel.snapshot)} />
+
               <div className="legend-strip">
                 <div className="legend-item">
                   <div className="legend-color-box" style={{ background: '#10b981' }} />
@@ -435,6 +430,8 @@ export const ResiliNetDashboard: React.FC = () => {
                   onViewportChange={setSharedViewport}
                 />
               </div>
+
+              <DecisionPanel decision={decisionFor(rightPanel.snapshot)} />
 
               <div className="legend-strip">
                 <div className="legend-item">
