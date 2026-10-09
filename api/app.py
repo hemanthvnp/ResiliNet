@@ -3,16 +3,17 @@
 Start:      uvicorn api.app:app --reload                 (port 8000; the Vite dev proxy targets it)
 Mock mode:  REROUTER_MOCK=1 uvicorn api.app:app --reload  (answers from fixtures/)
 
-Live mode answers 501 until core/sim lands (change add-rest-api, tasks 2.2 to 2.4).
+Live mode runs core/sim (api/live.py); mock mode is kept for frontend work without the core.
 """
 
 from __future__ import annotations
 
 import os
 
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.live import LiveBackend
 from api.mock import MockBackend
 from api.schemas import CompareRequest, CompareResponse, EventRequest, RunRequest, RunResponse, ScenarioInfo
 from core.model.types import DecisionRecord, Snapshot
@@ -20,21 +21,12 @@ from core.model.types import DecisionRecord, Snapshot
 DEV_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
 
-class LiveBackend:
-    """Placeholder until the simulation engine is on main."""
-
-    def __getattr__(self, name):
-        def not_ready(*args, **kwargs):
-            raise HTTPException(501, "live mode needs core/sim (add-simulation-engine); start with REROUTER_MOCK=1")
-
-        return not_ready
-
-
-def create_app(mock: bool = False) -> FastAPI:
+def create_app(mock: bool = False, check: bool = False) -> FastAPI:
+    """`check` runs the invariant checker on every live snapshot; tests turn it on."""
     app = FastAPI(title="Network Rerouter API", version="0.1.0")
     app.add_middleware(CORSMiddleware, allow_origins=DEV_ORIGINS, allow_methods=["*"], allow_headers=["*"],
                        expose_headers=["X-Mock"])
-    backend = MockBackend() if mock else LiveBackend()
+    backend = MockBackend() if mock else LiveBackend(check)
 
     if mock:
         @app.middleware("http")

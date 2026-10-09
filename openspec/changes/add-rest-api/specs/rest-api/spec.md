@@ -15,7 +15,7 @@ Source: PLAN.md section 7.
 Source: PLAN.md section 7.
 
 #### Scenario: Run from a built-in scenario
-- **WHEN** a client posts `{scenario_id: "diamond", policy: "S2"}`
+- **WHEN** a client posts `{scenario_id: "07_diamond", policy: "S2"}`
 - **THEN** the response is 200 with a run id and a snapshot whose step is 0
 
 #### Scenario: Run from a generator spec

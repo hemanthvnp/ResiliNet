@@ -3,7 +3,7 @@
 The fixtures hold the healthy diamond at step 0 under each policy and no later steps, so an
 event here updates link state and the step number but does not reroute. The decision endpoint
 answers with the section 10 sample record, since the diamond snapshots carry no records.
-Live mode replaces this once core/sim lands (tasks 2.1 to 2.4).
+Live mode (api/live.py) runs the real simulation; mock mode stays for frontend work without the core.
 """
 
 from __future__ import annotations
@@ -52,7 +52,7 @@ class MockBackend:
         self.topology = _load(Topology, "topologies/diamond.json")
         self.flows = [Flow.model_validate(f) for f in json.loads((FIXTURES / "flows/diamond.json").read_text())]
         self.scenario = Scenario(
-            id="diamond",
+            id="07_diamond",
             seed=0,
             topology=TemplateTopologySpec(template="diamond"),
             traffic=self.flows,
@@ -65,8 +65,8 @@ class MockBackend:
 
     def _check_scenario(self, req: RunRequest | CompareRequest) -> None:
         if req.scenario is not None:
-            raise HTTPException(422, "mock mode serves built-in scenarios only; use scenario_id 'diamond'")
-        if req.scenario_id != "diamond":
+            raise HTTPException(422, "mock mode serves built-in scenarios only; use scenario_id '07_diamond'")
+        if req.scenario_id != "07_diamond":
             raise HTTPException(404, f"unknown scenario {req.scenario_id!r}")
         if req.config not in (None, PolicyConfig()):
             raise HTTPException(422, "mock mode serves the default config only; fixtures are not recomputed")
@@ -76,7 +76,7 @@ class MockBackend:
             raise HTTPException(422, f"unknown policy {policy!r}; expected one of {sorted(self.step0)}")
 
     def scenarios(self) -> list[ScenarioInfo]:
-        return [ScenarioInfo(id="diamond", name="Diamond", description="PLAN.md section 4 worked example (mock)")]
+        return [ScenarioInfo(id="07_diamond", name="Critical vs ordinary competing", description="Diamond example of PLAN.md section 4 (mock)")]
 
     def create_run(self, req: RunRequest) -> RunResponse:
         self._check_scenario(req)
