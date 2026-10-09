@@ -6,9 +6,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The project is Network Rerouter, a steady-state fluid simulator of a campus network with a centralized routing controller, built by four members (A, B, C, D) in a 24-hour plan. [PLAN.md](PLAN.md) is the source of truth; cite its section numbers.
 
-There is no application code yet. The repo holds the plan, the [OpenSpec](https://github.com/Fission-AI/OpenSpec) config and changes under [openspec/](openspec/), and the workflow tooling described below. The stack is fixed by PLAN.md section 6: Python 3.11+, pydantic v2, networkx, FastAPI, pytest + hypothesis; React + Vite + TypeScript. The planned test command is `pytest`. Once the skeleton exists (PLAN.md section 12, H0 to 1.5), record the exact install, run, lint and test commands here and replace the placeholder install lines in [.github/workflows/ci.yml](.github/workflows/ci.yml).
+**Read [AGENTS.md](AGENTS.md) first.** It holds the rules shared by all four members' agents (PLAN.md section 11). If it conflicts with this file, raise the conflict instead of picking one.
 
-PLAN.md section 11 calls for a shared `AGENTS.md` for all four members' agents. When it exists, read it first; if it conflicts with this file, raise the conflict instead of picking one.
+The repo holds the plan, the [OpenSpec](https://github.com/Fission-AI/OpenSpec) config and changes under [openspec/](openspec/), the workflow tooling described below, and the `core/` Python package. The stack is fixed by PLAN.md section 6: Python 3.11+, pydantic v2, networkx, FastAPI, pytest + hypothesis; React + Vite + TypeScript.
+
+## Commands
+
+```
+python -m venv .venv
+.venv/Scripts/activate            # Windows; on Linux/macOS: source .venv/bin/activate
+pip install -e ".[dev]"           # pinned versions from pyproject.toml
+pytest                            # unit tests in core/<module>/tests/, D's suites in tests/
+```
+
+No linter is configured yet. Frontend commands are added when `frontend/` exists.
 
 ## Setup (once per clone)
 

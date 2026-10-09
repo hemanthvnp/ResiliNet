@@ -2,7 +2,7 @@
 
 - [x] 1.1 Create the branch `feat/add-core-model-contract` from an up-to-date `main`
 - [x] 1.2 Add `pyproject.toml` (Python 3.11+, pinned pydantic v2, networkx, pytest, hypothesis) and the empty packages `core/model`, `core/gen`, `core/routing`, `core/sim`, `core/metrics`, `core/explain`, with one import smoke test in `core/model/tests/` so `pytest` passes
-- [ ] 1.3 Write `AGENTS.md` (stack, folder ownership, determinism rules of section 7, test command, "never edit `core/model/types.py` or `fixtures/`"); point `CLAUDE.md` to it and record the install and test commands there
+- [x] 1.3 Write `AGENTS.md` (stack, folder ownership, determinism rules of section 7, test command, "never edit `core/model/types.py` or `fixtures/`"); point `CLAUDE.md` to it and record the install and test commands there
 
 ## 2. Types (B, with A on DecisionRecord, H0.5 to H1.5)
 
