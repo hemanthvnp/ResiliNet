@@ -1,7 +1,7 @@
 ## 1. Branch and hand-worked numbers (A, by H4)
 
 - [ ] 1.1 Create the branch `feat/add-decision-explanations` from an up-to-date `main`
-- [ ] 1.2 A works by hand the bound, gap and cut for the BD-failed diamond, the `max_paths` 1 diamond and the blocking example, and commits them as `core/explain/tests/expected_records.json`. An agent does not produce these values
+- [x] 1.2 A works by hand the bound, gap and cut for the BD-failed diamond, the `max_paths` 1 diamond and the blocking example, and commits them as `core/explain/tests/expected_records.json`. An agent does not produce these values
 
 ## 2. Record builder (A, H4 to H8)
 
@@ -12,12 +12,12 @@
 
 ## 3. Max-flow bound (A, H4 to H8)
 
-- [ ] 3.1 Add `bound.py` (residuals with the flow's own reservations added back, then `min(rate, maxflow)`) and `greedy_gap`, with tests from `expected_records.json`: bound 10 and gap 0, bound 15 and gap 5, gap above 0 on the blocking example
+- [x] 3.1 Add `bound.py` (residuals with the flow's own reservations added back, then `min(rate, maxflow)`) and `greedy_gap`, with tests from `expected_records.json`: bound 10 and gap 0, bound 15 and gap 5, gap above 0 on the blocking example
 - [x] 3.2 Set bound and gap to 0 for `DISCONNECTED`, with a test
 
 ## 4. Residual cut (A, H8 to H12)
 
-- [ ] 4.1 Add `cut.py` (arcs leaving the residual-reachable set, state `saturated` or `down`, sorted by arc id), with the BD-failed diamond test from `expected_records.json`
+- [x] 4.1 Add `cut.py` (arcs leaving the residual-reachable set, state `saturated` or `down`, sorted by arc id), with the BD-failed diamond test from `expected_records.json`
 - [x] 4.2 Attach `load_by_class` from `Ledger.class_breakdown`, with tests: class 0 holds 10 on the saturated arc; cut is empty under `PATH_LIMIT`, `DISCONNECTED` and `NONE`
 
 ## 5. Explanation template (A, H8 to H12)

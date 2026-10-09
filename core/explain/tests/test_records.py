@@ -6,9 +6,19 @@ from core.explain.data import CutArc, DecisionRecordData
 from core.explain.template import explain
 from core.routing.allocator import allocate
 from core.routing.baselines import route_s0
-from core.routing.inputs import AllocConfig, ArcSpec, FlowSpec, PathRate
+from core.routing.inputs import AllocConfig, FlowSpec, PathRate
 from core.routing.ledger_standin import SimpleLedger
-from core.routing.tests.helpers import F1, F2, diamond, link, random_case
+from core.routing.tests.helpers import (
+    F1,
+    F2,
+    RECORDS,
+    blocking_arcs,
+    blocking_flow,
+    cut_view,
+    diamond,
+    link,
+    random_case,
+)
 
 S2 = AllocConfig()
 
@@ -95,20 +105,26 @@ def test_two_attempts_for_f1_on_healthy_diamond():
 # --- bound, gap and cut -------------------------------------------------------------------
 
 
-def test_bound_10_gap_0_when_bd_fails():
-    record = allocate(diamond(down=("L_BD",)), [F1], S2).records[0]
-    assert (record.maxflow_bound, record.greedy_gap) == (10, 0.0)
+def check_against(record, key):
+    expected = RECORDS[key]
+    assert (record.maxflow_bound, record.greedy_gap) == (expected["maxflow_bound"], expected["greedy_gap"]), key
+    assert cut_view(record) == expected["cut"], key
 
 
-def test_path_limit_bound_15_gap_5():
+def test_bd_failed_diamond_matches_expected_records():
+    check_against(allocate(diamond(down=("L_BD",)), [F1], S2).records[0], "bd_failed_F1")
+
+
+def test_path_limit_diamond_matches_expected_records():
     record = allocate(diamond(), [F1], AllocConfig(max_paths=1)).records[0]
-    assert (record.cause, record.maxflow_bound, record.greedy_gap) == ("PATH_LIMIT", 15, 5.0)
+    assert record.cause == "PATH_LIMIT"
+    check_against(record, "path_limit_F1")
 
 
-def test_bound_uses_what_higher_classes_left():
-    # F1 holds 10 + 5; F2 then sees 5 free on A-C-D, so its bound is 5 and its gap 0.
+def test_healthy_diamond_second_flow_matches_expected_records():
     record = allocate(diamond(), [F1, F2], S2).records[1]
-    assert (record.flow_id, record.maxflow_bound, record.greedy_gap) == ("F2", 5, 0.0)
+    assert record.flow_id == "F2"
+    check_against(record, "healthy_F2")
 
 
 def test_disconnected_bound_and_gap_are_zero():
@@ -155,13 +171,9 @@ def test_cut_is_sorted_by_arc_id():
     assert [c.arc for c in cut] == ["L1:A>C", "L5:A>D", "L9:A>B"]
 
 
-def test_blocking_example_has_gap_above_zero_and_no_physical_claim():
-    arcs = [
-        ArcSpec("L1:S>A", "S", "A", 1, 1), ArcSpec("L2:A>B", "A", "B", 1, 1), ArcSpec("L3:B>T", "B", "T", 1, 1),
-        ArcSpec("L4:S>B", "S", "B", 1, 10), ArcSpec("L5:A>T", "A", "T", 1, 10),
-    ]
-    record = allocate(arcs, [FlowSpec("X", "S", "T", 2, 0)], S2).records[0]
-    assert record.greedy_gap == 1.0
+def test_blocking_example_matches_expected_records_and_makes_no_physical_claim():
+    record = allocate(blocking_arcs(), [blocking_flow()], S2).records[0]
+    check_against(record, "blocking")
     assert "could have been routed (heuristic or path limit)" in record.explanation
     assert "cut" not in record.explanation
 

@@ -1,8 +1,8 @@
 ## 1. Branch and hand-worked numbers (A, H0 to H1.5)
 
 - [x] 1.1 Create the branch `feat/add-routing-policies` from an up-to-date `main`
-- [ ] 1.2 A works the diamond by hand for S0, S0-QoS and S2, both rows, checks it against the section 4 table, and commits the numbers as `core/routing/tests/expected_diamond.json`. An agent does not produce these values
-- [ ] 1.3 A works by hand one blocking example (shortest-path pushes deliver less than max-flow), one `PATH_LIMIT` case and one `util_cap` 0.9 case, and commits them as `core/routing/tests/expected_cases.json`
+- [x] 1.2 A works the diamond by hand for S0, S0-QoS and S2, both rows, checks it against the section 4 table, and commits the numbers as `core/routing/tests/expected_diamond.json`. An agent does not produce these values
+- [x] 1.3 A works by hand one blocking example (shortest-path pushes deliver less than max-flow), one `PATH_LIMIT` case and one `util_cap` 0.9 case, and commits them as `core/routing/tests/expected_cases.json`
 
 ## 2. Pathfinder (A, H1.5 to H2.5)
 
@@ -22,7 +22,7 @@
 - [x] 4.1 Add the ordering policies (`arrival`, `class_size_desc`, `class_size_asc`) with flow id as the last key, with tests: critical flow first, arrival ignores class
 - [x] 4.2 Add the integer cost function with Fortz-Thorup slopes and integer threshold comparison, with tests: lambda 0 is pure latency, slope at each threshold
 - [ ] 4.3 Add the push loop on the residual graph with the ledger, `max_paths` and `util_cap`, with tests from `expected_diamond.json` (S2, both rows) and capacity never exceeded
-- [ ] 4.4 Add cause assignment (`DISCONNECTED` from components, `PATH_LIMIT`, `INSUFFICIENT_CAPACITY`), with tests from `expected_cases.json`
+- [x] 4.4 Add cause assignment (`DISCONNECTED` from components, `PATH_LIMIT`, `INSUFFICIENT_CAPACITY`), with tests from `expected_cases.json`
 - [x] 4.5 Handle `src == dst` and zero-rate flows, with a test for each
 - [ ] 4.6 Collect per-flow facts and call the record builder in `core/explain/`, with a test that one record is returned per flow
 - [ ] 4.7 Register `S1` and `S2` as configurations of the allocator, with tests: S1 never splits, `prev` is ignored, class isolation when P2 is removed
