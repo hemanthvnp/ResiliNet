@@ -37,7 +37,7 @@
 ## 6. Optional, only if core is stable at H12
 
 - [x] 6.1 Add upstream-aware baseline delivery behind a flag (up to 50 rounds, tolerance 1e-9), with a hand-worked two-link test
-- [ ] 6.2 Add the LP reference with scipy HiGHS on 20 to 30 nodes, labelled "fractional upper bound", with a test that it is never below S2 on the diamond
+- [x] 6.2 Add the LP reference with scipy HiGHS on 20 to 30 nodes, labelled "fractional upper bound", with a test that it is never below S2 on the diamond
 
 ## 7. Integrate
 
