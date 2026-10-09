@@ -20,7 +20,7 @@ export const FlowTable: React.FC<FlowTableProps> = ({
   // Sort deterministically: class ascending (P0, then P1, then P2), then flow ID
   const sortedFlows = [...flows].sort((a, b) => {
     if (a.cls !== b.cls) return a.cls - b.cls;
-    return a.id.localeCompare(b.id);
+    return a.id.localeCompare(b.id, undefined, { numeric: true }); // F2 before F10
   });
 
   const getClassBadge = (cls: number) => {

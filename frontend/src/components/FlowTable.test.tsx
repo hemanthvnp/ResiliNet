@@ -31,4 +31,12 @@ describe('FlowTable Component (Task 2.4)', () => {
     // F05 demand is 500, delivered is 0 Mbps
     expect(screen.getByText('0 Mbps')).toBeInTheDocument();
   });
+
+  it('orders flow ids by number within a class: F2 before F10', () => {
+    const flows = ['F10', 'F2', 'F1'].map((id) => ({ id, src: 'A', dst: 'B', rate: 1, cls: 0, service: '' }));
+    render(<FlowTable flows={flows} snapshot={MOCK_STEP1_S0_QOS_SNAPSHOT} />);
+
+    const ids = screen.getAllByRole('row').slice(1).map((r) => r.textContent?.match(/^F\d+/)?.[0]);
+    expect(ids).toEqual(['F1', 'F2', 'F10']);
+  });
 });

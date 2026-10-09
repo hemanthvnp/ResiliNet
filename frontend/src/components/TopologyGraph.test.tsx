@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getDeterministicPositions, getEdgeElements, getLinkColor, getLinkLabel, getLinkLineStyle } from './TopologyGraph';
+import { getDeterministicPositions, getEdgeElements, getLinkColor, getLinkLabel, getLinkLineStyle, getNodeLabel } from './TopologyGraph';
 import { CAMPUS_TOPOLOGY, MOCK_STEP1_S2_SNAPSHOT } from '../fixtures/mockData';
 import { Topology } from '../types/contract';
 
@@ -51,6 +51,15 @@ describe('Deterministic Topology Layout (Task 1.4 & Task 2.2)', () => {
     expect(Math.max(...perRow.values())).toBeLessThanOrEqual(12);
     expect(new Set(Object.values(pos).map((p) => `${p.x},${p.y}`)).size).toBe(38);
     expect(Object.entries(pos).every(([id, p]) => id === 'C1' || p.y > pos['C1'].y)).toBe(true);
+  });
+
+  it('orders generated ids by number within a row: N2 left of N10', () => {
+    const pos = getDeterministicPositions({
+      nodes: [node('C1', 'core'), node('N10', 'building'), node('N2', 'building'), node('N3', 'building')],
+      links: [],
+    });
+    expect(pos['N2'].x).toBeLessThan(pos['N3'].x);
+    expect(pos['N3'].x).toBeLessThan(pos['N10'].x);
   });
 
   it('draws a single-row topology such as the diamond on a circle', () => {
@@ -107,5 +116,14 @@ describe('Selected flow route highlight (Task 4.1)', () => {
     expect(getLinkLabel(0.9, false)).toBe('90%');
     expect(getLinkLabel(0.5, false)).toBe('');
     expect(getLinkLabel(undefined, false)).toBe('');
+  });
+
+  it('names every node on the campus template but only the backbone on a large network', () => {
+    expect(getNodeLabel({ name: 'Library', type: 'building' }, 15)).toBe('Library');
+    expect(getNodeLabel({ name: 'Building 7', type: 'building' }, 50)).toBe('');
+    expect(getNodeLabel({ name: 'Hostel 1', type: 'hostel' }, 50)).toBe('');
+    expect(getNodeLabel({ name: 'Core 1', type: 'core' }, 50)).toBe('Core 1');
+    expect(getNodeLabel({ name: 'Auth server', type: 'service' }, 50)).toBe('Auth server');
+    expect(getNodeLabel({ name: 'Distribution 3', type: 'distribution' }, 50)).toBe('Distribution 3');
   });
 });
