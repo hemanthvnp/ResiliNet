@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TopologyGraph, ViewportState } from './components/TopologyGraph';
+import { TopologyGraph, ViewportState, flowRatesByLink } from './components/TopologyGraph';
 import { KpiStrip } from './components/KpiStrip';
 import { Legend } from './components/Legend';
 import { FlowTable, CLASS_COLORS } from './components/FlowTable';
@@ -289,6 +289,10 @@ export const ResiliNetDashboard: React.FC = () => {
   const decisionFor = (snapshot: Snapshot) => snapshot.decisions.find((d) => d.flow_id === selectedFlowId);
 
   // Each panel highlights its own routes for the selected flow, in the flow's class colour
+  // The selected flow's Mbps per link in a panel's own snapshot, animated on its graph (task 5.5)
+  const flowRatesFor = (snapshot: Snapshot) =>
+    flowRatesByLink(selectedFlowId ? snapshot.allocation.results[selectedFlowId]?.paths ?? [] : []);
+
   const arcsFor = (snapshot: Snapshot) =>
     (selectedFlowId ? snapshot.allocation.results[selectedFlowId]?.paths ?? [] : []).flatMap((p) => p.arcs);
   const selectedCls = flows.find((f) => f.id === selectedFlowId)?.cls;
@@ -627,6 +631,7 @@ export const ResiliNetDashboard: React.FC = () => {
                   snapshot={leftPanel.snapshot}
                   onLinkClick={handleLinkClick}
                   highlightedArcs={arcsFor(leftPanel.snapshot)}
+                  flowRates={flowRatesFor(leftPanel.snapshot)}
                   highlightColor={highlightColor}
                   readOnly={locked}
                   viewport={sharedViewport}
@@ -668,6 +673,7 @@ export const ResiliNetDashboard: React.FC = () => {
                   snapshot={rightPanel.snapshot}
                   onLinkClick={handleLinkClick}
                   highlightedArcs={arcsFor(rightPanel.snapshot)}
+                  flowRates={flowRatesFor(rightPanel.snapshot)}
                   highlightColor={highlightColor}
                   readOnly={locked}
                   viewport={sharedViewport}

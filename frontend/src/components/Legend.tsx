@@ -24,5 +24,11 @@ export const Legend: React.FC = () => (
     <div className="legend-item">
       <span>Thicker line = more capacity · selected flow drawn in its class colour</span>
     </div>
+    <div className="legend-item">
+      <span>
+        Moving dashes: the selected flow's computed Mbps along its routes, red where it is lost to
+        overload (a fluid model, not individual packets)
+      </span>
+    </div>
   </div>
 );
