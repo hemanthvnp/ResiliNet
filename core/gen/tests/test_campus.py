@@ -11,8 +11,9 @@ from pathlib import Path
 import pytest
 
 from core.gen.campus import CAMPUS_PRIMARY_UPLINK
+from core.gen.pathcheck import check_post_failure
 from core.gen.registry import resolve_topology, resolve_traffic
-from core.model.types import Flow, TemplateTopologySpec, Topology
+from core.model.types import Flow, Link, Node, TemplateTopologySpec, Topology
 
 FIXTURES = Path(__file__).resolve().parents[3] / "fixtures"
 
@@ -129,3 +130,51 @@ def test_explicit_traffic_passes_through_unchanged():
 def test_explicit_traffic_with_unknown_node_is_rejected():
     with pytest.raises(ValueError, match="Z"):
         resolve_traffic([{"id": "F1", "src": "A", "dst": "Z", "rate": 1, "cls": 0}], campus().topology)
+
+
+# 1c: post-failure path check
+
+def test_template_passes_after_uplink_failure():
+    report = check_post_failure(campus().topology, campus_flows(), "L6")
+    assert report.failures == []
+    assert sorted(report.buildings) == ["B1", "B2", "B3", "B4", "B5"]  # H1 and H2 are exempt
+    for building in report.buildings.values():
+        assert (building.disjoint_paths, building.capacity, building.demand) == (2, 30, 10)
+
+
+def test_single_remaining_path_fails_and_names_the_building():
+    topo = Topology(
+        nodes=[Node(id="C1", type="core", name="C1"), Node(id="C2", type="core", name="C2"),
+               Node(id="D1", type="distribution", name="D1"), Node(id="B1", type="building", name="B1")],
+        links=[Link(id="U", u="D1", v="C1", capacity=10, latency=1, status="up"),
+               Link(id="K", u="D1", v="C2", capacity=10, latency=1, status="up"),
+               Link(id="A", u="B1", v="D1", capacity=10, latency=1, status="up")],
+    )
+    report = check_post_failure(topo, [Flow(id="F1", src="B1", dst="C1", rate=5, cls=0)], "U")
+    assert report.buildings["B1"].disjoint_paths == 1
+    assert [f.building for f in report.failures] == ["B1"]
+    assert "B1" in str(report.failures[0])
+
+
+def test_capacity_must_strictly_exceed_demand():
+    flows = [f for f in campus_flows() if f.src != "B1"] + [
+        Flow(id="X1", src="B1", dst="AUTH", rate=10, cls=0),
+        Flow(id="X2", src="B1", dst="LMS", rate=20, cls=1),
+        Flow(id="X3", src="B1", dst="INET", rate=50, cls=2),  # P2 does not count
+    ]
+    report = check_post_failure(campus().topology, flows, "L6")
+    assert report.buildings["B1"].demand == 30
+    assert report.buildings["B1"].capacity == 30
+    assert [f.building for f in report.failures] == ["B1"]
+
+
+def test_check_does_not_change_the_topology():
+    topo = campus().topology
+    before = topo.model_dump_json()
+    check_post_failure(topo, campus_flows(), "L6")
+    assert topo.model_dump_json() == before
+
+
+def test_unknown_uplink_raises():
+    with pytest.raises(KeyError, match="L99"):
+        check_post_failure(campus().topology, campus_flows(), "L99")

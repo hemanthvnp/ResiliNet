@@ -12,8 +12,8 @@
 
 ## 3. Post-failure path check (B, at H4)
 
-- [ ] 3.1 Add the path check (fail the primary uplink on a copy, node-disjoint paths per building, combined capacity against P0 plus P1 demand), with tests: a hand-made network with one remaining path fails and names the building
-- [ ] 3.2 Add the test that the campus template passes the check; if it fails (assumption A1), all four members agree to add redundancy to the template fixture, then the fixture is changed
+- [x] 3.1 Add the path check (fail the primary uplink on a copy, node-disjoint paths per building, combined capacity against P0 plus P1 demand), with tests: a hand-made network with one remaining path fails and names the building
+- [x] 3.2 Add the test that the campus template passes the check; if it fails (assumption A1), all four members agree to add redundancy to the template fixture, then the fixture is changed
 
 ## 4. Demo-network tuning (B, H8 to H10)
 
