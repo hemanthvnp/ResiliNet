@@ -90,3 +90,10 @@ def generate_traffic(spec: GeneratedTrafficSpec, topo: Topology) -> list[Flow]:
         Flow(id=f"F{i}", src=src, dst=dst, rate=rate, cls=cls, service=SERVICE_LABELS[dst])
         for i, ((cls, src, dst, _), rate) in enumerate(zip(drawn, rates), start=1)
     ]
+
+
+def scale_flows(flows: list[Flow], factor: float) -> list[Flow]:
+    """Each rate times `factor`, rounded half up, at least 1. Ids, endpoints, classes and
+    labels are kept, so the same flows exist at every factor of a load sweep."""
+    f = _exact(factor)
+    return [flow.model_copy(update={"rate": max(1, _half_up(flow.rate * f))}) for flow in flows]

@@ -20,7 +20,8 @@ from core.gen.campus import (
 )
 from core.gen.pathcheck import Failure, PathCheckReport
 from core.gen.registry import resolve_inputs, resolve_topology, resolve_traffic
-from core.model.types import GeneratedTopologySpec, TemplateTopologySpec
+from core.gen.traffic import scale_flows
+from core.model.types import Flow, GeneratedTopologySpec, TemplateTopologySpec
 
 FIXTURES = Path(__file__).resolve().parents[3] / "fixtures"
 
@@ -153,3 +154,29 @@ def test_template_inputs_are_returned_without_retry():
     resolved, flows = resolve_inputs(TemplateTopologySpec(template="campus"), traffic)
     assert resolved.seed is None
     assert len(flows) == 19
+
+
+# Load scaling (task 5.3)
+
+FLOWS = [Flow(id="F1", src="B1", dst="AUTH", rate=2, cls=0, service="auth"),
+         Flow(id="F2", src="B1", dst="LMS", rate=8, cls=1, service="lms"),
+         Flow(id="F3", src="B1", dst="INET", rate=5, cls=2, service="internet")]
+
+
+@pytest.mark.parametrize("factor, rates", [(1.5, [3, 12, 8]), (1.0, [2, 8, 5]), (0.1, [1, 1, 1])])  # S1-S3
+def test_scaling(factor, rates):
+    scaled = scale_flows(FLOWS, factor)
+    assert [f.rate for f in scaled] == rates
+    assert [(f.id, f.src, f.dst, f.cls, f.service) for f in scaled] == \
+        [(f.id, f.src, f.dst, f.cls, f.service) for f in FLOWS]
+
+
+def test_scaling_by_one_is_the_identity():  # S2
+    assert scale_flows(FLOWS, 1.0) == FLOWS
+
+
+def test_scaling_the_template_by_two():  # S4
+    traffic = json.loads((FIXTURES / "flows" / "campus.json").read_text())
+    flows = resolve_traffic(traffic, resolve_topology(TemplateTopologySpec(template="campus")).topology)
+    assert sum(f.rate for f in scale_flows(flows, 2.0)) == 170
+

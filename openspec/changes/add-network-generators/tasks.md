@@ -24,7 +24,7 @@
 
 - [x] 5.1 Add the campus generator (`buildings`, `redundancy`, `seed`; counter-based ids; designated uplink), with tests: same seed gives identical JSON, different seeds differ, the network is connected
 - [x] 5.2 Wire the path check into the generator with retry up to 20 seeds and effective-seed reporting, with tests: retry reports the passing seed, exhaustion raises with the reason
-- [ ] 5.3 Add load-factor scaling of a flow list, with tests: scaling by 1.5 keeps ids, endpoints and classes with integer rates, scaling by 1.0 is the identity
+- [x] 5.3 Add load-factor scaling of a flow list, with tests: scaling by 1.5 keeps ids, endpoints and classes with integer rates, scaling by 1.0 is the identity
 - [x] 5.4 Set the default parameters to give about 50 nodes and 200 flows, with a test on the node and flow counts
 
 ## 6. Integrate
