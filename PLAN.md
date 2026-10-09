@@ -40,6 +40,17 @@ Build a **steady-state fluid simulator of a campus network** with a centralized 
 - **Flows are splittable** across up to `max_paths` paths (1 means unsplittable).
 - **Node failure** is convenience sugar: it fails all incident links.
 
+**Assumption register.** Each assumption has an owner who checks it at the stated hour.
+
+| # | Assumption | Fact or inference | What would disprove it | Owner, hour | If wrong |
+|---|---|---|---|---|---|
+| A1 | After the primary uplink fails, the demo network still has at least two usable paths with spare capacity | Inference | The post-failure path check in section 9 fails | B, H4 | Add redundancy to the template at H4, while there is slack |
+| A2 | S2 beats S0-QoS on total or P1 delivery on the demo network | Inference | Headline check at H8 shows a tie or a loss | Whole team, H8 | The three outcomes in section 12 |
+| A3 | Recompute at 50 nodes and 200 flows takes under 1 second, including max-flow bounds | Testable | Median `compute_ms` on the first seed | A, H8 | Cut line in section 12: bounds become lazy, then `m = 2` |
+| A4 | 30 seeds give a usable 95% interval for H1 | Testable | Interval width at H12 | D, H12 | Report the interval as it is |
+| A5 | Judges accept per-class scale factors as a QoS model | Inference | Judge Q&A | D, README by H16 | Baseline-defence paragraph in the README; upstream-aware delivery if built |
+| A6 | Four people with AI agents reach the H1.5 freeze and the H4 slice | Inference | A missed checkpoint | Everyone | Cut lines in section 12 |
+
 **In scope (must have):** topology and traffic generation (from the UI as well as the CLI), link fail and recover, four policies (S0, S0-QoS, S1, S2), capacity accounting, metrics, decision log, reproducible scenarios, benchmark, interactive UI with side-by-side comparison, tests, README.
 
 **Out of scope:** real router behaviour, packet-level queueing (S0-QoS models strict priority as per-link scale factors, section 5), scaling study beyond the demo network size, multi-domain routing, persistence/database, authentication, deployment infrastructure, machine learning.
@@ -93,7 +104,7 @@ Build a **steady-state fluid simulator of a campus network** with a centralized 
 ### Trade-offs
 - **Delivered volume vs protection:** strict priority can reduce total delivered traffic compared with other orderings and gives P2 nothing when P0 saturates a bottleneck. This is intended, and it is reported (worked example below).
 - **Congestion vs path cost:** spreading load increases latency. The parameter λ sets the exchange rate.
-- **Churn vs optimality:** keeping old valid paths ("sticky") minimizes disruption but can keep sub-optimal routes.
+- **Churn vs simplicity:** every event is a full recompute from an empty ledger, so a flow can move even when its old path is still valid. Keeping old paths ("sticky" rerouting) was considered and cut: it carries state between events, makes sequential and simultaneous failures diverge, and is invisible in the demo. Churn is measured and reported instead.
 
 ### Edge-case semantics
 - **Disconnected destination:** `src` and `dst` are in different components of the available graph. Cause `DISCONNECTED`. This is physical and not the algorithm's fault.
@@ -167,31 +178,37 @@ route_S0_QoS(topo, flows):
 ```
 It is the same single-pass approximation as S0 and is built in the same block of work (about 15 lines on top of S0). It is the baseline every headline number is quoted against.
 
+**Known bias, and the optional fix.** The single-pass model under-delivers for the baselines: traffic lost on an upstream link still counts as load downstream. That bias favours S2, so the README states it. If core is stable at H12, A adds an upstream-aware version behind a flag and the benchmark reports both:
+
+```
+deliver_upstream_aware(alloc, per_class):
+    scale[a][k] = 1 for all arcs and classes
+    repeat up to 50 rounds, or until no scale changes by more than 1e-9:
+        for each flow f, walking its path from the source:
+            arriving[f][a] = f.rate * product of scale[b][f.cls] for arcs b before a on the path
+        L[a][k] = sum of arriving[f][a] over flows of class k on arc a
+        recompute scale[a][k] from L exactly as in route_S0_QoS
+    d_f = f.rate * product of scale[a][f.cls] over all arcs on the path
+```
+It has to iterate because two flows can cross the same links in opposite order, so there is no single pass that is correct. It is not on the path to any milestone.
+
 ### Improved S2 (same function with a config object)
 
 ```
 Config: order ∈ {arrival, class_size_desc, class_size_asc}
-        max_paths m, congestion λ, sticky, util_cap ρ
+        max_paths m, congestion λ, util_cap ρ
 
-allocate(topo, flows, prev_alloc, cfg):
-    ledger = Ledger(available arcs, cap = floor(ρ * c))     # tracks residual and per-class load
+allocate(topo, flows, prev_alloc, cfg):                     # prev_alloc is only copied into the log
+    ledger = Ledger(available arcs, cap = floor(ρ * c))     # empty on every event; tracks residual and per-class load
     comp   = connected components of available graph
     for f in order(flows, cfg.order):                       # class first, then policy within class
         rec = DecisionRecord(f)
         if comp[f.src] != comp[f.dst]:
             result(f) = unserved, cause DISCONNECTED; log; continue
         remaining, paths = f.rate, {}
+        rec.previous = prev_alloc[f] if f in prev_alloc else []     # for the log only, never reused
 
-        # 1. Sticky reuse of still-valid old paths
-        if cfg.sticky and f in prev_alloc:
-            for (p, r) in prev_alloc[f] sorted by (r desc, p):
-                if every arc of p is available:
-                    x = min(r, remaining, ledger.bottleneck(p))
-                    if x > 0: ledger.reserve(p, x); paths[p] += x; remaining -= x; rec.kept(p, x)
-                else:
-                    rec.invalid(p, down_links_on(p))
-
-        # 2. Fill the rest on the residual graph
+        # 1. Place the flow on the residual graph
         ref = dijkstra(available graph, latency)            # reference path, ignores capacity (for log)
         while remaining > 0 and len(paths) < cfg.max_paths:
             R = arcs with ledger.residual > 0
@@ -201,7 +218,7 @@ allocate(topo, flows, prev_alloc, cfg):
             ledger.reserve(p, x); paths[p] += x; remaining -= x
             rec.attempt(p, cost(p), bottleneck(p), x)
 
-        # 3. Unserved remainder
+        # 2. Unserved remainder
         if remaining > 0:
             cause = PATH_LIMIT if residual path still exists else INSUFFICIENT_CAPACITY
             if cause == INSUFFICIENT_CAPACITY:               # no cut exists under PATH_LIMIT
@@ -227,20 +244,19 @@ allocate(topo, flows, prev_alloc, cfg):
 on_event(event):                     # fail(links|node) / recover(links)
     topo.apply(event)                # atomic: simultaneous failures are one event
     affected = {f : some path of f in current_alloc uses a now-down arc}
-    sticky  = cfg.sticky and event.kind == "fail"      # recovery re-optimizes from scratch
-    new_alloc, log = policy.route(topo, flows, current_alloc, cfg with sticky)
+    new_alloc, log = policy.route(topo, flows, current_alloc, cfg)   # full recompute, fail or recover
     snapshot = metrics(topo, flows, new_alloc, affected, previous=current_alloc)
     check_invariants(snapshot)       # always on in tests, optional in demo
     current_alloc = new_alloc
     return snapshot
 ```
 
-- **Multiple failures:** simultaneous (one event with several links) or sequential (several events). Both supported; sequential shows the progression, simultaneous shows the worst case. With sticky off the two give the same end state. **With sticky on they can differ**, because each sequential step keeps paths chosen in the previous step. That is expected behaviour, not a bug.
+- **Multiple failures:** simultaneous (one event with several links) or sequential (several events). Both supported; sequential shows the progression, simultaneous shows the worst case. Because every event recomputes from an empty ledger, the two give the same final state; only the intermediate snapshots differ.
 - **Unreroutable flows:** reported with cause and cut links, never silently dropped.
-- **Recovery:** non-sticky recompute so flows return to shortest/least-cost routes. The churn this causes is itself a reported metric.
+- **Recovery:** the same full recompute, so flows return to shortest/least-cost routes. The churn this causes is itself a reported metric.
 
 ### Why full priority-ordered recompute and not incremental
-Rerouting only the affected flows could let unaffected P2 flows hold capacity that an affected P0 flow needs. Full recompute in priority order avoids that. The cost is churn of lower-class flows, which is intentional and measured. Sticky mode reduces needless churn without breaking class isolation, because flows are still processed in class order.
+Rerouting only the affected flows could let unaffected P2 flows hold capacity that an affected P0 flow needs. Full recompute in priority order avoids that. The cost is churn of lower-class flows, which is intentional and measured. Because routing is deterministic, flows ordered before the first affected flow get the same paths as before, so churn after a failure is limited to that flow and those after it.
 
 ### Design knobs decided by experiment (room for independent decisions)
 Do not hard-code these. Run ablations (section 9) and pick by data.
@@ -250,7 +266,6 @@ Do not hard-code these. Run ablations (section 9) and pick by data.
 | Ordering within class | arrival, size desc, size asc | Compare total delivered and number of served flows |
 | `max_paths` m | 1, 2, 3, 4 | Delivered vs compute time vs path fragmentation |
 | λ | 0, 0.5, 1, 2 × mean latency, each rounded to an integer | Max utilization vs latency stretch |
-| Sticky | on, off | Churn vs total latency |
 | ρ (utilization cap) | 1.0, 0.9 | Headroom vs delivered |
 
 If λ > 0 shows no measurable benefit over λ = 0, **remove it** and report that. A smaller algorithm is preferred.
@@ -304,7 +319,7 @@ Not used: microservices, database, containers, ML, external services. Everything
 
 ## 7. Data models and component interfaces
 
-These are **frozen at hour 1.5** and live in `core/model/types.py` plus JSON fixtures in `fixtures/`. The freeze is valid only if every type named below is written out as a pydantic model and a fixture of each validates, including one S0 snapshot with a non-integer `delivered`.
+These are **frozen at hour 1.5** and live in `core/model/types.py` plus JSON fixtures in `fixtures/`. The freeze is valid only if every type named below is written out as a pydantic model and a fixture of each validates, including one S0 snapshot with a non-integer `delivered` and the decision-record example from section 10.
 
 ```python
 class Node(BaseModel):  id: str; type: str; name: str
@@ -323,7 +338,7 @@ class Allocation(BaseModel): results: dict[str, FlowResult]; arc_load: dict[str,
 
 class PolicyConfig(BaseModel):
     order: Literal["arrival","class_size_desc","class_size_asc"] = "class_size_desc"
-    max_paths: int = 3; congestion_lambda: int = 0; sticky: bool = True; util_cap: float = 1.0
+    max_paths: int = 3; congestion_lambda: int = 0; util_cap: float = 1.0
 
 class Event(BaseModel):
     step: int; kind: Literal["fail","recover"]; links: list[str] = []; node: str | None = None
@@ -334,7 +349,7 @@ class CutArc(BaseModel):
     arc: str; state: Literal["saturated","down"]; load_by_class: dict[int, int]
 class DecisionRecord(BaseModel):
     flow_id: str; cls: int; demand: int; step: int
-    failed_links: list[str]; previous: list[PathAlloc]; kept: list[PathAlloc]
+    failed_links: list[str]; previous: list[PathAlloc]
     reference_path: list[str]; reference_status: str
     attempts: list[Attempt]
     delivered: float; unserved: float; cause: str
@@ -362,6 +377,7 @@ class RoutingPolicy(Protocol):
     def route(self, topo: Topology, flows: list[Flow],
               prev: Allocation | None, cfg: PolicyConfig) -> tuple[Allocation, list[DecisionRecord]]: ...
     # Must be pure and deterministic: no globals, no clocks, no unseeded randomness.
+    # `prev` is copied into DecisionRecord.previous for the log. It must not influence the allocation.
 
 class Ledger:               # capacity accounting, owned by B
     def residual(self, arc) -> int
@@ -447,7 +463,7 @@ Metrics are computed from `(topology, flows, allocation)` alone so they cannot d
 | I5 | Ledger reserve and release are symmetric; after releasing all allocations, every residual equals capacity |
 | I6 | `arc_load` equals the sum of path rates through the arc |
 | I7 | Every unserved flow has a cause. `DISCONNECTED` is reported only if the components really differ. `INSUFFICIENT_CAPACITY` is reported only if a path exists in the available graph |
-| I8 | Same scenario, config and seed give a byte-identical snapshot sequence |
+| I8 | Same scenario, config and seed give a byte-identical snapshot sequence after masking the wall-clock field `metrics.compute_ms` |
 | I9 | Metrics recomputed from the snapshot's allocation equal the reported metrics |
 | I10 | Class isolation: removing all lower-class flows does not change a class's allocation (S2) |
 | I11 | For every unserved S1/S2 flow: `0 ≤ greedy_gap`, and `cut` is non-empty only when the cause is `INSUFFICIENT_CAPACITY` |
@@ -467,12 +483,15 @@ Metrics are computed from `(topology, flows, allocation)` alone so they cannot d
 |---|---|---|---|
 | 1 | Normal operation | Campus template, load factor about 0.5 | All policies deliver nearly everything; S2 not worse than S0-QoS within tolerance; no overloads in S2 |
 | 2 | Single critical-link failure | Fail the primary uplink | S0 and S0-QoS pile flows onto the backup and overload it; S2 splits across remaining paths and delivers more in total than S0-QoS |
-| 3 | Multiple simultaneous failures | Fail 3 links in one event, then the same 3 sequentially | **Sticky off:** identical end state (asserted). **Sticky on:** invariants hold for both runs; end states may differ and the difference in DR and churn is reported, not asserted equal |
+| 3 | Multiple simultaneous failures | Fail 3 links in one event, then the same 3 sequentially | Identical final snapshot (asserted, apart from step number and `compute_ms`); the sequential run shows the progression |
 | 4 | Congestion on alternatives | Two alternate routes, one nearly full | S2 with λ > 0 avoids the nearly full route; S1 does not. Tests whether congestion cost earns its place |
 | 5 | Insufficient capacity | Demand exceeds min-cut | Unserved reported with `INSUFFICIENT_CAPACITY` and cut links; P2 loses first |
 | 6 | Disconnected destination | Isolate a hostel | `DISCONNECTED` reported; `DR_reach` unaffected by the cut; S2 not blamed |
 | 7 | Critical vs ordinary competing | Diamond example | Exact numbers from section 4 for S0, S0-QoS and S2 |
-| 8 | Link recovery | Fail then recover | Non-sticky recompute restores low-latency routes; churn reported |
+| 8 | Link recovery | Fail then recover | Recompute restores the step-0 allocation exactly (asserted); churn reported |
+
+### Demo-network path check (B, at H4)
+The story in scenario 2 needs somewhere for traffic to go after the failure. A test asserts, on the campus template **with the primary uplink already failed**, that every building still has at least two node-disjoint paths to the core, and that their combined capacity exceeds the P0 plus P1 demand of that building. Checking before the failure is not enough: two paths before means one path after, which is the tie case in the diamond's second row. The campus generator runs the same check on its designated uplink and retries with the next seed (at most 20 times, then raises).
 
 ### Experimental method
 - **Identical conditions:** a scenario is generated once from `(spec, seed)`; every policy runs on a deep copy of the same topology, flows and events.
@@ -505,22 +524,20 @@ The earlier plan crossed five network sizes with four flow counts, three generat
 ```json
 {
   "flow_id": "F12", "cls": 0, "demand": 15, "step": 2,
-  "trigger": {
-    "reason": "PATH_INVALID",
-    "failed_links": ["L7"],
-    "previous": [{"arcs": ["L2:A>B", "L7:B>D"], "rate": 10}]
-  },
-  "reference_path": {"arcs": ["L2:A>B","L7:B>D"], "latency": 2, "status": "INVALID: L7 down"},
+  "failed_links": ["L7"],
+  "previous": [{"arcs": ["L2:A>B", "L7:B>D"], "rate": 10}],
+  "reference_path": ["L2:A>B", "L7:B>D"],
+  "reference_status": "INVALID: L7 down",
   "attempts": [
-    {"iter": 1, "arcs": ["L5:A>C","L6:C>D"], "cost": 4.0, "latency": 4,
-     "bottleneck": 10, "residual_per_arc": {"L5:A>C": 10, "L6:C>D": 10}, "pushed": 10},
-    {"iter": 2, "result": "NO_RESIDUAL_PATH"}
+    {"iter": 1, "arcs": ["L5:A>C", "L6:C>D"], "cost": 4, "latency": 4, "bottleneck": 10, "pushed": 10}
   ],
-  "outcome": {"delivered": 10, "unserved": 5, "cause": "INSUFFICIENT_CAPACITY",
-              "maxflow_bound": 10, "greedy_gap": 0},
-  "cut": [{"arc": "L5:A>C", "state": "saturated", "load_by_class": {"0": 10}},
-          {"arc": "L7:B>D", "state": "down"}],
-  "network_effect": {"max_util_before": 0.8, "max_util_after": 1.0, "arcs_saturated": ["L5:A>C","L6:C>D"]}
+  "delivered": 10.0, "unserved": 5.0, "cause": "INSUFFICIENT_CAPACITY",
+  "cut": [
+    {"arc": "L5:A>C", "state": "saturated", "load_by_class": {"0": 10}},
+    {"arc": "L7:B>D", "state": "down", "load_by_class": {}}
+  ],
+  "maxflow_bound": 10, "greedy_gap": 0.0,
+  "explanation": "F12 (P0, 15 Mbps): path A-B-D invalid (L7 down). Moved 10 Mbps to A-C-D (latency 4 ms). 5 Mbps unserved: cut L5 saturated by P0 (10 Mbps)."
 }
 ```
 
@@ -528,7 +545,7 @@ The earlier plan crossed five network sizes with four flow counts, three generat
 
 **The cut is only presented as the reason when `greedy_gap = 0`.** In that case the flow received everything it could, given higher-priority allocations, and the cut is a checkable answer to "why was traffic left unserved". When `greedy_gap > 0` the template says instead: `N Mbps unserved, of which G Mbps could have been routed (heuristic or path limit)`. Under `PATH_LIMIT` there is no cut and none is shown.
 
-The JSON above is illustrative. The authoritative shape is the `DecisionRecord` model in section 7.
+The JSON above has exactly the fields of the `DecisionRecord` model in section 7. It is saved as a fixture and must validate against that model before the contract is frozen at H1.5.
 
 **One-line UI explanation** is generated from the record by a fixed template, never by free text:
 `F12 (P0, 15 Mbps): path A-B-D invalid (L7 down). Moved 10 Mbps to A-C-D (latency 4 ms). 5 Mbps unserved: cut L5 saturated by P0 (10 Mbps).`
@@ -554,9 +571,9 @@ Benchmark charts (Recharts), event timeline with scrub, before/after path diff o
 | | Owns | Delivers | Depends on | Does not own |
 |---|---|---|---|---|
 | **A: Routing** | `routing/` pathfinder, S0, S0-QoS, allocator with config, decision records (including the `DecisionRecord` type at H0 to 1.5), residual-cut and max-flow bound; ablation tuning; optional LP reference | Policies behind the `RoutingPolicy` interface, diamond unit tests, per-flow decision log | `types.py`, `Ledger` (from B at H1.5) | UI, API |
-| **B: Simulation, model and metrics** | `model/`, `gen/`, `sim/`, **`metrics/` and the invariant checker**, ledger, campus template, one campus generator, traffic generator, event format, failure/recovery incl. node failure, seeding and determinism, demo-network tuning | Pydantic types, `Ledger`, `Simulation`, `Metrics`, `check_invariants`, generator, 8 scenario fixtures (inputs) | Nothing at start; A consumes B's types first | Algorithms, API |
+| **B: Simulation, model and metrics** | `model/`, `gen/`, `sim/`, **`metrics/` and the invariant checker**, ledger, campus template, one campus generator, traffic generator, event format, failure/recovery incl. node failure, seeding and determinism, demo-network tuning | Pydantic types, `Ledger`, `Simulation`, `Metrics`, `check_invariants`, generator, 8 scenario fixtures (inputs and their assertions) | Nothing at start; A consumes B's types first | Algorithms, API |
 | **C: Frontend** | Entire React app: graph, link click, side-by-side with baseline selector, KPI strip, flow table, decision panel, generate-network form, charts | Working UI against mock data from H1.5, then live API | OpenAPI contract and fixtures (D, B) | Backend logic |
-| **D: Integration and QA** | FastAPI and sessions, scenario loader, compare endpoint, hypothesis tests (using B's checker), fixture assertions, benchmark CLI and results, README, demo script | API serving mocks by H1.5, then real policies; benchmark tables; README | Types and metrics (B), policies (A) | Algorithm design, metrics formulas, UI |
+| **D: Integration and QA** | FastAPI and sessions, scenario loader, compare endpoint, hypothesis tests (using B's checker), benchmark CLI and results, README, demo script | API serving mocks by H1.5, then real policies; benchmark tables; README | Types and metrics (B), policies (A) | Algorithm design, metrics formulas, UI |
 
 **Why metrics moved to B.** D previously owned every integrating piece (metrics, invariants, API, tests, benchmark, README, demo script) and was on the critical path of every milestone, while B had slack from H12. Metrics are pure functions of B's own types, so B writes them. If D is still behind at any checkpoint, B takes the benchmark run as well.
 
@@ -587,9 +604,9 @@ AI speeds up writing code. It does not speed up integration, tuning the demo net
 
 | Hours | A: Routing | B: Simulation, model, metrics | C: Frontend | D: Integration/QA | Exit criteria |
 |---|---|---|---|---|---|
-| 0 to 1.5 | Work diamond example on paper (all three columns); sketch allocator; write `DecisionRecord` with B | `types.py` with every section 7 model, `Ledger`, repo skeleton with git and `AGENTS.md` | Vite + Cytoscape scaffold rendering a fixture | FastAPI skeleton serving mocked snapshots; pytest set up | Contract frozen with no undefined type; a non-integer S0 fixture validates; C renders a mocked snapshot fetched from the API |
-| 1.5 to 4 | Pathfinder; S0 and S0-QoS with delivery models; diamond tests | Campus template; traffic generator; fail/recover events; minimal `Simulation.apply`; basic metrics (DR, overloads, `link_util`) | Click-to-fail calls API; utilization coloring; flow table | Scenario loader; sessions; wire real S0 and S0-QoS through API | **M1 (H4): vertical slice**: click a link, see both baselines reroute and metrics in the UI |
-| 4 to 8 | Allocator (S1/S2 via config); decision records; sticky | Full metrics; invariant checker; node failure; recovery; seeds; determinism check | Side-by-side view with baseline selector; KPI strip | Hypothesis tests I1 to I10 on B's checker; scenario fixtures 1 to 7 with assertions; `/compare` endpoint | **M2 (H8): S2 passes all invariants on all fixtures, and the headline check is run** (below) |
+| 0 to 1.5 | Work diamond example on paper (all three columns); sketch allocator; write `DecisionRecord` with B | `types.py` with every section 7 model, `Ledger`, repo skeleton with git and `AGENTS.md` | Vite + Cytoscape scaffold rendering a fixture | FastAPI skeleton serving mocked snapshots; pytest set up | Contract frozen with no undefined type; a non-integer S0 fixture and the section 10 decision-record example validate; C renders a mocked snapshot fetched from the API |
+| 1.5 to 4 | Pathfinder; S0 and S0-QoS with delivery models; diamond tests | Campus template; traffic generator; fail/recover events; minimal `Simulation.apply`; basic metrics (DR, overloads, `link_util`); post-failure path check on the template | Click-to-fail calls API; utilization coloring; flow table | Scenario loader; sessions; wire real S0 and S0-QoS through API | **M1 (H4): vertical slice**: click a link, see both baselines reroute and metrics in the UI |
+| 4 to 8 | Allocator (S1/S2 via config); decision records with max-flow bound | Full metrics; invariant checker; node failure; recovery; seeds; determinism check; scenario fixtures 1 to 7 with assertions | Side-by-side view with baseline selector; KPI strip | Hypothesis tests I1 to I10 on B's checker; `/compare` endpoint; benchmark CLI skeleton | **M2 (H8): S2 passes all invariants on all fixtures, and the headline check is run** (below) |
 | 8 to 12 | Residual-cut explanations; max-flow bound and `greedy_gap` (I11); ablation runs; tune knobs by data | **H8 to H10: tune the demo network against S0-QoS and S2.** Then the campus generator; load-factor scaling; fixture 8 | Flow inspector with route highlight and decision text; generate-network form | Benchmark CLI writing CSV; time one seed and size the matrix | **M3 (H12): demo scenario runs baseline and S2 in the UI with explanation; a generated network loads** |
 | 12 to 16 | Fix algorithm issues found by benchmark; keep or drop λ based on ablation | Determinism and edge-case audit; take over the benchmark run or results tables if D is behind | Benchmark charts; reset and seed UI; visual polish | Run full benchmark; generate tables; evaluate H1 to H5; draft results | **H16: feature freeze.** Results exist, hypotheses evaluated |
 | 16 to 20 | Bug fixes only; algorithm doc | Bug fixes only; model doc | Bug fixes; demo-mode layout | Edge-case sweep; README with setup, model, limitations, architecture diagram | All tests green; README complete |
@@ -610,13 +627,14 @@ AI speeds up writing code. It does not speed up integration, tuning the demo net
 | When | If behind | Then |
 |---|---|---|
 | H4 | D has not wired S0 through the API | B pairs with D until M1 passes; campus template tuning waits |
-| H8 | S2 does not pass invariants | Drop the congestion cost and sticky (`λ = 0`, sticky off) but **keep splitting**: splitting is what separates S2 from S0-QoS. Drop to `m = 1` only as a last resort, and then expect a tie with S0-QoS on delivery |
+| H8 | S2 does not pass invariants | Drop the congestion cost (`λ = 0`) and set `m = 2`, but **keep splitting**: splitting is what separates S2 from S0-QoS. Drop to `m = 1` only as a last resort, and then expect a tie with S0-QoS on delivery |
 | H8 | Frontend side-by-side not ready | Show two stacked panels with the same graph component; or toggle between policies |
 | H12 | Flow inspector not ready | Show the decision record as formatted text in a side panel |
+| H8 | Recompute takes 1 second or more (A3) | Stop computing max-flow bounds at route time. The decision endpoint computes one on request by replaying the allocation up to that flow, so the bound still uses the ledger as it was when the flow was placed. The benchmark computes them offline. If still slow, set `m = 2` |
 | H12 | Generate-network form not ready | Ship a seed field only: same generator, default size |
 | H12 | Benchmark behind | Run 10 seeds instead of 30, all four policies, no ablations |
 | H16 | Always | **Freeze features.** Only fixes and docs after this |
-| Only if core is stable at H12 | Add | LP reference, timeline scrubber, hypothesis-test polish |
+| Only if core is stable at H12 | Add | Upstream-aware baseline delivery (section 5), LP reference, timeline scrubber, hypothesis-test polish. None of these enters the frozen contract |
 | Never | Add | Scaling study, extra generators, cascades, SRLG, NL box, WebSocket, database |
 | Never | Cut | S0-QoS. Without it the headline has no fair baseline |
 
@@ -625,7 +643,7 @@ AI speeds up writing code. It does not speed up integration, tuning the demo net
 ## 13. Risks, edge cases, and fallback strategies
 
 ### Edge cases to handle and test
-`src == dst` (treated as delivered with no network use); zero-rate flow; two flows with the same pair; parallel links between the same nodes; link with capacity 0; flow larger than any single bottleneck (needs splitting); `max_paths` reached with residual left (`PATH_LIMIT`); sticky flow with one valid and one invalid path (keep the valid one, refill the rest); node failure isolating hosts; failure of an already-failed link (idempotent); recovery of an already-up link (no-op); all P0 flows saturating a bottleneck (P2 starved by design); ties in cost (deterministic tie-break); path containing the same node twice (never selected).
+`src == dst` (treated as delivered with no network use); zero-rate flow; two flows with the same pair; parallel links between the same nodes; link with capacity 0; flow larger than any single bottleneck (needs splitting); `max_paths` reached with residual left (`PATH_LIMIT`); node failure isolating hosts; failure of an already-failed link (idempotent); recovery of an already-up link (no-op); all P0 flows saturating a bottleneck (P2 starved by design); ties in cost (deterministic tie-break); path containing the same node twice (never selected).
 
 ### Risks
 
@@ -647,7 +665,7 @@ AI speeds up writing code. It does not speed up integration, tuning the demo net
 | Team fatigue | Bugs late | Staggered rest; no features after H16 |
 
 ### Fallback ladder
-If S2 is not working at H8, ship priority ordering with splitting and no congestion cost or sticky. If the UI is not working at H12, demo from the CLI and generated HTML or charts from the benchmark output. If the live demo fails, play the recording.
+If S2 is not working at H8, ship priority ordering with splitting and no congestion cost. If the UI is not working at H12, demo from the CLI and generated HTML or charts from the benchmark output. If the live demo fails, play the recording.
 
 ---
 
@@ -663,7 +681,7 @@ If S2 is not working at H8, ship priority ordering with splitting and no congest
 ### Optimizations (roadmap only; not needed at the 50-node demo size unless H4 fails)
 1. Aggregate flows with the same `(src, dst, class)`.
 2. Replace networkx Dijkstra with a heapq version on integer node indices behind `pathfinder.py`.
-3. After a **failure** event with sticky off, reuse the allocation of flows ordered before the first affected flow. This is exact because they see the same ledger state and a removed non-chosen arc cannot change their shortest path. It does not hold for recovery events, where added arcs can change earlier choices.
+3. After a **failure** event, reuse the allocation of flows ordered before the first affected flow. This is exact because they see the same ledger state and a removed non-chosen arc cannot change their shortest path. It does not hold for recovery events, where added arcs can change earlier choices.
 4. Reduce the residual graph to arcs with residual above zero incrementally rather than rebuilding.
 
 ### Extensibility without a rewrite
