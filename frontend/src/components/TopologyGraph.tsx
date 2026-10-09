@@ -190,6 +190,13 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<Core | null>(null);
   const [hint, setHint] = useState('');
+  // The latest callbacks, read through refs: App passes new functions on every render, and
+  // having them in the build effect's dependencies rebuilt the graph mid-drag, so panning
+  // by dragging did nothing.
+  const onLinkClickRef = useRef(onLinkClick);
+  onLinkClickRef.current = onLinkClick;
+  const onViewportChangeRef = useRef(onViewportChange);
+  onViewportChangeRef.current = onViewportChange;
 
   // Zoom about the centre of the view; the 'zoom' event then syncs the partner panel
   const zoomBy = (factor: number) => {
@@ -315,7 +322,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
       autoungrabify: true, // nodes locked in deterministic positions
     });
 
-    if (!readOnly && onLinkClick) {
+    if (!readOnly && onLinkClickRef.current) {
       cy.on('mouseover', 'edge', (evt) => {
         if (containerRef.current) containerRef.current.style.cursor = 'pointer';
         evt.target.addClass('hovered');
@@ -331,18 +338,32 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
         const edge = evt.target;
         const linkId = edge.id();
         const currentStatus = snapshot.link_state[linkId] === 'down' ? 'down' : 'up';
-        onLinkClick(linkId, currentStatus);
+        onLinkClickRef.current?.(linkId, currentStatus);
       });
     }
 
     // Synchronized pan/zoom event dispatch
-    if (onViewportChange) {
-      cy.on('pan zoom', () => {
-        const curZoom = cy.zoom();
-        const curPan = cy.pan();
-        onViewportChange({ zoom: curZoom, pan: { x: curPan.x, y: curPan.y } });
-      });
-    }
+    // Cytoscape pans when a drag starts on the background or on a link, but not on a node (nodes
+    // are locked). On a dense campus a drag that starts on a node then does nothing, so it pans
+    // the view by hand.
+    let dragFrom: { x: number; y: number } | null = null;
+    cy.on('tapstart', 'node', (evt) => {
+      dragFrom = { ...evt.renderedPosition };
+    });
+    cy.on('tapdrag', (evt) => {
+      if (!dragFrom) return;
+      const to = evt.renderedPosition;
+      cy.panBy({ x: to.x - dragFrom.x, y: to.y - dragFrom.y });
+      dragFrom = { ...to };
+    });
+    cy.on('tapend', () => {
+      dragFrom = null;
+    });
+
+    cy.on('pan zoom', () => {
+      const curPan = cy.pan();
+      onViewportChangeRef.current?.({ zoom: cy.zoom(), pan: { x: curPan.x, y: curPan.y } });
+    });
 
     // Apply external viewport if provided
     if (viewport) {
@@ -354,7 +375,9 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
     return () => {
       cy.destroy();
     };
-  }, [topology, snapshot, highlightedArcs, highlightColor, readOnly, onLinkClick, onViewportChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- callbacks are read through refs;
+    // highlightedArcs is compared by value, since App builds a new array on every render
+  }, [topology, snapshot, highlightedArcs.join(','), highlightColor, readOnly]);
 
   // Re-fit when the container changes size (switching to Stacked or Toggle, or resizing the
   // window): cytoscape does not notice on its own and keeps the old, smaller drawing.
