@@ -52,6 +52,9 @@ LOAD_FACTORS = (0.5, 0.75, 1.0, 1.25, 1.5, 2.0)
 ABLATION_LOAD = 1.0  # the ablations run at the demo load, not across the sweep
 SEED_STRIDE = 100  # B's note: space benchmark seeds at least 20 apart so a generator retry never lands on another seed
 BUDGET_SECONDS = 30 * 60
+# Worker processes share one machine, so n of them are not n times faster. Measured on 8 processes: the projection
+# without this factor was 118 s and the run took 220 s, an efficiency of 0.54; 0.5 keeps the projection honest.
+PARALLEL_EFFICIENCY = 0.5
 DEFAULT_SEEDS = 30
 CLASSES = (0, 1, 2)
 UNSERVED_CAUSES = tuple(c for c in Cause.__args__ if c != "NONE")  # type: ignore[attr-defined]
@@ -186,14 +189,16 @@ def plan_matrix(seeds: int, first_seed_seconds: float, processes: int, n_loads: 
                 budget: float = BUDGET_SECONDS) -> MatrixPlan:
     """Size the matrix from the time of the first seed run with the full matrix (PLAN.md section 9).
 
-    The projection is the first seed's time, scaled by the number of runs and divided by the number of
-    processes. Over the budget, the ablations shrink to max_paths and congestion lambda; still over, to
-    10 seeds with no ablations (the H12 cut line). The returned plan states what was cut."""
+    The projection is the first seed's time, scaled by the number of runs and divided by the speed-up of the
+    worker processes (n processes at PARALLEL_EFFICIENCY, one process at 1). Over the budget, the ablations shrink
+    to max_paths and congestion lambda; still over, to 10 seeds with no ablations (the H12 cut line). The returned
+    plan states what was cut."""
     full = ABLATION_GROUPS if ablations else ()
     full_runs = runs_per_seed(n_loads, n_policies, full)
 
     def projected(count: int, groups: Sequence[str]) -> float:
-        return first_seed_seconds * count * runs_per_seed(n_loads, n_policies, groups) / full_runs / max(1, processes)
+        speedup = 1.0 if processes <= 1 else processes * PARALLEL_EFFICIENCY
+        return first_seed_seconds * count * runs_per_seed(n_loads, n_policies, groups) / full_runs / speedup
 
     if projected(seeds, full) <= budget:
         return MatrixPlan(seeds, tuple(full), projected(seeds, full), "")

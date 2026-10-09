@@ -190,8 +190,15 @@ def test_a_matrix_that_fits_the_budget_is_not_cut():
     assert plan.projected_seconds == pytest.approx(1800.0)
 
 
-def test_processes_divide_the_projection():
-    assert bm.plan_matrix(30, 400.0, 8).projected_seconds == pytest.approx(1500.0)  # 400 x 30 / 8
+def test_processes_divide_the_projection_at_the_measured_efficiency():
+    # 8 processes share one machine: measured, they ran at about half the ideal speed-up (118 s projected, 220 s
+    # taken). So 400 x 30 / (8 x 0.5) = 3000 s, not 1500, and that is over the budget.
+    assert bm.PARALLEL_EFFICIENCY == 0.5
+    plan = bm.plan_matrix(30, 400.0, 8)
+    assert plan.reduction != "" and plan.ablation_groups != bm.ABLATION_GROUPS
+    assert bm.plan_matrix(30, 400.0, 1).projected_seconds > bm.plan_matrix(30, 400.0, 8).projected_seconds
+    assert bm.plan_matrix(30, 200.0, 8).projected_seconds == pytest.approx(1500.0)  # 200 x 30 / 4, and it fits
+    assert bm.plan_matrix(30, 200.0, 8).reduction == ""
 
 
 def test_a_projected_overrun_cuts_the_ablations_to_max_paths_and_lambda():
