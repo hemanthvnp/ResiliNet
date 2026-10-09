@@ -101,13 +101,15 @@ Open <http://localhost:5173>. These URL options are useful for a demo:
 
 To run the frontend without the simulation, start the backend with `REROUTER_MOCK=1 uvicorn api.app:app --port 8000`. It answers from the fixtures, and the UI shows a MOCK DATA badge.
 
-**A demo with no server at all:** save a comparison with the command line, then open it with the UI's "Load saved run" control:
+**A demo with no server at all:** open a saved comparison with the UI's "Load saved run" control. A ready one is `demo/fallback.json`: S0-QoS, S0 and S2 on `02_uplink_failure`, healthy and then with L6 failed. To save your own:
 
 ```bash
 python -m cli compare --scenario 02_uplink_failure --policies S0-QoS S2 --out fallback.json
 ```
 
 ### Demonstrating it
+
+The full timed script, with the numbers to quote and answers to likely judge questions, is [`demo/script.md`](demo/script.md). In short:
 
 1. Open `02_uplink_failure`. The left panel runs S0-QoS and the right panel runs S2, with the same traffic on both.
 2. Click link **L6**, the primary uplink, to fail it in both panels.
@@ -486,5 +488,6 @@ Every member is responsible for understanding and explaining the code they submi
 | `examples/` | Editable scenarios for trying your own input |
 | `ext/` | Cycle 2 additions: extra policies and analyses that build on `core/` without changing it |
 | `results/` | The 30-seed benchmark: CSV, summary, tables and hypothesis verdicts |
+| `demo/` | The demo script and the saved fallback run |
 | `openspec/` | Proposals, designs, specs and tasks for each change |
 | `PLAN.md` | The full design and plan; the source of truth |

@@ -15,6 +15,11 @@ Notable changes to this project, newest first. The format follows
   +2.1 points when uncongested. H3 passed: S2 never overloaded an arc in 1800
   runs. H4 passed: median recompute 51 ms. H5 passed: zero P0 greedy gap in all
   720 runs. The README Results and Limitations sections report them.
+- Demo deliverables (`demo/`): the timed demo script with the numbers to quote
+  and answers to likely judge questions, and `fallback.json`, a saved comparison
+  of S0-QoS, S0 and S2 on `02_uplink_failure`. Every snapshot passes
+  `check_invariants`, and the UI plays it back with no server.
+
 - Judge kit (`examples/`): editable scenarios `custom-flow.json` (an added P0 flow
   from Admin to Engineering), `custom-failure.json` (L6, L11 and L13 fail, then L6
   recovers) and `overload.json` (40 generated flows at load factor 1.5). Each

@@ -36,12 +36,12 @@
 - [x] 5.2 Write the model, assumptions, algorithm with pseudocode and architecture diagram sections
 - [x] 5.3 Write "reproduce a run from a seed" and the benchmark results with the stress-case mapping
 - [x] 5.4 Write the limitations section (ties and losses against S0-QoS, the single-pass baseline bias, greedy sub-optimality), the technical-contribution paragraph and future work
-- [ ] 5.5 Fill the demo script with numbers from the final run and save the fallback run JSON with `compare --out`
-- [ ] 5.6 Record the fallback video
+- [x] 5.5 Fill the demo script with numbers from the final run and save the fallback run JSON with `compare --out`
+- [ ] 5.6 Record the fallback video (assigned to C, with the other manual testing)
 
 ## 6. Integrate
 
-- [ ] 6.1 Run the full test suite with `pytest`, and `check_invariants` on every snapshot of the fallback run
+- [x] 6.1 Run the full test suite with `pytest`, and `check_invariants` on every snapshot of the fallback run
 - [x] 6.2 Rebase onto `main`
 - [x] 6.3 Run `sh .github/scripts/check-history.sh`
 - [ ] 6.4 Open the pull request from `.github/pull_request_template.md`
