@@ -8,6 +8,18 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- Command line (`python -m cli`): `run --scenario <file|id> --policy <name>` writes
+  the snapshot sequence as JSON, and `compare --scenario <file|id> [--policies ...]`
+  prints the headline metrics per step and policy. `compare --out` writes the same
+  body as `POST /compare`, which the frontend plays back offline. Policy knobs are
+  flags: `--order`, `--max-paths`, `--lambda` and `--util-cap`. It never imports
+  the API, so it works with no server running.
+- Property tests (`tests/property/`): hypothesis draws campus networks, traffic
+  and fail or recover events through the generators, then runs every invariant
+  (I1 to I4 and I6 to I11) on every snapshot under all four policies. The run is
+  derandomized, so CI and laptops draw the same 25 cases. A failure ends with a
+  `check_case(...)` line that replays it.
+
 - Simulation engine (`core/sim/`): `Simulation` builds step 0 from a scenario and
   a policy, applies fail and recover events (links or a node) atomically with a
   full recompute, lists affected flows, times the route call and can check every

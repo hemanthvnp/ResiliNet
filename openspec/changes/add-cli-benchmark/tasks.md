@@ -1,16 +1,16 @@
 ## 1. Branch and property tests (D, H4 to H8)
 
-- [ ] 1.1 Create the branch `feat/add-cli-benchmark` from an up-to-date `main`
-- [ ] 1.2 Add a hypothesis strategy in `tests/property/` that draws a seed, size and event list and builds a scenario through the generators, with a test asserting I1 to I10 through B's checker on every snapshot for all four policies, under a fixed derandomized profile
-- [ ] 1.3 Make a failing property test print the seed and parameters for replay, with a test of the message on a forced failure
-- [ ] 1.4 Add I11 to the property test once decision records carry the cut and the bound
+- [x] 1.1 Create the branch `feat/add-cli-benchmark` from an up-to-date `main`
+- [x] 1.2 Add a hypothesis strategy in `tests/property/` that draws a seed, size and event list and builds a scenario through the generators, with a test asserting I1 to I10 through B's checker on every snapshot for all four policies, under a fixed derandomized profile
+- [x] 1.3 Make a failing property test print the seed and parameters for replay, with a test of the message on a forced failure
+- [x] 1.4 Add I11 to the property test once decision records carry the cut and the bound
 
 ## 2. CLI (D, H4 to H8)
 
-- [ ] 2.1 Add `cli/main.py` with shared scenario and config arguments and the `run` subcommand (snapshot sequence to JSON, headline metrics to stdout), with tests: the diamond under S2 exits 0 with valid output, an unknown policy exits non-zero and names it
-- [ ] 2.2 Add the `compare` subcommand with the default policy list, with a test that the diamond gives four rows and the S2 row shows `DR` 0.80 and 0 overloaded arcs at the healthy step
+- [x] 2.1 Add `cli/main.py` with shared scenario and config arguments and the `run` subcommand (snapshot sequence to JSON, headline metrics to stdout), with tests: the diamond under S2 exits 0 with valid output, an unknown policy exits non-zero and names it
+- [x] 2.2 Add the `compare` subcommand with the default policy list, with a test that the diamond gives four rows and the S2 row shows `DR` 0.80 and 0 overloaded arcs at the healthy step
 - [ ] 2.3 Add the config flags (`--order`, `--max-paths`, `--lambda`, `--util-cap`), with a test that a path limit of 1 reports F1 as `PATH_LIMIT`
-- [ ] 2.4 Add a test that two runs of the same generator spec and seed write identical output once `compute_ms` is masked, and a test that `cli/` does not import `api`
+- [x] 2.4 Add a test that two runs of the same generator spec and seed write identical output once `compute_ms` is masked, and a test that `cli/` does not import `api`
 
 ## 3. Benchmark runner (D, H8 to H12)
 
