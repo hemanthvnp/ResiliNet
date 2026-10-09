@@ -1,5 +1,5 @@
 {
-  "source": "Worked by hand from PLAN.md sections 4, 5 and 10 by an agent at the user's instruction, before comparing with the code. Cross-checked by core/routing/tests/test_expected_values_independent.py, which recomputes every value from the PLAN.md definitions with brute-force path enumeration, Edmonds-Karp, an exhaustive min cut and exact fractions. That test is by the same author, so A should still check the numbers.",
+  "source": "Worked by hand from PLAN.md sections 4, 5 and 10 by an agent at the user's instruction, before comparing with the code. Cross-checked by core/routing/tests/test_expected_values_independent.py, which recomputes every value from the PLAN.md definitions with brute-force path enumeration, Edmonds-Karp, an exhaustive min cut and exact fractions. A has also checked these numbers by hand (confirmed 2026-10-09).",
   "bd_failed_F1": {
     "description": "Diamond with BD down, F1 (P0, 15). Pre-placement max flow is 10 over A-C-D.",
     "maxflow_bound": 10,
