@@ -603,3 +603,20 @@ body {
 .legend-gradient {
   width: 48px;
 }
+
+/* Demo mode (task 5.4): readable from the back of the room, nothing secondary on screen */
+.demo-mode .kpi-value {
+  font-size: 2.2rem;
+}
+
+.demo-mode .kpi-title {
+  font-size: 1rem;
+}
+
+.demo-mode .brand-subtitle,
+.demo-mode .layout-switcher-group,
+.demo-mode .failure-select-group,
+.demo-mode .graph-instruction-banner,
+.demo-mode .legend-strip {
+  display: none;
+}

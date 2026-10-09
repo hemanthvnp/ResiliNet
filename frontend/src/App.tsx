@@ -33,6 +33,10 @@ export const ResiliNetDashboard: React.FC = () => {
 
   // Layout mode (Task 3.5 cut-line fallback)
   const [layoutMode, setLayoutMode] = useState<ViewLayoutMode>('side-by-side');
+
+  // Demo mode for the projector: large KPIs, secondary labels hidden (task 5.4). Open the
+  // app with ?demo=1 on the demo laptop to start in it.
+  const [demoMode, setDemoMode] = useState(() => new URLSearchParams(window.location.search).get('demo') === '1');
   const [activeTogglePolicy, setActiveTogglePolicy] = useState<'baseline' | 's2'>('s2');
 
   // Interactive failure injection controls
@@ -190,7 +194,7 @@ export const ResiliNetDashboard: React.FC = () => {
   const highlightColor = selectedCls === undefined ? undefined : CLASS_COLORS[selectedCls];
 
   return (
-    <div className="app-container" data-testid="app-root">
+    <div className={`app-container ${demoMode ? 'demo-mode' : ''}`} data-testid="app-root">
       {/* Top Header Controls */}
       <header className="app-header">
         <div className="brand-section">
@@ -261,6 +265,15 @@ export const ResiliNetDashboard: React.FC = () => {
             title="Reset both panels to Step 0"
           >
             Reset
+          </button>
+
+          <button
+            className={`btn-secondary ${demoMode ? 'btn-primary' : ''}`}
+            onClick={() => setDemoMode((on) => !on)}
+            aria-pressed={demoMode}
+            data-testid="demo-mode-btn"
+          >
+            Demo mode
           </button>
         </div>
       </header>

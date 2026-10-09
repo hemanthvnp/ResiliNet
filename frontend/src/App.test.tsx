@@ -292,4 +292,25 @@ describe('App Component (Phase 1 & Phase 2)', () => {
     await waitFor(() => expect((screen.getByTestId('baseline-selector') as HTMLSelectElement).value).toBe('S0'));
     expect(screen.queryByTestId('error-banner')).not.toBeInTheDocument();
   });
+
+  it('toggles demo mode from the header (Task 5.4)', async () => {
+    render(<App />);
+    const root = await screen.findByTestId('app-root');
+    expect(root).not.toHaveClass('demo-mode');
+
+    fireEvent.click(screen.getByTestId('demo-mode-btn'));
+    expect(root).toHaveClass('demo-mode');
+    fireEvent.click(screen.getByTestId('demo-mode-btn'));
+    expect(root).not.toHaveClass('demo-mode');
+  });
+
+  it('starts in demo mode when opened with ?demo=1 (Task 5.4)', async () => {
+    window.history.pushState({}, '', '/?demo=1');
+    try {
+      render(<App />);
+      expect(await screen.findByTestId('app-root')).toHaveClass('demo-mode');
+    } finally {
+      window.history.pushState({}, '', '/');
+    }
+  });
 });
