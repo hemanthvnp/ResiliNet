@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    {"id": "A", "type": "switch", "name": "A"},
+    {"id": "B", "type": "switch", "name": "B"},
+    {"id": "C", "type": "switch", "name": "C"},
+    {"id": "D", "type": "switch", "name": "D"}
+  ],
+  "links": [
+    {"id": "L2", "u": "A", "v": "B", "capacity": 10, "latency": 1, "status": "up"},
+    {"id": "L7", "u": "B", "v": "D", "capacity": 10, "latency": 1, "status": "up"},
+    {"id": "L5", "u": "A", "v": "C", "capacity": 10, "latency": 2, "status": "up"},
+    {"id": "L6", "u": "C", "v": "D", "capacity": 10, "latency": 2, "status": "up"}
+  ]
+}

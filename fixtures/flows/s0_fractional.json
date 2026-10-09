@@ -1,0 +1,4 @@
+[
+  {"id": "F1", "src": "A", "dst": "D", "rate": 18, "cls": 0},
+  {"id": "F2", "src": "A", "dst": "D", "rate": 7, "cls": 2}
+]
