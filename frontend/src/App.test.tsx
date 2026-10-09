@@ -17,10 +17,11 @@ function stubApi() {
   vi.spyOn(apiClient, 'getScenarios').mockResolvedValue([
     { id: 'campus-template', name: 'Campus', description: 'test campus' },
   ]);
-  vi.spyOn(apiClient, 'createRun').mockImplementation(async ({ scenario_id, policy }) => ({
-    run_id: `run-${policy}`,
-    scenario: {
-      id: scenario_id,
+  vi.spyOn(apiClient, 'createRun').mockImplementation(async (params) => ({
+    run_id: `run-${params.policy}`,
+    // an inline (generated) scenario comes back as run, with the seed the generator used after a retry
+    scenario: 'scenario' in params ? { ...params.scenario, topology: { ...params.scenario.topology, seed: 10 } } : {
+      id: params.scenario_id,
       seed: 42,
       topology: { template: 'campus' },
       traffic: INITIAL_FLOWS,
@@ -396,5 +397,35 @@ describe('App Component (Phase 1 & Phase 2)', () => {
     } finally {
       window.history.pushState({}, '', '/');
     }
+  });
+
+  it('generates a network, shows its effective seed and keeps it for baseline replay (Task 4.4)', async () => {
+    render(<App />);
+    await screen.findByTestId('quick-fail-btn');
+
+    fireEvent.change(screen.getByTestId('gen-buildings'), { target: { value: '20' } });
+    fireEvent.change(screen.getByTestId('gen-seed'), { target: { value: '9' } });
+    fireEvent.click(screen.getByTestId('generate-btn'));
+
+    const generatedRun = (policy: string) =>
+      expect(apiClient.createRun).toHaveBeenCalledWith({
+        scenario: expect.objectContaining({
+          topology: { generator: 'campus', buildings: 20, redundancy: 0.5, seed: 9 },
+          traffic: expect.objectContaining({ generator: 'campus', seed: 9 }),
+        }),
+        policy,
+      });
+    await waitFor(() => generatedRun('S2'));
+    generatedRun('S0-QoS');
+    // the generator retried and used seed 10: that is the seed shown
+    expect(await screen.findByText('10')).toBeInTheDocument();
+
+    fireEvent.change(screen.getByTestId('baseline-selector'), { target: { value: 'S0' } });
+    await waitFor(() =>
+      expect(apiClient.createRun).toHaveBeenCalledWith({
+        scenario: expect.objectContaining({ topology: expect.objectContaining({ seed: 10 }) }),
+        policy: 'S0',
+      }),
+    );
   });
 });

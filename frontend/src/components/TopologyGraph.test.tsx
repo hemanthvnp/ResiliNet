@@ -39,6 +39,20 @@ describe('Deterministic Topology Layout (Task 1.4 & Task 2.2)', () => {
     expect(new Set(Object.values(pos).map((p) => `${p.x},${p.y}`)).size).toBe(15);
   });
 
+  it('wraps a wide layer such as 37 generated buildings onto rows of at most 12', () => {
+    const wide: Topology = {
+      nodes: [node('C1', 'core'), ...Array.from({ length: 37 }, (_, i) => node(`N${100 + i}`, 'building'))],
+      links: [],
+    };
+    const pos = getDeterministicPositions(wide);
+    const perRow = new Map<number, number>();
+    for (const p of Object.values(pos)) perRow.set(p.y, (perRow.get(p.y) ?? 0) + 1);
+
+    expect(Math.max(...perRow.values())).toBeLessThanOrEqual(12);
+    expect(new Set(Object.values(pos).map((p) => `${p.x},${p.y}`)).size).toBe(38);
+    expect(Object.entries(pos).every(([id, p]) => id === 'C1' || p.y > pos['C1'].y)).toBe(true);
+  });
+
   it('draws a single-row topology such as the diamond on a circle', () => {
     const pos = getDeterministicPositions(diamond);
     expect(new Set(Object.values(pos).map((p) => p.y)).size).toBeGreaterThan(1);
