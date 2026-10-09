@@ -1,0 +1,1326 @@
+{
+  "components": {
+    "schemas": {
+      "Allocation": {
+        "additionalProperties": false,
+        "properties": {
+          "arc_load": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Arc Load",
+            "type": "object"
+          },
+          "results": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FlowResult"
+            },
+            "title": "Results",
+            "type": "object"
+          }
+        },
+        "required": [
+          "results",
+          "arc_load"
+        ],
+        "title": "Allocation",
+        "type": "object"
+      },
+      "Attempt": {
+        "additionalProperties": false,
+        "properties": {
+          "arcs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Arcs",
+            "type": "array"
+          },
+          "bottleneck": {
+            "title": "Bottleneck",
+            "type": "integer"
+          },
+          "cost": {
+            "title": "Cost",
+            "type": "integer"
+          },
+          "iter": {
+            "title": "Iter",
+            "type": "integer"
+          },
+          "latency": {
+            "title": "Latency",
+            "type": "integer"
+          },
+          "pushed": {
+            "title": "Pushed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "iter",
+          "arcs",
+          "cost",
+          "latency",
+          "bottleneck",
+          "pushed"
+        ],
+        "title": "Attempt",
+        "type": "object"
+      },
+      "CompareRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PolicyConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "policies": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Policies",
+            "type": "array"
+          },
+          "scenario": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Scenario"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          }
+        },
+        "required": [
+          "policies"
+        ],
+        "title": "CompareRequest",
+        "type": "object"
+      },
+      "CompareResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "scenario": {
+            "$ref": "#/components/schemas/Scenario"
+          },
+          "snapshots": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/Snapshot"
+              },
+              "type": "array"
+            },
+            "title": "Snapshots",
+            "type": "object"
+          },
+          "table": {
+            "items": {
+              "$ref": "#/components/schemas/CompareRow"
+            },
+            "title": "Table",
+            "type": "array"
+          }
+        },
+        "required": [
+          "scenario",
+          "table",
+          "snapshots"
+        ],
+        "title": "CompareResponse",
+        "type": "object"
+      },
+      "CompareRow": {
+        "additionalProperties": false,
+        "properties": {
+          "metrics": {
+            "$ref": "#/components/schemas/Metrics"
+          },
+          "policy": {
+            "title": "Policy",
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy",
+          "metrics"
+        ],
+        "title": "CompareRow",
+        "type": "object"
+      },
+      "CutArc": {
+        "additionalProperties": false,
+        "properties": {
+          "arc": {
+            "title": "Arc",
+            "type": "string"
+          },
+          "load_by_class": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Load By Class",
+            "type": "object"
+          },
+          "state": {
+            "enum": [
+              "saturated",
+              "down"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "arc",
+          "state",
+          "load_by_class"
+        ],
+        "title": "CutArc",
+        "type": "object"
+      },
+      "DecisionRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "attempts": {
+            "items": {
+              "$ref": "#/components/schemas/Attempt"
+            },
+            "title": "Attempts",
+            "type": "array"
+          },
+          "cause": {
+            "enum": [
+              "NONE",
+              "DISCONNECTED",
+              "INSUFFICIENT_CAPACITY",
+              "PATH_LIMIT",
+              "OVERLOAD_LOSS"
+            ],
+            "title": "Cause",
+            "type": "string"
+          },
+          "cls": {
+            "title": "Cls",
+            "type": "integer"
+          },
+          "cut": {
+            "items": {
+              "$ref": "#/components/schemas/CutArc"
+            },
+            "title": "Cut",
+            "type": "array"
+          },
+          "delivered": {
+            "title": "Delivered",
+            "type": "number"
+          },
+          "demand": {
+            "title": "Demand",
+            "type": "integer"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "failed_links": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Failed Links",
+            "type": "array"
+          },
+          "flow_id": {
+            "title": "Flow Id",
+            "type": "string"
+          },
+          "greedy_gap": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Greedy Gap"
+          },
+          "maxflow_bound": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Maxflow Bound"
+          },
+          "previous": {
+            "items": {
+              "$ref": "#/components/schemas/PathAlloc"
+            },
+            "title": "Previous",
+            "type": "array"
+          },
+          "reference_path": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reference Path",
+            "type": "array"
+          },
+          "reference_status": {
+            "title": "Reference Status",
+            "type": "string"
+          },
+          "step": {
+            "title": "Step",
+            "type": "integer"
+          },
+          "unserved": {
+            "title": "Unserved",
+            "type": "number"
+          }
+        },
+        "required": [
+          "flow_id",
+          "cls",
+          "demand",
+          "step",
+          "failed_links",
+          "previous",
+          "reference_path",
+          "reference_status",
+          "attempts",
+          "delivered",
+          "unserved",
+          "cause",
+          "cut",
+          "maxflow_bound",
+          "greedy_gap",
+          "explanation"
+        ],
+        "title": "DecisionRecord",
+        "type": "object"
+      },
+      "Event": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "fail",
+              "recover"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "links": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "node": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node"
+          },
+          "step": {
+            "title": "Step",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "step",
+          "kind"
+        ],
+        "title": "Event",
+        "type": "object"
+      },
+      "EventRequest": {
+        "additionalProperties": false,
+        "description": "The server assigns the step, so a stale client cannot send one.",
+        "properties": {
+          "kind": {
+            "enum": [
+              "fail",
+              "recover"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "links": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "node": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Node"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "EventRequest",
+        "type": "object"
+      },
+      "Flow": {
+        "additionalProperties": false,
+        "properties": {
+          "cls": {
+            "title": "Cls",
+            "type": "integer"
+          },
+          "dst": {
+            "title": "Dst",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "rate": {
+            "title": "Rate",
+            "type": "integer"
+          },
+          "service": {
+            "default": "",
+            "title": "Service",
+            "type": "string"
+          },
+          "src": {
+            "title": "Src",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "src",
+          "dst",
+          "rate",
+          "cls"
+        ],
+        "title": "Flow",
+        "type": "object"
+      },
+      "FlowResult": {
+        "additionalProperties": false,
+        "properties": {
+          "cause": {
+            "enum": [
+              "NONE",
+              "DISCONNECTED",
+              "INSUFFICIENT_CAPACITY",
+              "PATH_LIMIT",
+              "OVERLOAD_LOSS"
+            ],
+            "title": "Cause",
+            "type": "string"
+          },
+          "delivered": {
+            "title": "Delivered",
+            "type": "number"
+          },
+          "flow_id": {
+            "title": "Flow Id",
+            "type": "string"
+          },
+          "paths": {
+            "items": {
+              "$ref": "#/components/schemas/PathAlloc"
+            },
+            "title": "Paths",
+            "type": "array"
+          },
+          "unserved": {
+            "title": "Unserved",
+            "type": "number"
+          }
+        },
+        "required": [
+          "flow_id",
+          "paths",
+          "delivered",
+          "unserved",
+          "cause"
+        ],
+        "title": "FlowResult",
+        "type": "object"
+      },
+      "GeneratedTopologySpec": {
+        "additionalProperties": false,
+        "properties": {
+          "buildings": {
+            "title": "Buildings",
+            "type": "integer"
+          },
+          "generator": {
+            "title": "Generator",
+            "type": "string"
+          },
+          "redundancy": {
+            "title": "Redundancy",
+            "type": "number"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "generator",
+          "buildings",
+          "redundancy",
+          "seed"
+        ],
+        "title": "GeneratedTopologySpec",
+        "type": "object"
+      },
+      "GeneratedTrafficSpec": {
+        "additionalProperties": false,
+        "properties": {
+          "class_mix": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Class Mix",
+            "type": "object"
+          },
+          "generator": {
+            "title": "Generator",
+            "type": "string"
+          },
+          "load_factor": {
+            "title": "Load Factor",
+            "type": "number"
+          },
+          "n_flows": {
+            "title": "N Flows",
+            "type": "integer"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "generator",
+          "n_flows",
+          "load_factor",
+          "class_mix",
+          "seed"
+        ],
+        "title": "GeneratedTrafficSpec",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "Link": {
+        "additionalProperties": false,
+        "properties": {
+          "capacity": {
+            "title": "Capacity",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "latency": {
+            "title": "Latency",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "up",
+              "down"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "u": {
+            "title": "U",
+            "type": "string"
+          },
+          "v": {
+            "title": "V",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "u",
+          "v",
+          "capacity",
+          "latency",
+          "status"
+        ],
+        "title": "Link",
+        "type": "object"
+      },
+      "Metrics": {
+        "additionalProperties": false,
+        "properties": {
+          "arcs_above_90": {
+            "title": "Arcs Above 90",
+            "type": "integer"
+          },
+          "churn_flows": {
+            "title": "Churn Flows",
+            "type": "integer"
+          },
+          "churn_rate": {
+            "title": "Churn Rate",
+            "type": "integer"
+          },
+          "compute_ms": {
+            "title": "Compute Ms",
+            "type": "number"
+          },
+          "dr": {
+            "title": "Dr",
+            "type": "number"
+          },
+          "dr_by_class": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Dr By Class",
+            "type": "object"
+          },
+          "dr_reach": {
+            "title": "Dr Reach",
+            "type": "number"
+          },
+          "latency_stretch": {
+            "title": "Latency Stretch",
+            "type": "number"
+          },
+          "link_util": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Link Util",
+            "type": "object"
+          },
+          "max_util": {
+            "title": "Max Util",
+            "type": "number"
+          },
+          "mean_util": {
+            "title": "Mean Util",
+            "type": "number"
+          },
+          "overload_excess": {
+            "title": "Overload Excess",
+            "type": "integer"
+          },
+          "overloaded_arcs": {
+            "title": "Overloaded Arcs",
+            "type": "integer"
+          },
+          "p0_greedy_gap": {
+            "title": "P0 Greedy Gap",
+            "type": "number"
+          },
+          "recovery_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recovery Ratio"
+          },
+          "unserved_by_cause": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Unserved By Cause",
+            "type": "object"
+          }
+        },
+        "required": [
+          "dr",
+          "dr_by_class",
+          "dr_reach",
+          "unserved_by_cause",
+          "overloaded_arcs",
+          "overload_excess",
+          "max_util",
+          "mean_util",
+          "arcs_above_90",
+          "link_util",
+          "latency_stretch",
+          "recovery_ratio",
+          "churn_flows",
+          "churn_rate",
+          "p0_greedy_gap",
+          "compute_ms"
+        ],
+        "title": "Metrics",
+        "type": "object"
+      },
+      "Node": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "name"
+        ],
+        "title": "Node",
+        "type": "object"
+      },
+      "PathAlloc": {
+        "additionalProperties": false,
+        "properties": {
+          "arcs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Arcs",
+            "type": "array"
+          },
+          "rate": {
+            "title": "Rate",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "arcs",
+          "rate"
+        ],
+        "title": "PathAlloc",
+        "type": "object"
+      },
+      "PolicyConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "congestion_lambda": {
+            "default": 0,
+            "title": "Congestion Lambda",
+            "type": "integer"
+          },
+          "max_paths": {
+            "default": 3,
+            "title": "Max Paths",
+            "type": "integer"
+          },
+          "order": {
+            "default": "class_size_desc",
+            "enum": [
+              "arrival",
+              "class_size_desc",
+              "class_size_asc"
+            ],
+            "title": "Order",
+            "type": "string"
+          },
+          "util_cap": {
+            "default": 1.0,
+            "title": "Util Cap",
+            "type": "number"
+          }
+        },
+        "title": "PolicyConfig",
+        "type": "object"
+      },
+      "RunRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "config": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PolicyConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "policy": {
+            "title": "Policy",
+            "type": "string"
+          },
+          "scenario": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Scenario"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scenario_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Id"
+          }
+        },
+        "required": [
+          "policy"
+        ],
+        "title": "RunRequest",
+        "type": "object"
+      },
+      "RunResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "flows": {
+            "items": {
+              "$ref": "#/components/schemas/Flow"
+            },
+            "title": "Flows",
+            "type": "array"
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/Scenario"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "topology": {
+            "$ref": "#/components/schemas/Topology"
+          }
+        },
+        "required": [
+          "run_id",
+          "scenario",
+          "topology",
+          "flows",
+          "snapshot"
+        ],
+        "title": "RunResponse",
+        "type": "object"
+      },
+      "Scenario": {
+        "additionalProperties": false,
+        "properties": {
+          "config": {
+            "$ref": "#/components/schemas/PolicyConfig"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/Event"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          },
+          "topology": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TemplateTopologySpec"
+              },
+              {
+                "$ref": "#/components/schemas/GeneratedTopologySpec"
+              }
+            ],
+            "title": "Topology"
+          },
+          "traffic": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Flow"
+                },
+                "type": "array"
+              },
+              {
+                "$ref": "#/components/schemas/GeneratedTrafficSpec"
+              }
+            ],
+            "title": "Traffic"
+          }
+        },
+        "required": [
+          "id",
+          "seed",
+          "topology",
+          "traffic",
+          "events",
+          "config"
+        ],
+        "title": "Scenario",
+        "type": "object"
+      },
+      "ScenarioInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
+        "title": "ScenarioInfo",
+        "type": "object"
+      },
+      "Snapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "affected_flows": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Affected Flows",
+            "type": "array"
+          },
+          "allocation": {
+            "$ref": "#/components/schemas/Allocation"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionRecord"
+            },
+            "title": "Decisions",
+            "type": "array"
+          },
+          "link_state": {
+            "additionalProperties": {
+              "enum": [
+                "up",
+                "down"
+              ],
+              "type": "string"
+            },
+            "title": "Link State",
+            "type": "object"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/Metrics"
+          },
+          "step": {
+            "title": "Step",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "step",
+          "link_state",
+          "allocation",
+          "metrics",
+          "affected_flows",
+          "decisions"
+        ],
+        "title": "Snapshot",
+        "type": "object"
+      },
+      "TemplateTopologySpec": {
+        "additionalProperties": false,
+        "properties": {
+          "template": {
+            "title": "Template",
+            "type": "string"
+          }
+        },
+        "required": [
+          "template"
+        ],
+        "title": "TemplateTopologySpec",
+        "type": "object"
+      },
+      "Topology": {
+        "additionalProperties": false,
+        "properties": {
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/Link"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/Node"
+            },
+            "title": "Nodes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "nodes",
+          "links"
+        ],
+        "title": "Topology",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Network Rerouter API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/compare": {
+      "post": {
+        "operationId": "compare_compare_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompareRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompareResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Compare"
+      }
+    },
+    "/runs": {
+      "post": {
+        "operationId": "create_run_runs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Run"
+      }
+    },
+    "/runs/{run_id}/events": {
+      "post": {
+        "operationId": "apply_event_runs__run_id__events_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Snapshot"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Apply Event"
+      }
+    },
+    "/runs/{run_id}/flows/{flow_id}/decision": {
+      "get": {
+        "operationId": "flow_decision_runs__run_id__flows__flow_id__decision_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "flow_id",
+            "required": true,
+            "schema": {
+              "title": "Flow Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionRecord"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Flow Decision"
+      }
+    },
+    "/runs/{run_id}/reset": {
+      "post": {
+        "operationId": "reset_run_runs__run_id__reset_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Snapshot"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Reset Run"
+      }
+    },
+    "/scenarios": {
+      "get": {
+        "operationId": "list_scenarios_scenarios_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ScenarioInfo"
+                  },
+                  "title": "Response List Scenarios Scenarios Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Scenarios"
+      }
+    }
+  }
+}

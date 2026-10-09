@@ -1,9 +1,9 @@
 ## 1. Branch, skeleton and mocks (D, H0 to H1.5)
 
-- [ ] 1.1 Create the branch `feat/add-rest-api` from an up-to-date `main`
-- [ ] 1.2 Add `api/` with a FastAPI app, the uvicorn start command, local CORS and pinned dependencies, with an httpx test client and one test that the app starts
-- [ ] 1.3 Add request and response schemas in `api/schemas.py` from the shared models and declare all six routes with their status codes, with a test that each route is registered
-- [ ] 1.4 Add mock mode serving the snapshot fixtures, with tests that each mocked response validates against its schema
+- [x] 1.1 Create the branch `feat/add-rest-api` from an up-to-date `main`
+- [x] 1.2 Add `api/` with a FastAPI app, the uvicorn start command, local CORS and pinned dependencies, with an httpx test client and one test that the app starts
+- [x] 1.3 Add request and response schemas in `api/schemas.py` from the shared models and declare all six routes with their status codes, with a test that each route is registered
+- [x] 1.4 Add mock mode serving the snapshot fixtures, with tests that each mocked response validates against its schema
 - [ ] 1.5 Export the OpenAPI schema to a committed file, with the schema-is-current test; all four members confirm it as part of the H1.5 freeze
 - [ ] 1.6 Confirm with C that the frontend renders a mocked snapshot fetched from the API (H1.5 exit criterion) and note it in the pull request description
 
@@ -26,7 +26,7 @@
 
 ## 4. Hardening (D, H12 to H20)
 
-- [ ] 4.1 Add a test that no module under `core/` imports `fastapi` or `api`
+- [x] 4.1 Add a test that no module under `core/` imports `fastapi` or `api`
 - [ ] 4.2 Add tests through the API for idempotent events, node failure and an empty link list; fix any failure in `api/`, or report it to the owner if it is in `core/`
 
 ## 5. Integrate
