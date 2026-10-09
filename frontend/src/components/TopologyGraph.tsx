@@ -54,6 +54,10 @@ export function getDeterministicPositions(topology: Topology): Record<string, { 
  * Calculates edge color based on link utilization according to PLAN.md section 7 & 10.
  * Sequential green -> yellow -> red for 0..1, distinct overload color (magenta) for > 1.0.
  */
+export function getLinkLineStyle(isDown: boolean): 'dashed' | 'solid' {
+  return isDown ? 'dashed' : 'solid';
+}
+
 export function getLinkColor(util: number | undefined, isDown: boolean): string {
   if (isDown) return '#ef4444'; // Red for down/failed
   if (util === undefined) return '#10b981';

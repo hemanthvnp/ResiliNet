@@ -1,0 +1,120 @@
+import { describe, it, expect } from 'vitest';
+import { networkReducer, initialNetworkState, NetworkState } from './NetworkStore';
+import { MOCK_STEP0_SNAPSHOT, MOCK_STEP1_S2_SNAPSHOT, MOCK_STEP1_S0_QOS_SNAPSHOT, CAMPUS_TOPOLOGY, INITIAL_FLOWS } from '../fixtures/mockData';
+
+describe('Network Reducer (Task 2.1)', () => {
+  it('handles INIT_SCENARIO properly', () => {
+    const nextState = networkReducer(initialNetworkState, {
+      type: 'INIT_SCENARIO',
+      payload: {
+        seed: 99,
+        topology: CAMPUS_TOPOLOGY,
+        flows: INITIAL_FLOWS,
+        initialSnapshot: MOCK_STEP0_SNAPSHOT,
+      },
+    });
+
+    expect(nextState.seed).toBe(99);
+    expect(nextState.eventHistory).toEqual([]);
+    expect(nextState.leftPanel.snapshot.step).toBe(0);
+    expect(nextState.rightPanel.snapshot.step).toBe(0);
+    expect(nextState.inFlight).toBe(false);
+  });
+
+  it('updates baseline policy with SET_BASELINE_POLICY', () => {
+    const nextState = networkReducer(initialNetworkState, {
+      type: 'SET_BASELINE_POLICY',
+      payload: 'S0',
+    });
+
+    expect(nextState.leftPanel.policy).toBe('S0');
+  });
+
+  it('sets and releases inFlight loading lock', () => {
+    const lockedState = networkReducer(initialNetworkState, {
+      type: 'SET_IN_FLIGHT',
+      payload: true,
+    });
+    expect(lockedState.inFlight).toBe(true);
+
+    const unlockedState = networkReducer(lockedState, {
+      type: 'SET_IN_FLIGHT',
+      payload: false,
+    });
+    expect(unlockedState.inFlight).toBe(false);
+  });
+
+  it('commits both snapshots together on APPLY_EVENT_SUCCESS', () => {
+    const event = { step: 1, kind: 'fail' as const, links: ['L_DC_PRI'] };
+    const nextState = networkReducer(initialNetworkState, {
+      type: 'APPLY_EVENT_SUCCESS',
+      payload: {
+        event,
+        leftSnapshot: MOCK_STEP1_S0_QOS_SNAPSHOT,
+        rightSnapshot: MOCK_STEP1_S2_SNAPSHOT,
+      },
+    });
+
+    expect(nextState.eventHistory).toHaveLength(1);
+    expect(nextState.eventHistory[0]).toEqual(event);
+    expect(nextState.leftPanel.snapshot.step).toBe(1);
+    expect(nextState.rightPanel.snapshot.step).toBe(1);
+    expect(nextState.leftPanel.snapshot.metrics.overloaded_arcs).toBeGreaterThan(0);
+    expect(nextState.rightPanel.snapshot.metrics.overloaded_arcs).toBe(0);
+    expect(nextState.inFlight).toBe(false);
+  });
+
+  it('retains last good snapshots on APPLY_EVENT_FAILURE (Task 2.5)', () => {
+    // Start with a valid state at step 0
+    const stateWithGoodSnapshot: NetworkState = {
+      ...initialNetworkState,
+      inFlight: true,
+      lastGoodSnapshots: {
+        left: MOCK_STEP0_SNAPSHOT,
+        right: MOCK_STEP0_SNAPSHOT,
+      },
+    };
+
+    const nextState = networkReducer(stateWithGoodSnapshot, {
+      type: 'APPLY_EVENT_FAILURE',
+      payload: { error: 'Network timeout during event computation' },
+    });
+
+    expect(nextState.error).toBe('Network timeout during event computation');
+    expect(nextState.inFlight).toBe(false);
+    expect(nextState.leftPanel.snapshot).toEqual(MOCK_STEP0_SNAPSHOT);
+    expect(nextState.rightPanel.snapshot).toEqual(MOCK_STEP0_SNAPSHOT);
+  });
+
+  it('clears error on CLEAR_ERROR', () => {
+    const stateWithError = { ...initialNetworkState, error: 'Some error' };
+    const nextState = networkReducer(stateWithError, { type: 'CLEAR_ERROR' });
+    expect(nextState.error).toBeNull();
+  });
+
+  it('updates selected flow on SELECT_FLOW', () => {
+    const nextState = networkReducer(initialNetworkState, {
+      type: 'SELECT_FLOW',
+      payload: 'F01',
+    });
+    expect(nextState.selectedFlowId).toBe('F01');
+  });
+
+  it('resets both panels to step 0 on RESET', () => {
+    const stateWithHistory: NetworkState = {
+      ...initialNetworkState,
+      eventHistory: [{ step: 1, kind: 'fail', links: ['L_DC_PRI'] }],
+      leftPanel: { ...initialNetworkState.leftPanel, snapshot: MOCK_STEP1_S0_QOS_SNAPSHOT },
+      rightPanel: { ...initialNetworkState.rightPanel, snapshot: MOCK_STEP1_S2_SNAPSHOT },
+    };
+
+    const nextState = networkReducer(stateWithHistory, {
+      type: 'RESET',
+      payload: { step0Snapshot: MOCK_STEP0_SNAPSHOT },
+    });
+
+    expect(nextState.eventHistory).toEqual([]);
+    expect(nextState.leftPanel.snapshot.step).toBe(0);
+    expect(nextState.rightPanel.snapshot.step).toBe(0);
+  });
+});

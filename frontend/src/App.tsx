@@ -1,81 +1,117 @@
-import React, { useState, useEffect } from 'react';
-import { CAMPUS_TOPOLOGY, INITIAL_FLOWS, MOCK_STEP0_SNAPSHOT, MOCK_STEP1_S2_SNAPSHOT, MOCK_STEP1_S0_QOS_SNAPSHOT } from './fixtures/mockData';
-import { Snapshot, Flow } from './types/contract';
+import React, { useEffect } from 'react';
 import { TopologyGraph } from './components/TopologyGraph';
 import { KpiStrip } from './components/KpiStrip';
 import { FlowTable } from './components/FlowTable';
 import { apiClient } from './api/client';
+import { NetworkProvider, useNetwork } from './context/NetworkStore';
+import { Event } from './types/contract';
+import { MOCK_STEP0_SNAPSHOT } from './fixtures/mockData';
 
-export const App: React.FC = () => {
-  const [seed] = useState<number>(42);
-  const [topology] = useState(CAMPUS_TOPOLOGY);
-  const [flows] = useState<Flow[]>(INITIAL_FLOWS);
+export const ResiliNetDashboard: React.FC = () => {
+  const { state, dispatch } = useNetwork();
+  const {
+    seed,
+    topology,
+    flows,
+    leftPanel,
+    rightPanel,
+    selectedFlowId,
+    inFlight,
+    error,
+    eventHistory,
+  } = state;
 
-  // Left panel policy: S0-QoS (default) or S0
-  const [baselinePolicy, setBaselinePolicy] = useState<'S0-QoS' | 'S0'>('S0-QoS');
+  const currentStep = eventHistory.length;
 
-  // Snapshots for baseline and S2
-  const [baselineSnapshot, setBaselineSnapshot] = useState<Snapshot>(MOCK_STEP0_SNAPSHOT);
-  const [s2Snapshot, setS2Snapshot] = useState<Snapshot>(MOCK_STEP0_SNAPSHOT);
-
-  const [selectedFlowId, setSelectedFlowId] = useState<string | null>('F03');
-  const [inFlight, setInFlight] = useState<boolean>(false);
-  const [activeStep, setActiveStep] = useState<number>(0);
-
-  // Initialize data on mount (Task 1.5)
+  // Initialize initial sessions on mount
   useEffect(() => {
     async function loadInitial() {
       try {
+        dispatch({ type: 'SET_IN_FLIGHT', payload: true });
         const { snapshot } = await apiClient.createRun({ policy: 'S2', seed });
-        setS2Snapshot(snapshot);
-        setBaselineSnapshot(snapshot);
-      } catch (err) {
-        console.error('Failed to initialize run session:', err);
+        dispatch({
+          type: 'INIT_SCENARIO',
+          payload: {
+            seed,
+            topology,
+            flows,
+            initialSnapshot: snapshot,
+          },
+        });
+      } catch (err: any) {
+        dispatch({
+          type: 'APPLY_EVENT_FAILURE',
+          payload: { error: err.message || 'Failed to initialize session' },
+        });
       }
     }
     loadInitial();
-  }, [seed]);
+  }, [seed, dispatch, topology, flows]);
 
-  // Click-to-fail / Click-to-recover on links
+  // Click-to-fail / Click-to-recover handler with click lock (Task 2.3)
   const handleLinkClick = async (linkId: string, currentStatus: 'up' | 'down') => {
-    if (inFlight) return; // Click lock while in flight
+    if (inFlight) {
+      console.warn('Click ignored: request in flight');
+      return; // Click lock
+    }
 
-    setInFlight(true);
-    const newKind = currentStatus === 'up' ? 'fail' : 'recover';
+    dispatch({ type: 'SET_IN_FLIGHT', payload: true });
+    const kind = currentStatus === 'up' ? 'fail' : 'recover';
+    const event: Event = { step: currentStep + 1, kind, links: [linkId] };
 
     try {
-      if (newKind === 'fail' && linkId === 'L_DC_PRI') {
-        // Demonstrate the core comparison: L_DC_PRI down
-        setBaselineSnapshot(MOCK_STEP1_S0_QOS_SNAPSHOT);
-        setS2Snapshot(MOCK_STEP1_S2_SNAPSHOT);
-        setActiveStep(1);
-      } else {
-        // Generic toggle / reset back to step 0
-        setBaselineSnapshot(MOCK_STEP0_SNAPSHOT);
-        setS2Snapshot(MOCK_STEP0_SNAPSHOT);
-        setActiveStep(0);
-      }
-    } finally {
-      setInFlight(false);
+      // Parallel dispatch to both baseline and S2 engines
+      const [leftSnapshot, rightSnapshot] = await Promise.all([
+        apiClient.applyEvent(leftPanel.runId, event, leftPanel.policy),
+        apiClient.applyEvent(rightPanel.runId, event, rightPanel.policy),
+      ]);
+
+      dispatch({
+        type: 'APPLY_EVENT_SUCCESS',
+        payload: {
+          event,
+          leftSnapshot,
+          rightSnapshot,
+        },
+      });
+    } catch (err: any) {
+      dispatch({
+        type: 'APPLY_EVENT_FAILURE',
+        payload: { error: err.message || `Failed to apply ${kind} event for link ${linkId}` },
+      });
     }
   };
 
-  const handleReset = () => {
-    setBaselineSnapshot(MOCK_STEP0_SNAPSHOT);
-    setS2Snapshot(MOCK_STEP0_SNAPSHOT);
-    setActiveStep(0);
+  const handleReset = async () => {
+    if (inFlight) return;
+    dispatch({ type: 'SET_IN_FLIGHT', payload: true });
+    try {
+      await Promise.all([
+        apiClient.resetRun(leftPanel.runId),
+        apiClient.resetRun(rightPanel.runId),
+      ]);
+      dispatch({
+        type: 'RESET',
+        payload: { step0Snapshot: MOCK_STEP0_SNAPSHOT },
+      });
+    } catch (err: any) {
+      dispatch({
+        type: 'APPLY_EVENT_FAILURE',
+        payload: { error: err.message || 'Failed to reset sessions' },
+      });
+    }
   };
 
   // Find active decision for the selected flow in S2
-  const selectedDecision = s2Snapshot.decisions.find((d) => d.flow_id === selectedFlowId);
+  const selectedDecision = rightPanel.snapshot.decisions?.find((d) => d.flow_id === selectedFlowId);
 
   // Selected flow's active paths for highlight
-  const selectedPaths = s2Snapshot.allocation.results[selectedFlowId || '']?.paths || [];
+  const selectedPaths = rightPanel.snapshot.allocation?.results?.[selectedFlowId || '']?.paths || [];
   const highlightedArcs = selectedPaths.flatMap((p) => p.arcs);
 
   return (
     <div className="app-container" data-testid="app-root">
-      {/* Top Navigation / Controls */}
+      {/* Top Header Controls */}
       <header className="app-header">
         <div className="brand-section">
           <div className="brand-title">ResiliNet</div>
@@ -88,9 +124,14 @@ export const App: React.FC = () => {
             <strong>{seed}</strong>
           </div>
 
-          <div className="badge-seed" style={{ background: inFlight ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)', color: inFlight ? '#f87171' : '#34d399' }}>
-            <span>Step:</span>
-            <strong>{activeStep}</strong>
+          <div
+            className="badge-seed"
+            style={{
+              background: inFlight ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
+              color: inFlight ? '#f87171' : '#34d399',
+            }}
+          >
+            <span>{inFlight ? 'In Flight...' : `Step: ${currentStep}`}</span>
           </div>
 
           <button
@@ -104,9 +145,24 @@ export const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Dashboard */}
       <main className="dashboard-main">
-        {/* Active Decision Banner */}
+        {/* Error Notification Banner (Task 2.5) */}
+        {error && (
+          <div className="error-banner" data-testid="error-banner">
+            <div className="error-message-text">
+              <strong>Request Error:</strong> {error}
+            </div>
+            <button
+              className="btn-secondary error-dismiss-btn"
+              onClick={() => dispatch({ type: 'CLEAR_ERROR' })}
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Active Flow Decision Banner */}
         {selectedDecision && (
           <div className="decision-banner" data-testid="decision-banner">
             <strong style={{ color: '#38bdf8' }}>Flow Explanation:</strong>
@@ -123,8 +179,14 @@ export const App: React.FC = () => {
                 <span className="panel-title">Baseline Network</span>
                 <select
                   className="panel-selector"
-                  value={baselinePolicy}
-                  onChange={(e) => setBaselinePolicy(e.target.value as 'S0-QoS' | 'S0')}
+                  value={leftPanel.policy}
+                  onChange={(e) =>
+                    dispatch({
+                      type: 'SET_BASELINE_POLICY',
+                      payload: e.target.value as 'S0-QoS' | 'S0',
+                    })
+                  }
+                  disabled={inFlight}
                 >
                   <option value="S0-QoS">S0-QoS (Priority Queues)</option>
                   <option value="S0">S0 (Naive Dijkstra)</option>
@@ -133,19 +195,20 @@ export const App: React.FC = () => {
             </div>
 
             <KpiStrip
-              metrics={baselineSnapshot.metrics}
-              policyName={baselinePolicy}
-              label={activeStep > 0 ? 'Post-Failure (Overloaded)' : 'Steady State'}
+              metrics={leftPanel.snapshot.metrics}
+              policyName={leftPanel.policy}
+              label={currentStep > 0 ? 'Post-Failure (Overloaded)' : 'Steady State'}
             />
 
             <div className="graph-viewport-wrapper">
               <div className="graph-instruction-banner">Click any link to fail / recover</div>
               <TopologyGraph
                 topology={topology}
-                snapshot={baselineSnapshot}
+                snapshot={leftPanel.snapshot}
                 onLinkClick={handleLinkClick}
                 highlightedArcs={highlightedArcs}
                 highlightColor="#f59e0b"
+                readOnly={inFlight}
               />
             </div>
 
@@ -181,19 +244,20 @@ export const App: React.FC = () => {
             </div>
 
             <KpiStrip
-              metrics={s2Snapshot.metrics}
+              metrics={rightPanel.snapshot.metrics}
               policyName="S2-Resilient"
-              label={activeStep > 0 ? 'Capacity Protected' : 'Optimal Initial'}
+              label={currentStep > 0 ? 'Capacity Protected' : 'Optimal Initial'}
             />
 
             <div className="graph-viewport-wrapper">
               <div className="graph-instruction-banner">Synchronized parallel view</div>
               <TopologyGraph
                 topology={topology}
-                snapshot={s2Snapshot}
+                snapshot={rightPanel.snapshot}
                 onLinkClick={handleLinkClick}
                 highlightedArcs={highlightedArcs}
                 highlightColor="#38bdf8"
+                readOnly={inFlight}
               />
             </div>
 
@@ -217,12 +281,20 @@ export const App: React.FC = () => {
         {/* Flow Inspection Table */}
         <FlowTable
           flows={flows}
-          snapshot={s2Snapshot}
+          snapshot={rightPanel.snapshot}
           selectedFlowId={selectedFlowId}
-          onSelectFlow={setSelectedFlowId}
+          onSelectFlow={(id) => dispatch({ type: 'SELECT_FLOW', payload: id })}
         />
       </main>
     </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <NetworkProvider>
+      <ResiliNetDashboard />
+    </NetworkProvider>
   );
 };
 
