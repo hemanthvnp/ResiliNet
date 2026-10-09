@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CartesianGrid, Legend as ChartLegend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Legend as ChartLegend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 /**
  * Benchmark chart (task 5.1): delivery ratio against offered load factor for S0-QoS and S2,
@@ -78,7 +78,9 @@ export const BenchmarkChart: React.FC<{ rows: BenchmarkRow[]; source: string }> 
           ))}
         </select>
       </div>
-      <LineChart width={720} height={280} data={data} margin={{ top: 10, right: 24, bottom: 24, left: 8 }}>
+      {/* fills the card's width, so the chart reads on a projector */}
+      <ResponsiveContainer width="100%" height={300}>
+      <LineChart data={data} margin={{ top: 10, right: 24, bottom: 24, left: 8 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
         <XAxis dataKey="load_factor" label={{ value: 'offered load factor', position: 'insideBottom', offset: -12 }} />
         <YAxis domain={[0, 1]} tickFormatter={(v: number) => `${Math.round(v * 100)}%`} />
@@ -88,6 +90,7 @@ export const BenchmarkChart: React.FC<{ rows: BenchmarkRow[]; source: string }> 
           <Line key={p} type="monotone" dataKey={p} stroke={POLICY_COLORS[p]} strokeWidth={2} dot isAnimationActive={false} />
         ))}
       </LineChart>
+      </ResponsiveContainer>
       <div className="legend-strip">
         Mean over {seeds} seed{seeds === 1 ? '' : 's'}, default configuration. Source: {source}
       </div>
