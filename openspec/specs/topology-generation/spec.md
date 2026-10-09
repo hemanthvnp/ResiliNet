@@ -1,4 +1,9 @@
-## ADDED Requirements
+# topology-generation Specification
+
+## Purpose
+TBD - created by archiving change add-network-generators. Update Purpose after archive.
+
+## Requirements
 
 ### Requirement: Campus template
 The system SHALL provide a fixed campus template topology, selectable with `TopologySpec` `{template: "campus"}`, with a designated primary uplink and named key-service nodes.
@@ -60,3 +65,10 @@ Source: PLAN.md section 14.
 #### Scenario: Unknown generator
 - **WHEN** a spec names a generator that is not registered
 - **THEN** resolution raises an error containing that name
+
+### Requirement: Distinct networks for consecutive seeds
+Resolving the default generated scenario for consecutive seeds SHALL give distinct effective seeds, so a benchmark over those seeds never counts one network twice.
+
+#### Scenario: Thirty seeds, thirty networks
+- **WHEN** the default topology and traffic specs are resolved with seeds 1 to 30
+- **THEN** the 30 effective seeds are all different

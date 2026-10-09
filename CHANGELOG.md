@@ -8,6 +8,14 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- Campus network for the demo and the benchmark (`core/gen/`): the hand-drawn
+  campus template (15 nodes, primary uplink L6, two single-link hostels) and its
+  traffic (19 flows, load factor 0.5) as fixtures; a seeded campus generator
+  (default 50 nodes) and a seeded traffic generator (default 200 flows); load-factor
+  scaling; and the PLAN.md section 9 post-failure path check. `resolve_inputs`
+  retries a generated network up to 20 seeds and reports the seed it used; space
+  benchmark seeds at least 20 apart. H8 headline check: with L6 failed, S2 delivers
+  DR 1.000 and DR_P1 1.000 against S0-QoS 0.706 and 0.750.
 - Shared contract frozen (H1.5, agreed by A, B, C and D): every PLAN.md section 7
   model in `core/model/types.py`, the arc model, the capacity `Ledger`, and the
   validating fixtures under `fixtures/` (the diamond under S0, S0-QoS, S1 and S2,

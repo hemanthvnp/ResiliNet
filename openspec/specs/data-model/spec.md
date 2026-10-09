@@ -1,4 +1,9 @@
-## ADDED Requirements
+# data-model Specification
+
+## Purpose
+TBD - created by archiving change add-core-model-contract. Update Purpose after archive.
+
+## Requirements
 
 ### Requirement: Shared typed contract
 The system SHALL define every model named in PLAN.md section 7 as a pydantic v2 model in `core/model/types.py`: `Node`, `Link`, `Topology`, `Flow`, `PathAlloc`, `FlowResult`, `Allocation`, `PolicyConfig`, `Event`, `Attempt`, `CutArc`, `DecisionRecord`, `Metrics`, `TopologySpec`, `TrafficSpec`, `Scenario` and `Snapshot`, with the fields and defaults stated there. The module SHALL also define the `RoutingPolicy` protocol.
@@ -68,3 +73,16 @@ Source: PLAN.md section 11.
 #### Scenario: Tool instruction file points to the shared file
 - **WHEN** `CLAUDE.md` is read
 - **THEN** it references `AGENTS.md` as the shared rules
+
+### Requirement: Consistent topology ids
+A `Topology` SHALL reject duplicate node ids, duplicate link ids, and links whose endpoints are not listed as nodes.
+
+Source: added during implementation after a hand-written fixture repeated ids; confirmed by B.
+
+#### Scenario: Duplicate link id is rejected
+- **WHEN** a topology has two links with id `L1`
+- **THEN** validation fails naming the duplicate id
+
+#### Scenario: Link to an unknown node is rejected
+- **WHEN** a link refers to node `D` and no node `D` is listed
+- **THEN** validation fails naming `D`
