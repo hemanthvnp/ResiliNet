@@ -323,18 +323,56 @@ The core never imports the API or the frontend; a test checks this.
 
 ## Results
 
-**Status: the final 30-seed run has not been made yet.** The runner (`python -m cli benchmark`, PR #26) and the statistics and verdicts (`python -m cli report`, PR #29) are in place; the run is made once on the frozen code at H16, and its results go here. The pass or fail criteria below were written down before any run.
+The 30-seed benchmark ran on commit `f45c9c0`; `core/` and `cli/` have not changed since. Full tables are in [`results/tables.md`](results/tables.md), every row is in `results/benchmark.csv`, and the configuration is in `results/summary.json`. Reproduce it with `python -m cli benchmark --seeds 30 --out results`, then `python -m cli report --dir results`.
 
-| Hypothesis | Criterion |
-|---|---|
-| H1 | In stress scenarios, mean `DR` of S2 is at least 10 points above S0-QoS, with the 95% interval above zero |
-| H1b | S2's P0 delivery is not more than 1 point below S0-QoS |
-| H2 | In uncongested scenarios S2 is within 1 point of S0-QoS |
-| H3 | S2 never overloads a link, while S0 and S0-QoS do in stress scenarios |
-| H4 | A recompute at 50 nodes and 200 flows takes under 1 second |
-| H5 | The P0 greedy gap is zero on at least 95% of runs |
+**Setup:**
+- 30 generated campus networks (about 50 nodes and 200 flows each), all four policies, offered load factors 0.5 to 2.0, and one-setting S2 ablations: 3960 runs in 88 s.
+- Four cases per seed, mapped to the fixture scenarios they resemble:
 
-**Measured during development.** Each number has its source. These are not the benchmark.
+  | Case | What fails | Like scenario |
+  |---|---|---|
+  | `healthy` | nothing | 1 |
+  | `uplink` | the primary uplink | 2 |
+  | `multi` | three random links at once | 3 |
+  | `recovered` | three random links, which then recover | 8 |
+
+  Load factors above 1.0 give scenario 5's regime, where there is not enough capacity.
+- H1 and H1b are read on `uplink` and `multi` at load 1.0; H2 on `healthy` and `recovered` at load 0.5.
+- Differences are S2 minus S0-QoS per seed, in percentage points, with 95% bootstrap intervals.
+
+**Hypotheses** (fixed before the run, reported either way):
+
+| Hypothesis | Criterion | Result | Measured |
+|---|---|---|---|
+| H1 | Under stress, S2's `DR` beats S0-QoS by at least 10 points, with the interval above 0 | **passed** | +14.0 points (95% CI +13.1 to +15.1) |
+| H1b | Under stress, S2's P0 delivery is not more than 1 point below S0-QoS | **passed** | +0.00: a tie |
+| H2 | Uncongested, S2 is within 1 point of S0-QoS | **failed** | `DR` +2.1 points (CI +1.6 to +2.6), outside the band in S2's favour; P0 delivery +0.00 |
+| H3 | S2 never overloads a link; S0 and S0-QoS do under stress | **passed** | S2 overloaded no arc in any of 1800 runs; S0 and S0-QoS overloaded arcs in 60 stress runs each |
+| H4 | A recompute at 50 nodes and 200 flows takes under 1 second | **passed** | median 51 ms |
+| H5 | The P0 greedy gap is zero in at least 95% of runs | **passed** | zero in all 720 default S2 runs |
+
+**Total delivery (`DR`), S2 against S0-QoS:**
+
+| Load factor | Primary uplink failed: S0-QoS | S2 | Difference | Three links failed: S0-QoS | S2 | Difference |
+|---|---|---|---|---|---|---|
+| 0.5 | 0.970 | 0.997 | +2.7 | 0.955 | 0.974 | +2.0 |
+| 1.0 | 0.823 | 0.981 | **+15.8** | 0.831 | 0.954 | **+12.3** |
+| 1.5 | 0.584 | 0.918 | +33.4 | 0.599 | 0.909 | +31.0 |
+| 2.0 | 0.460 | 0.791 | +33.1 | 0.473 | 0.820 | +34.7 |
+
+**What the numbers say:**
+- **S2 delivers more, and the gap grows with load.** S0-QoS piles traffic onto shortest paths that overload, while S2 uses capacity those paths leave idle. Over the uplink failure and the three-link failure at load 1.0 together, the gain is 14 points (H1).
+- **Critical traffic is a tie.** S0-QoS already protects P0 with its priority queues, so S2 matches it (within 0.03 points up to load 1.5) rather than beating it. S2 pulls ahead on P0 only at twice the normal load (+1.2 to +1.4 points). The gain is in P1 and P2 traffic: P1 delivery at load 1.0 is +3.1 points with the uplink failed.
+- **H2 failed, in S2's favour.** We expected the two to be equal when uncongested. But at load 0.5, shortest-path routing already overloads about 4 arcs per network, and S2 delivers 2.1 points more.
+- **S1 against S2** isolates the value of splitting and priority order. At load 1.0 with the uplink failed, S1 delivers 0.940 and S2 0.981. In the ablation, `max_paths` 1 costs S2 3.3 to 3.9 points; 2 or more paths make no difference. Ordering within a class and the congestion cost change delivery by at most 0.03 points; `util_cap` 0.9 costs 0.35 to 0.51 points.
+- **These numbers include the baselines' single-pass bias** (see Limitations), which slightly understates S0 and S0-QoS.
+
+**Single-link sensitivity** (`python -m ext sweep --scenario 01_normal`, cycle 2):
+- **Method:** fail each link of the campus template alone, per policy.
+- **Result:** for every single failure of a non-bridge link, S2 keeps all P0 traffic and overloads nothing. S0-QoS's worst case is the primary uplink L6, with total delivery 0.706 and one overloaded link.
+- **Bridges:** the links whose loss cuts something off are listed separately, with the demand they disconnect: the core-to-service links L2 to L5 and the single-homed hostel links L20 and L21. This is a single-link analysis of one topology and traffic matrix, not a claim about simultaneous failures.
+
+**Measured during development,** before the benchmark. Each number has its source.
 
 | Measurement | Result | Source |
 |---|---|---|
@@ -343,7 +381,7 @@ The core never imports the API or the frontend; a test checks this.
 | S2 recompute time at 50 nodes and 200 flows | 126 to 377 ms, worst 458 ms | Routing timing record (PR #4) |
 | P0 greedy gap | Zero on 180 of 180 runs | Routing timing record |
 | One event through the API at 50 nodes and 200 flows | About 60 ms and 144 KiB, of which decision records are 120 KiB | API measurement (PR #23) |
-| Congestion cost (`--lambda` above 0) across 30 networks | 0.2 to 3.3 points less delivery and 7 to 30% more latency, so it is off by default | Ablation (PR #13) |
+| Congestion cost (`--lambda` above 0) across 30 networks | 0.2 to 3.3 points less delivery and 7 to 30% more latency, so it is off by default. In the benchmark's ablation at load 1.0 it changed nothing measurable | Ablation (PR #13) |
 
 ## Challenges
 
@@ -366,7 +404,10 @@ Problems we met during the hackathon and how we handled them. New entries are ad
 - **S2 is greedy, not optimal.** Flows are placed one at a time in a fixed order, so an early placement can block capacity a later flow needed, and `max_paths` limits splitting.
   - It can lose to a baseline on some inputs.
   - `greedy_gap` measures this per flow, and an optional LP reference (`core/routing/lp_reference.py`) gives a fractional upper bound on small networks.
-- **Where S2 only ties.** When one path is left, rerouting cannot create capacity: S2 and S0-QoS deliver the same, and S2's remaining advantage is that it overloads nothing.
+- **Where S2 only ties.**
+  - On critical (P0) traffic, S2 ties S0-QoS in every benchmark case up to 1.5 times the normal load (+0.00 to +0.03 points; H1b), because priority queueing already protects P0. Our gain is in total, P1 and P2 delivery, and in never overloading a link.
+  - When one path is left, rerouting cannot create capacity: S2 and S0-QoS deliver the same, and S2's remaining advantage is that it overloads nothing.
+  - S2 did not deliver less than S0-QoS on average in any benchmark case or load, but it is a heuristic, and single inputs where it loses can exist.
 - **The model is steady-state.** There are no packets, queues, time-varying traffic, protocol convergence or cascading failures. Results describe this simulator on generated networks, not production networks.
 - **Churn.** Every event reroutes everything in priority order, so lower-class flows may move even when their old path still works. Churn is measured and reported, not avoided.
 - **Sessions live in memory.** Restarting the API loses runs. Seeds make any run reproducible, so nothing is lost for good.
@@ -444,5 +485,6 @@ Every member is responsible for understanding and explaining the code they submi
 | `tests/` | Cross-module API, CLI and property tests |
 | `examples/` | Editable scenarios for trying your own input |
 | `ext/` | Cycle 2 additions: extra policies and analyses that build on `core/` without changing it |
+| `results/` | The 30-seed benchmark: CSV, summary, tables and hypothesis verdicts |
 | `openspec/` | Proposals, designs, specs and tasks for each change |
 | `PLAN.md` | The full design and plan; the source of truth |

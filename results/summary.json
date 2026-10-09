@@ -1,0 +1,104 @@
+{
+  "ablation_groups": [
+    "order",
+    "max_paths",
+    "congestion_lambda",
+    "util_cap"
+  ],
+  "ablation_load_factor": 1.0,
+  "benchmark": "campus generator, 4 policies, 4 cases, load sweep, S2 ablations (PLAN.md section 9)",
+  "benchmark_seeds": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800,
+    900,
+    1000,
+    1100,
+    1200,
+    1300,
+    1400,
+    1500,
+    1600,
+    1700,
+    1800,
+    1900,
+    2000,
+    2100,
+    2200,
+    2300,
+    2400,
+    2500,
+    2600,
+    2700,
+    2800,
+    2900,
+    3000
+  ],
+  "cases": [
+    "healthy",
+    "uplink",
+    "multi",
+    "recovered"
+  ],
+  "check_invariants": false,
+  "first_seed_seconds": 14.56,
+  "git": {
+    "commit": "f45c9c0da7968831dca31e9e30cb68ba7480504e",
+    "dirty": false
+  },
+  "h4_compute_ms": {
+    "case": "uplink",
+    "load_factor": 1.0,
+    "median": 51.42,
+    "policy": "S2",
+    "repeats": 5
+  },
+  "load_factors": [
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    2.0
+  ],
+  "not_reproducible_columns": [
+    "compute_ms"
+  ],
+  "policies": [
+    "S0",
+    "S0-QoS",
+    "S1",
+    "S2"
+  ],
+  "processes": 8,
+  "projected_seconds": 109.2,
+  "python": "3.14.4",
+  "reduction": "none",
+  "rows": 3960,
+  "seed_stride": 100,
+  "seeds_requested": 30,
+  "seeds_run": 30,
+  "topology_spec": {
+    "buildings": 37,
+    "generator": "campus",
+    "redundancy": 0.5,
+    "seed": 1
+  },
+  "traffic_spec": {
+    "class_mix": {
+      "0": 0.1,
+      "1": 0.4,
+      "2": 0.5
+    },
+    "generator": "campus",
+    "load_factor": 0.5,
+    "n_flows": 200,
+    "seed": 1
+  },
+  "wall_seconds": 88.4
+}

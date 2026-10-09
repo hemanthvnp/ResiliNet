@@ -28,7 +28,7 @@
   - the printout shows every structural link and the top 5 operational links
 
   Verify the default-run (`--scenario 07_diamond` gives 8 rows), repeat-run (byte-identical CSV) and unknown-policy scenarios.
-- [ ] 3.2 Run `python -m ext sweep --scenario 01_normal --out results/sweep_campus.csv` (about 1 to 2 minutes per policy). Record the structural list and the top-5 operational table in the PR description. Add a "Single-link sensitivity" README paragraph using the PLAN-CYCLE2.md §4 wording. Verify that the documented command runs as written.
+- [x] 3.2 Run `python -m ext sweep --scenario 01_normal --out results/sweep_campus.csv` (about 1 to 2 minutes per policy). Record the structural list and the top-5 operational table in the PR description. Add a "Single-link sensitivity" README paragraph using the PLAN-CYCLE2.md §4 wording. Verify that the documented command runs as written.
 
 ## 4. Integrate
 
