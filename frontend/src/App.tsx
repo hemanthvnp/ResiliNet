@@ -135,7 +135,15 @@ export const ResiliNetDashboard: React.FC = () => {
       .then((list) => {
         if (list.length === 0) throw new Error('The API lists no scenarios');
         setScenarios(list);
-        return loadScenario(list[0].id, 'S0-QoS');
+        // ?scenario=<id> opens a given scenario, e.g. 02_uplink_failure for the demo; otherwise the first
+        const wanted = new URLSearchParams(window.location.search).get('scenario');
+        const chosen = list.find((sc) => sc.id === wanted) ?? list[0];
+        return loadScenario(chosen.id, 'S0-QoS').then(() => {
+          if (wanted && chosen.id !== wanted) {
+            const ids = list.map((sc) => sc.id).join(', ');
+            throw new Error(`Unknown scenario '${wanted}' in the URL; showing ${chosen.id}. Known: ${ids}`);
+          }
+        });
       })
       .catch((err) => dispatch({ type: 'APPLY_EVENT_FAILURE', payload: { error: err.message } }));
 

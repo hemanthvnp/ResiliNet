@@ -370,4 +370,31 @@ describe('App Component (Phase 1 & Phase 2)', () => {
     render(<App />);
     expect(await screen.findByTestId('mock-badge')).toHaveTextContent('MOCK DATA');
   });
+
+  it('opens the scenario named by ?scenario=, for the demo laptop', async () => {
+    vi.mocked(apiClient.getScenarios).mockResolvedValue([
+      { id: '01_normal', name: 'Normal', description: '' },
+      { id: '02_uplink_failure', name: 'Uplink failure', description: '' },
+    ]);
+    window.history.pushState({}, '', '/?scenario=02_uplink_failure');
+    try {
+      render(<App />);
+      await screen.findByTestId('quick-fail-btn');
+      expect(apiClient.createRun).toHaveBeenCalledWith({ scenario_id: '02_uplink_failure', policy: 'S2' });
+      expect(apiClient.createRun).not.toHaveBeenCalledWith(expect.objectContaining({ scenario_id: '01_normal' }));
+    } finally {
+      window.history.pushState({}, '', '/');
+    }
+  });
+
+  it('says so when ?scenario= names an unknown scenario, and shows the first one', async () => {
+    window.history.pushState({}, '', '/?scenario=nope');
+    try {
+      render(<App />);
+      expect(await screen.findByTestId('error-banner')).toHaveTextContent("Unknown scenario 'nope'");
+      expect(apiClient.createRun).toHaveBeenCalledWith({ scenario_id: 'campus-template', policy: 'S2' });
+    } finally {
+      window.history.pushState({}, '', '/');
+    }
+  });
 });
