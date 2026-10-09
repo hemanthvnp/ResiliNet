@@ -116,6 +116,8 @@ python -m cli compare --scenario 02_uplink_failure --policies S0-QoS S2 --out fa
 ```bash
 python -m cli run --scenario 07_diamond --policy S2 --out run.json     # snapshot sequence as JSON
 python -m cli compare --scenario 07_diamond                            # S0, S0-QoS, S1, S2 per step
+python -m cli benchmark --seeds 30 --out results                        # seeded benchmark matrix: CSV and summary
+python -m cli report --dir results                                     # tables and the H1 to H5 verdicts
 python -m cli run --scenario 07_diamond --policy S2 --max-paths 1      # flags: --order --max-paths --lambda --util-cap
 pytest                                                                 # backend: unit, API, CLI and property tests
 cd frontend && npm test                                                # frontend
@@ -288,7 +290,7 @@ The core never imports the API or the frontend; a test checks this.
 
 ## Results
 
-**Status: the 30-seed benchmark has not been run yet** (`python -m cli benchmark`, PR #26). Its results go here. The pass or fail criteria below were written down before any run.
+**Status: the final 30-seed run has not been made yet.** The runner (`python -m cli benchmark`, PR #26) and the statistics and verdicts (`python -m cli report`, PR #29) are in place; the run is made once on the frozen code at H16, and its results go here. The pass or fail criteria below were written down before any run.
 
 | Hypothesis | Criterion |
 |---|---|
