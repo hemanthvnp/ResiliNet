@@ -152,3 +152,39 @@ def test_snapshot_header(policy):
     assert s.link_state == {"L2": "up", "L5": "up", "L6": "up", "L7": "up"}
     assert s.affected_flows == []
     assert s.decisions == []  # convention C6
+
+
+# Group 3: S0 non-integer fixture (PLAN.md section 4, "a 7 Mbps flow scaled by 0.4")
+
+def test_s0_fractional_flows():
+    flows = [Flow.model_validate(f) for f in json.loads((FIXTURES / "flows" / "s0_fractional.json").read_text())]
+    assert [(f.id, f.src, f.dst, f.rate, f.cls) for f in flows] == [
+        ("F1", "A", "D", 18, 0),
+        ("F2", "A", "D", 7, 2),
+    ]
+
+
+def test_s0_fractional_snapshot():
+    s = Snapshot.model_validate_json((FIXTURES / "snapshots" / "s0_fractional.json").read_bytes())
+    f1, f2 = s.allocation.results["F1"], s.allocation.results["F2"]
+    assert [(p.arcs, p.rate) for p in f1.paths] == [(ABD, 18)]
+    assert [(p.arcs, p.rate) for p in f2.paths] == [(ABD, 7)]
+    assert f2.delivered == approx(2.8, abs=1e-9)
+    assert f2.unserved == approx(4.2, abs=1e-9)
+    assert f1.delivered == approx(7.2, abs=1e-9)
+    assert f1.unserved == approx(10.8, abs=1e-9)
+    assert f1.cause == f2.cause == "OVERLOAD_LOSS"
+    assert s.allocation.arc_load == {a: {"L2:A>B": 25, "L7:B>D": 25}.get(a, 0) for a in ARCS}
+
+    m = s.metrics
+    assert m.dr == approx(0.4, abs=1e-9)
+    assert m.dr_by_class == approx({0: 0.4, 2: 0.4}, abs=1e-9)
+    assert m.dr_reach == approx(0.4, abs=1e-9)
+    assert m.unserved_by_cause == approx({"OVERLOAD_LOSS": 15.0}, abs=1e-9)
+    assert (m.overloaded_arcs, m.overload_excess, m.arcs_above_90) == (2, 30, 2)
+    assert m.max_util == approx(2.5) and m.mean_util == approx(0.625)
+    assert m.link_util == approx({"L2": 2.5, "L7": 2.5, "L5": 0.0, "L6": 0.0})
+    assert m.latency_stretch == approx(1.0)
+    assert m.recovery_ratio is None
+    assert (m.churn_flows, m.churn_rate, m.p0_greedy_gap, m.compute_ms) == (0, 0, 0.0, 0.0)
+    assert (s.step, s.affected_flows, s.decisions) == (0, [], [])

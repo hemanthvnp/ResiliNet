@@ -23,7 +23,7 @@
 
 - [x] 4.1 B writes the diamond topology and flows (section 4) as a fixture by hand, with a test that it validates
 - [x] 4.2 B writes one snapshot per policy for the diamond by hand from the section 4 table, with a test that each validates
-- [ ] 4.3 B writes the S0 snapshot with a non-integer `delivered` (a 7 Mbps flow scaled by 0.4) by hand, with a test that 2.8 and 4.2 are preserved
+- [x] 4.3 B writes the S0 snapshot with a non-integer `delivered` (a 7 Mbps flow scaled by 0.4) by hand, with a test that 2.8 and 4.2 are preserved
 - [x] 4.4 Save the section 10 decision-record JSON as a fixture, with a test that it validates as a `DecisionRecord`
 - [x] 4.5 Add the freeze test: import every section 7 name and validate every file under `fixtures/` against its model
 - [ ] 4.6 All four members confirm the contract in chat once the freeze test passes; record the freeze in `CHANGELOG.md`

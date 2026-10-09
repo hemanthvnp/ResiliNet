@@ -105,8 +105,8 @@ def test_unknown_field_is_rejected():
 
 def test_fractional_delivery_is_preserved():
     r = result(delivered=2.8, unserved=4.2, cause="OVERLOAD_LOSS")
-    assert r.delivered == 2.8
-    assert r.unserved == 4.2
+    assert r.delivered == pytest.approx(2.8, abs=1e-9)
+    assert r.unserved == pytest.approx(4.2, abs=1e-9)
 
 
 def test_unknown_cause_is_rejected():

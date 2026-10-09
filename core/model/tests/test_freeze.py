@@ -32,7 +32,7 @@ SECTION_7_NAMES = [
 
 # The freeze needs a fixture for the diamond under every policy, the fractional
 # S0 case and the section 10 record (PLAN.md section 7, "the freeze is valid only if").
-REQUIRED_PENDING = [
+REQUIRED = [
     "topologies/diamond.json",
     "flows/diamond.json",
     "snapshots/diamond_healthy_s0.json",
@@ -40,8 +40,8 @@ REQUIRED_PENDING = [
     "snapshots/diamond_healthy_s1.json",
     "snapshots/diamond_healthy_s2.json",
     "snapshots/s0_fractional.json",
+    "decisions/section10_f12.json",
 ]
-REQUIRED_PRESENT = ["decisions/section10_f12.json"]
 
 
 def fixture_files():
@@ -63,16 +63,9 @@ def test_fixture_validates_against_its_model(path):
     FOLDER_MODELS[rel.parts[0]].validate_json(path.read_bytes())
 
 
-@pytest.mark.parametrize("rel", REQUIRED_PRESENT)
+@pytest.mark.parametrize("rel", REQUIRED)
 def test_required_fixture_exists(rel):
     assert (FIXTURES / rel).is_file()
-
-
-@pytest.mark.xfail(strict=True, reason="diamond fixtures are written by hand by B (tasks 4.1 to 4.3); "
-                   "remove this marker when they land")
-def test_pending_required_fixtures_exist():
-    missing = [rel for rel in REQUIRED_PENDING if not (FIXTURES / rel).is_file()]
-    assert not missing, f"missing fixtures: {missing}"
 
 
 def test_section_10_decision_record():
