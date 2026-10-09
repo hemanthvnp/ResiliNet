@@ -1,0 +1,6986 @@
+{
+  "flows": [
+    {
+      "cls": 0,
+      "dst": "AUTH",
+      "id": "F1",
+      "rate": 2,
+      "service": "auth",
+      "src": "B1"
+    },
+    {
+      "cls": 1,
+      "dst": "LMS",
+      "id": "F2",
+      "rate": 8,
+      "service": "lms",
+      "src": "B1"
+    },
+    {
+      "cls": 2,
+      "dst": "INET",
+      "id": "F3",
+      "rate": 5,
+      "service": "internet",
+      "src": "B1"
+    },
+    {
+      "cls": 0,
+      "dst": "AUTH",
+      "id": "F4",
+      "rate": 2,
+      "service": "auth",
+      "src": "B2"
+    },
+    {
+      "cls": 1,
+      "dst": "LMS",
+      "id": "F5",
+      "rate": 8,
+      "service": "lms",
+      "src": "B2"
+    },
+    {
+      "cls": 2,
+      "dst": "INET",
+      "id": "F6",
+      "rate": 5,
+      "service": "internet",
+      "src": "B2"
+    },
+    {
+      "cls": 0,
+      "dst": "AUTH",
+      "id": "F7",
+      "rate": 2,
+      "service": "auth",
+      "src": "B3"
+    },
+    {
+      "cls": 1,
+      "dst": "LMS",
+      "id": "F8",
+      "rate": 8,
+      "service": "lms",
+      "src": "B3"
+    },
+    {
+      "cls": 2,
+      "dst": "INET",
+      "id": "F9",
+      "rate": 5,
+      "service": "internet",
+      "src": "B3"
+    },
+    {
+      "cls": 0,
+      "dst": "AUTH",
+      "id": "F10",
+      "rate": 2,
+      "service": "auth",
+      "src": "B4"
+    },
+    {
+      "cls": 1,
+      "dst": "LMS",
+      "id": "F11",
+      "rate": 8,
+      "service": "lms",
+      "src": "B4"
+    },
+    {
+      "cls": 2,
+      "dst": "INET",
+      "id": "F12",
+      "rate": 5,
+      "service": "internet",
+      "src": "B4"
+    },
+    {
+      "cls": 0,
+      "dst": "AUTH",
+      "id": "F13",
+      "rate": 2,
+      "service": "auth",
+      "src": "B5"
+    },
+    {
+      "cls": 1,
+      "dst": "LMS",
+      "id": "F14",
+      "rate": 8,
+      "service": "lms",
+      "src": "B5"
+    },
+    {
+      "cls": 2,
+      "dst": "INET",
+      "id": "F15",
+      "rate": 5,
+      "service": "internet",
+      "src": "B5"
+    },
+    {
+      "cls": 0,
+      "dst": "EMRG",
+      "id": "F16",
+      "rate": 1,
+      "service": "emergency",
+      "src": "H1"
+    },
+    {
+      "cls": 2,
+      "dst": "INET",
+      "id": "F17",
+      "rate": 4,
+      "service": "internet",
+      "src": "H1"
+    },
+    {
+      "cls": 0,
+      "dst": "EMRG",
+      "id": "F18",
+      "rate": 1,
+      "service": "emergency",
+      "src": "H2"
+    },
+    {
+      "cls": 2,
+      "dst": "INET",
+      "id": "F19",
+      "rate": 4,
+      "service": "internet",
+      "src": "H2"
+    }
+  ],
+  "scenario": {
+    "config": {
+      "congestion_lambda": 0,
+      "max_paths": 3,
+      "order": "class_size_desc",
+      "util_cap": 1.0
+    },
+    "events": [
+      {
+        "kind": "fail",
+        "links": [
+          "L6"
+        ],
+        "node": null,
+        "step": 1
+      }
+    ],
+    "id": "02_uplink_failure",
+    "seed": 0,
+    "topology": {
+      "template": "campus"
+    },
+    "traffic": [
+      {
+        "cls": 0,
+        "dst": "AUTH",
+        "id": "F1",
+        "rate": 2,
+        "service": "auth",
+        "src": "B1"
+      },
+      {
+        "cls": 1,
+        "dst": "LMS",
+        "id": "F2",
+        "rate": 8,
+        "service": "lms",
+        "src": "B1"
+      },
+      {
+        "cls": 2,
+        "dst": "INET",
+        "id": "F3",
+        "rate": 5,
+        "service": "internet",
+        "src": "B1"
+      },
+      {
+        "cls": 0,
+        "dst": "AUTH",
+        "id": "F4",
+        "rate": 2,
+        "service": "auth",
+        "src": "B2"
+      },
+      {
+        "cls": 1,
+        "dst": "LMS",
+        "id": "F5",
+        "rate": 8,
+        "service": "lms",
+        "src": "B2"
+      },
+      {
+        "cls": 2,
+        "dst": "INET",
+        "id": "F6",
+        "rate": 5,
+        "service": "internet",
+        "src": "B2"
+      },
+      {
+        "cls": 0,
+        "dst": "AUTH",
+        "id": "F7",
+        "rate": 2,
+        "service": "auth",
+        "src": "B3"
+      },
+      {
+        "cls": 1,
+        "dst": "LMS",
+        "id": "F8",
+        "rate": 8,
+        "service": "lms",
+        "src": "B3"
+      },
+      {
+        "cls": 2,
+        "dst": "INET",
+        "id": "F9",
+        "rate": 5,
+        "service": "internet",
+        "src": "B3"
+      },
+      {
+        "cls": 0,
+        "dst": "AUTH",
+        "id": "F10",
+        "rate": 2,
+        "service": "auth",
+        "src": "B4"
+      },
+      {
+        "cls": 1,
+        "dst": "LMS",
+        "id": "F11",
+        "rate": 8,
+        "service": "lms",
+        "src": "B4"
+      },
+      {
+        "cls": 2,
+        "dst": "INET",
+        "id": "F12",
+        "rate": 5,
+        "service": "internet",
+        "src": "B4"
+      },
+      {
+        "cls": 0,
+        "dst": "AUTH",
+        "id": "F13",
+        "rate": 2,
+        "service": "auth",
+        "src": "B5"
+      },
+      {
+        "cls": 1,
+        "dst": "LMS",
+        "id": "F14",
+        "rate": 8,
+        "service": "lms",
+        "src": "B5"
+      },
+      {
+        "cls": 2,
+        "dst": "INET",
+        "id": "F15",
+        "rate": 5,
+        "service": "internet",
+        "src": "B5"
+      },
+      {
+        "cls": 0,
+        "dst": "EMRG",
+        "id": "F16",
+        "rate": 1,
+        "service": "emergency",
+        "src": "H1"
+      },
+      {
+        "cls": 2,
+        "dst": "INET",
+        "id": "F17",
+        "rate": 4,
+        "service": "internet",
+        "src": "H1"
+      },
+      {
+        "cls": 0,
+        "dst": "EMRG",
+        "id": "F18",
+        "rate": 1,
+        "service": "emergency",
+        "src": "H2"
+      },
+      {
+        "cls": 2,
+        "dst": "INET",
+        "id": "F19",
+        "rate": 4,
+        "service": "internet",
+        "src": "H2"
+      }
+    ]
+  },
+  "snapshots": {
+    "S0": [
+      {
+        "affected_flows": [],
+        "allocation": {
+          "arc_load": {
+            "L10:B1>D1": 15,
+            "L10:D1>B1": 0,
+            "L11:B1>D2": 0,
+            "L11:D2>B1": 0,
+            "L12:B2>D1": 15,
+            "L12:D1>B2": 0,
+            "L13:B2>D2": 0,
+            "L13:D2>B2": 0,
+            "L14:B3>D1": 15,
+            "L14:D1>B3": 0,
+            "L15:B3>D2": 0,
+            "L15:D2>B3": 0,
+            "L16:B4>D2": 15,
+            "L16:D2>B4": 0,
+            "L17:B4>D1": 0,
+            "L17:D1>B4": 0,
+            "L18:B5>D2": 15,
+            "L18:D2>B5": 0,
+            "L19:B5>D1": 0,
+            "L19:D1>B5": 0,
+            "L1:C1>C2": 0,
+            "L1:C2>C1": 0,
+            "L20:D2>H1": 0,
+            "L20:H1>D2": 5,
+            "L21:D2>H2": 0,
+            "L21:H2>D2": 5,
+            "L2:AUTH>C1": 0,
+            "L2:C1>AUTH": 10,
+            "L3:C1>EMRG": 2,
+            "L3:EMRG>C1": 0,
+            "L4:C1>LMS": 40,
+            "L4:LMS>C1": 0,
+            "L5:C1>INET": 33,
+            "L5:INET>C1": 0,
+            "L6:C1>D1": 0,
+            "L6:D1>C1": 45,
+            "L7:C2>D1": 0,
+            "L7:D1>C2": 0,
+            "L8:C1>D2": 0,
+            "L8:D2>C1": 40,
+            "L9:C2>D2": 0,
+            "L9:D2>C2": 0
+          },
+          "results": {
+            "F1": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F1",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L6:D1>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F10": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F10",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F11": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F11",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F12": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F12",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F13": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F13",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F14": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F14",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F15": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F15",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F16": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F16",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F17": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F17",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F18": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F18",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F19": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F19",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F2": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F2",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L6:D1>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F3": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F3",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L6:D1>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F4": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F4",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L6:D1>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F5": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F5",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L6:D1>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F6": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F6",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L6:D1>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F7": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F7",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L6:D1>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F8": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F8",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L6:D1>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F9": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F9",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L6:D1>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            }
+          }
+        },
+        "decisions": [
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F1 (P0, 2 Mbps): path B1-D1-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F1",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F10 (P0, 2 Mbps): path B4-D2-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F10",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F11 (P1, 8 Mbps): path B4-D2-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F11",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F12 (P2, 5 Mbps): path B4-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F12",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F13 (P0, 2 Mbps): path B5-D2-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F13",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F14 (P1, 8 Mbps): path B5-D2-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F14",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F15 (P2, 5 Mbps): path B5-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F15",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F16 (P0, 1 Mbps): path H1-D2-C1-EMRG used.",
+            "failed_links": [],
+            "flow_id": "F16",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F17 (P2, 4 Mbps): path H1-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F17",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F18 (P0, 1 Mbps): path H2-D2-C1-EMRG used.",
+            "failed_links": [],
+            "flow_id": "F18",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F19 (P2, 4 Mbps): path H2-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F19",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F2 (P1, 8 Mbps): path B1-D1-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F2",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F3 (P2, 5 Mbps): path B1-D1-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F3",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F4 (P0, 2 Mbps): path B2-D1-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F4",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F5 (P1, 8 Mbps): path B2-D1-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F5",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F6 (P2, 5 Mbps): path B2-D1-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F6",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F7 (P0, 2 Mbps): path B3-D1-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F7",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F8 (P1, 8 Mbps): path B3-D1-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F8",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F9 (P2, 5 Mbps): path B3-D1-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F9",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          }
+        ],
+        "link_state": {
+          "L1": "up",
+          "L10": "up",
+          "L11": "up",
+          "L12": "up",
+          "L13": "up",
+          "L14": "up",
+          "L15": "up",
+          "L16": "up",
+          "L17": "up",
+          "L18": "up",
+          "L19": "up",
+          "L2": "up",
+          "L20": "up",
+          "L21": "up",
+          "L3": "up",
+          "L4": "up",
+          "L5": "up",
+          "L6": "up",
+          "L7": "up",
+          "L8": "up",
+          "L9": "up"
+        },
+        "metrics": {
+          "arcs_above_90": 0,
+          "churn_flows": 0,
+          "churn_rate": 0,
+          "compute_ms": 1.2087709999377694,
+          "dr": 1.0,
+          "dr_by_class": {
+            "0": 1.0,
+            "1": 1.0,
+            "2": 1.0
+          },
+          "dr_reach": 1.0,
+          "latency_stretch": 1.0,
+          "link_util": {
+            "L1": 0.0,
+            "L10": 0.75,
+            "L11": 0.0,
+            "L12": 0.75,
+            "L13": 0.0,
+            "L14": 0.75,
+            "L15": 0.0,
+            "L16": 0.75,
+            "L17": 0.0,
+            "L18": 0.75,
+            "L19": 0.0,
+            "L2": 0.1,
+            "L20": 0.5,
+            "L21": 0.5,
+            "L3": 0.02,
+            "L4": 0.4,
+            "L5": 0.33,
+            "L6": 0.9,
+            "L7": 0.0,
+            "L8": 0.8,
+            "L9": 0.0
+          },
+          "max_util": 0.9,
+          "mean_util": 0.1738095238095238,
+          "overload_excess": 0,
+          "overloaded_arcs": 0,
+          "p0_greedy_gap": 0.0,
+          "recovery_ratio": null,
+          "unserved_by_cause": {}
+        },
+        "step": 0
+      },
+      {
+        "affected_flows": [
+          "F1",
+          "F2",
+          "F3",
+          "F4",
+          "F5",
+          "F6",
+          "F7",
+          "F8",
+          "F9"
+        ],
+        "allocation": {
+          "arc_load": {
+            "L10:B1>D1": 15,
+            "L10:D1>B1": 0,
+            "L11:B1>D2": 0,
+            "L11:D2>B1": 0,
+            "L12:B2>D1": 15,
+            "L12:D1>B2": 0,
+            "L13:B2>D2": 0,
+            "L13:D2>B2": 0,
+            "L14:B3>D1": 15,
+            "L14:D1>B3": 0,
+            "L15:B3>D2": 0,
+            "L15:D2>B3": 0,
+            "L16:B4>D2": 15,
+            "L16:D2>B4": 0,
+            "L17:B4>D1": 0,
+            "L17:D1>B4": 0,
+            "L18:B5>D2": 15,
+            "L18:D2>B5": 0,
+            "L19:B5>D1": 0,
+            "L19:D1>B5": 0,
+            "L1:C1>C2": 0,
+            "L1:C2>C1": 45,
+            "L20:D2>H1": 0,
+            "L20:H1>D2": 5,
+            "L21:D2>H2": 0,
+            "L21:H2>D2": 5,
+            "L2:AUTH>C1": 0,
+            "L2:C1>AUTH": 10,
+            "L3:C1>EMRG": 2,
+            "L3:EMRG>C1": 0,
+            "L4:C1>LMS": 40,
+            "L4:LMS>C1": 0,
+            "L5:C1>INET": 33,
+            "L5:INET>C1": 0,
+            "L7:C2>D1": 0,
+            "L7:D1>C2": 45,
+            "L8:C1>D2": 0,
+            "L8:D2>C1": 40,
+            "L9:C2>D2": 0,
+            "L9:D2>C2": 0
+          },
+          "results": {
+            "F1": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 0.8888888888888888,
+              "flow_id": "F1",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 1.1111111111111112
+            },
+            "F10": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F10",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F11": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F11",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F12": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F12",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F13": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F13",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F14": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F14",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F15": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F15",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F16": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F16",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F17": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F17",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F18": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F18",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F19": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F19",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F2": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 3.5555555555555554,
+              "flow_id": "F2",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 4.444444444444445
+            },
+            "F3": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 2.2222222222222223,
+              "flow_id": "F3",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 2.7777777777777777
+            },
+            "F4": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 0.8888888888888888,
+              "flow_id": "F4",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 1.1111111111111112
+            },
+            "F5": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 3.5555555555555554,
+              "flow_id": "F5",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 4.444444444444445
+            },
+            "F6": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 2.2222222222222223,
+              "flow_id": "F6",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 2.7777777777777777
+            },
+            "F7": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 0.8888888888888888,
+              "flow_id": "F7",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 1.1111111111111112
+            },
+            "F8": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 3.5555555555555554,
+              "flow_id": "F8",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 4.444444444444445
+            },
+            "F9": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 2.2222222222222223,
+              "flow_id": "F9",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 2.7777777777777777
+            }
+          }
+        },
+        "decisions": [
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 0,
+            "cut": [],
+            "delivered": 0.8888888888888888,
+            "demand": 2,
+            "explanation": "F1 (P0, 2 Mbps): path B1-D1-C1-AUTH invalid (L6 down). 1.11 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F1",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 1.1111111111111112
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F10 (P0, 2 Mbps): path B4-D2-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F10",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F11 (P1, 8 Mbps): path B4-D2-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F11",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F12 (P2, 5 Mbps): path B4-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F12",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F13 (P0, 2 Mbps): path B5-D2-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F13",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F14 (P1, 8 Mbps): path B5-D2-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F14",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F15 (P2, 5 Mbps): path B5-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F15",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F16 (P0, 1 Mbps): path H1-D2-C1-EMRG used.",
+            "failed_links": [],
+            "flow_id": "F16",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L20:H1>D2",
+                  "L8:D2>C1",
+                  "L3:C1>EMRG"
+                ],
+                "rate": 1
+              }
+            ],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F17 (P2, 4 Mbps): path H1-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F17",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L20:H1>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 4
+              }
+            ],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F18 (P0, 1 Mbps): path H2-D2-C1-EMRG used.",
+            "failed_links": [],
+            "flow_id": "F18",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L21:H2>D2",
+                  "L8:D2>C1",
+                  "L3:C1>EMRG"
+                ],
+                "rate": 1
+              }
+            ],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F19 (P2, 4 Mbps): path H2-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F19",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L21:H2>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 4
+              }
+            ],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 1,
+            "cut": [],
+            "delivered": 3.5555555555555554,
+            "demand": 8,
+            "explanation": "F2 (P1, 8 Mbps): path B1-D1-C1-LMS invalid (L6 down). 4.44 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F2",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 4.444444444444445
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 2,
+            "cut": [],
+            "delivered": 2.2222222222222223,
+            "demand": 5,
+            "explanation": "F3 (P2, 5 Mbps): path B1-D1-C1-INET invalid (L6 down). 2.78 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F3",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 2.7777777777777777
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 0,
+            "cut": [],
+            "delivered": 0.8888888888888888,
+            "demand": 2,
+            "explanation": "F4 (P0, 2 Mbps): path B2-D1-C1-AUTH invalid (L6 down). 1.11 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F4",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 1.1111111111111112
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 1,
+            "cut": [],
+            "delivered": 3.5555555555555554,
+            "demand": 8,
+            "explanation": "F5 (P1, 8 Mbps): path B2-D1-C1-LMS invalid (L6 down). 4.44 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F5",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 4.444444444444445
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 2,
+            "cut": [],
+            "delivered": 2.2222222222222223,
+            "demand": 5,
+            "explanation": "F6 (P2, 5 Mbps): path B2-D1-C1-INET invalid (L6 down). 2.78 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F6",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 2.7777777777777777
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 0,
+            "cut": [],
+            "delivered": 0.8888888888888888,
+            "demand": 2,
+            "explanation": "F7 (P0, 2 Mbps): path B3-D1-C1-AUTH invalid (L6 down). 1.11 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F7",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 1.1111111111111112
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 1,
+            "cut": [],
+            "delivered": 3.5555555555555554,
+            "demand": 8,
+            "explanation": "F8 (P1, 8 Mbps): path B3-D1-C1-LMS invalid (L6 down). 4.44 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F8",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 4.444444444444445
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 2,
+            "cut": [],
+            "delivered": 2.2222222222222223,
+            "demand": 5,
+            "explanation": "F9 (P2, 5 Mbps): path B3-D1-C1-INET invalid (L6 down). 2.78 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F9",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 2.7777777777777777
+          }
+        ],
+        "link_state": {
+          "L1": "up",
+          "L10": "up",
+          "L11": "up",
+          "L12": "up",
+          "L13": "up",
+          "L14": "up",
+          "L15": "up",
+          "L16": "up",
+          "L17": "up",
+          "L18": "up",
+          "L19": "up",
+          "L2": "up",
+          "L20": "up",
+          "L21": "up",
+          "L3": "up",
+          "L4": "up",
+          "L5": "up",
+          "L6": "down",
+          "L7": "up",
+          "L8": "up",
+          "L9": "up"
+        },
+        "metrics": {
+          "arcs_above_90": 1,
+          "churn_flows": 9,
+          "churn_rate": 45,
+          "compute_ms": 1.2302119998821581,
+          "dr": 0.7058823529411765,
+          "dr_by_class": {
+            "0": 0.7222222222222222,
+            "1": 0.6666666666666666,
+            "2": 0.7474747474747475
+          },
+          "dr_reach": 0.7058823529411765,
+          "latency_stretch": 1.1111111111111112,
+          "link_util": {
+            "L1": 0.45,
+            "L10": 0.75,
+            "L11": 0.0,
+            "L12": 0.75,
+            "L13": 0.0,
+            "L14": 0.75,
+            "L15": 0.0,
+            "L16": 0.75,
+            "L17": 0.0,
+            "L18": 0.75,
+            "L19": 0.0,
+            "L2": 0.1,
+            "L20": 0.5,
+            "L21": 0.5,
+            "L3": 0.02,
+            "L4": 0.4,
+            "L5": 0.33,
+            "L6": 0.0,
+            "L7": 2.25,
+            "L8": 0.8,
+            "L9": 0.0
+          },
+          "max_util": 2.25,
+          "mean_util": 0.2275,
+          "overload_excess": 25,
+          "overloaded_arcs": 1,
+          "p0_greedy_gap": 0.0,
+          "recovery_ratio": 0.4444444444444444,
+          "unserved_by_cause": {
+            "OVERLOAD_LOSS": 25.0
+          }
+        },
+        "step": 1
+      }
+    ],
+    "S0-QoS": [
+      {
+        "affected_flows": [],
+        "allocation": {
+          "arc_load": {
+            "L10:B1>D1": 15,
+            "L10:D1>B1": 0,
+            "L11:B1>D2": 0,
+            "L11:D2>B1": 0,
+            "L12:B2>D1": 15,
+            "L12:D1>B2": 0,
+            "L13:B2>D2": 0,
+            "L13:D2>B2": 0,
+            "L14:B3>D1": 15,
+            "L14:D1>B3": 0,
+            "L15:B3>D2": 0,
+            "L15:D2>B3": 0,
+            "L16:B4>D2": 15,
+            "L16:D2>B4": 0,
+            "L17:B4>D1": 0,
+            "L17:D1>B4": 0,
+            "L18:B5>D2": 15,
+            "L18:D2>B5": 0,
+            "L19:B5>D1": 0,
+            "L19:D1>B5": 0,
+            "L1:C1>C2": 0,
+            "L1:C2>C1": 0,
+            "L20:D2>H1": 0,
+            "L20:H1>D2": 5,
+            "L21:D2>H2": 0,
+            "L21:H2>D2": 5,
+            "L2:AUTH>C1": 0,
+            "L2:C1>AUTH": 10,
+            "L3:C1>EMRG": 2,
+            "L3:EMRG>C1": 0,
+            "L4:C1>LMS": 40,
+            "L4:LMS>C1": 0,
+            "L5:C1>INET": 33,
+            "L5:INET>C1": 0,
+            "L6:C1>D1": 0,
+            "L6:D1>C1": 45,
+            "L7:C2>D1": 0,
+            "L7:D1>C2": 0,
+            "L8:C1>D2": 0,
+            "L8:D2>C1": 40,
+            "L9:C2>D2": 0,
+            "L9:D2>C2": 0
+          },
+          "results": {
+            "F1": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F1",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L6:D1>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F10": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F10",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F11": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F11",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F12": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F12",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F13": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F13",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F14": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F14",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F15": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F15",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F16": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F16",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F17": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F17",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F18": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F18",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F19": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F19",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F2": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F2",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L6:D1>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F3": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F3",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L6:D1>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F4": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F4",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L6:D1>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F5": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F5",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L6:D1>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F6": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F6",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L6:D1>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F7": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F7",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L6:D1>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F8": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F8",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L6:D1>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F9": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F9",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L6:D1>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            }
+          }
+        },
+        "decisions": [
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F1 (P0, 2 Mbps): path B1-D1-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F1",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F10 (P0, 2 Mbps): path B4-D2-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F10",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F11 (P1, 8 Mbps): path B4-D2-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F11",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F12 (P2, 5 Mbps): path B4-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F12",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F13 (P0, 2 Mbps): path B5-D2-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F13",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F14 (P1, 8 Mbps): path B5-D2-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F14",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F15 (P2, 5 Mbps): path B5-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F15",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F16 (P0, 1 Mbps): path H1-D2-C1-EMRG used.",
+            "failed_links": [],
+            "flow_id": "F16",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F17 (P2, 4 Mbps): path H1-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F17",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F18 (P0, 1 Mbps): path H2-D2-C1-EMRG used.",
+            "failed_links": [],
+            "flow_id": "F18",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F19 (P2, 4 Mbps): path H2-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F19",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F2 (P1, 8 Mbps): path B1-D1-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F2",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F3 (P2, 5 Mbps): path B1-D1-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F3",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F4 (P0, 2 Mbps): path B2-D1-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F4",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F5 (P1, 8 Mbps): path B2-D1-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F5",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F6 (P2, 5 Mbps): path B2-D1-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F6",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F7 (P0, 2 Mbps): path B3-D1-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F7",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F8 (P1, 8 Mbps): path B3-D1-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F8",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F9 (P2, 5 Mbps): path B3-D1-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F9",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          }
+        ],
+        "link_state": {
+          "L1": "up",
+          "L10": "up",
+          "L11": "up",
+          "L12": "up",
+          "L13": "up",
+          "L14": "up",
+          "L15": "up",
+          "L16": "up",
+          "L17": "up",
+          "L18": "up",
+          "L19": "up",
+          "L2": "up",
+          "L20": "up",
+          "L21": "up",
+          "L3": "up",
+          "L4": "up",
+          "L5": "up",
+          "L6": "up",
+          "L7": "up",
+          "L8": "up",
+          "L9": "up"
+        },
+        "metrics": {
+          "arcs_above_90": 0,
+          "churn_flows": 0,
+          "churn_rate": 0,
+          "compute_ms": 1.3349410000955686,
+          "dr": 1.0,
+          "dr_by_class": {
+            "0": 1.0,
+            "1": 1.0,
+            "2": 1.0
+          },
+          "dr_reach": 1.0,
+          "latency_stretch": 1.0,
+          "link_util": {
+            "L1": 0.0,
+            "L10": 0.75,
+            "L11": 0.0,
+            "L12": 0.75,
+            "L13": 0.0,
+            "L14": 0.75,
+            "L15": 0.0,
+            "L16": 0.75,
+            "L17": 0.0,
+            "L18": 0.75,
+            "L19": 0.0,
+            "L2": 0.1,
+            "L20": 0.5,
+            "L21": 0.5,
+            "L3": 0.02,
+            "L4": 0.4,
+            "L5": 0.33,
+            "L6": 0.9,
+            "L7": 0.0,
+            "L8": 0.8,
+            "L9": 0.0
+          },
+          "max_util": 0.9,
+          "mean_util": 0.1738095238095238,
+          "overload_excess": 0,
+          "overloaded_arcs": 0,
+          "p0_greedy_gap": 0.0,
+          "recovery_ratio": null,
+          "unserved_by_cause": {}
+        },
+        "step": 0
+      },
+      {
+        "affected_flows": [
+          "F1",
+          "F2",
+          "F3",
+          "F4",
+          "F5",
+          "F6",
+          "F7",
+          "F8",
+          "F9"
+        ],
+        "allocation": {
+          "arc_load": {
+            "L10:B1>D1": 15,
+            "L10:D1>B1": 0,
+            "L11:B1>D2": 0,
+            "L11:D2>B1": 0,
+            "L12:B2>D1": 15,
+            "L12:D1>B2": 0,
+            "L13:B2>D2": 0,
+            "L13:D2>B2": 0,
+            "L14:B3>D1": 15,
+            "L14:D1>B3": 0,
+            "L15:B3>D2": 0,
+            "L15:D2>B3": 0,
+            "L16:B4>D2": 15,
+            "L16:D2>B4": 0,
+            "L17:B4>D1": 0,
+            "L17:D1>B4": 0,
+            "L18:B5>D2": 15,
+            "L18:D2>B5": 0,
+            "L19:B5>D1": 0,
+            "L19:D1>B5": 0,
+            "L1:C1>C2": 0,
+            "L1:C2>C1": 45,
+            "L20:D2>H1": 0,
+            "L20:H1>D2": 5,
+            "L21:D2>H2": 0,
+            "L21:H2>D2": 5,
+            "L2:AUTH>C1": 0,
+            "L2:C1>AUTH": 10,
+            "L3:C1>EMRG": 2,
+            "L3:EMRG>C1": 0,
+            "L4:C1>LMS": 40,
+            "L4:LMS>C1": 0,
+            "L5:C1>INET": 33,
+            "L5:INET>C1": 0,
+            "L7:C2>D1": 0,
+            "L7:D1>C2": 45,
+            "L8:C1>D2": 0,
+            "L8:D2>C1": 40,
+            "L9:C2>D2": 0,
+            "L9:D2>C2": 0
+          },
+          "results": {
+            "F1": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F1",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F10": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F10",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F11": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F11",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F12": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F12",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F13": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F13",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F14": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F14",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F15": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F15",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F16": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F16",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F17": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F17",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F18": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F18",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F19": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F19",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F2": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 4.666666666666667,
+              "flow_id": "F2",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 3.3333333333333335
+            },
+            "F3": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 0.0,
+              "flow_id": "F3",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 5.0
+            },
+            "F4": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F4",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F5": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 4.666666666666667,
+              "flow_id": "F5",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 3.3333333333333335
+            },
+            "F6": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 0.0,
+              "flow_id": "F6",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 5.0
+            },
+            "F7": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F7",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F8": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 4.666666666666667,
+              "flow_id": "F8",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 3.3333333333333335
+            },
+            "F9": {
+              "cause": "OVERLOAD_LOSS",
+              "delivered": 0.0,
+              "flow_id": "F9",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 5.0
+            }
+          }
+        },
+        "decisions": [
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F1 (P0, 2 Mbps): path B1-D1-C1-AUTH invalid (L6 down).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F1",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F10 (P0, 2 Mbps): path B4-D2-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F10",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F11 (P1, 8 Mbps): path B4-D2-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F11",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F12 (P2, 5 Mbps): path B4-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F12",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F13 (P0, 2 Mbps): path B5-D2-C1-AUTH used.",
+            "failed_links": [],
+            "flow_id": "F13",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F14 (P1, 8 Mbps): path B5-D2-C1-LMS used.",
+            "failed_links": [],
+            "flow_id": "F14",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F15 (P2, 5 Mbps): path B5-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F15",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F16 (P0, 1 Mbps): path H1-D2-C1-EMRG used.",
+            "failed_links": [],
+            "flow_id": "F16",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L20:H1>D2",
+                  "L8:D2>C1",
+                  "L3:C1>EMRG"
+                ],
+                "rate": 1
+              }
+            ],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F17 (P2, 4 Mbps): path H1-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F17",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L20:H1>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 4
+              }
+            ],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F18 (P0, 1 Mbps): path H2-D2-C1-EMRG used.",
+            "failed_links": [],
+            "flow_id": "F18",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L21:H2>D2",
+                  "L8:D2>C1",
+                  "L3:C1>EMRG"
+                ],
+                "rate": 1
+              }
+            ],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F19 (P2, 4 Mbps): path H2-D2-C1-INET used.",
+            "failed_links": [],
+            "flow_id": "F19",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L21:H2>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 4
+              }
+            ],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 1,
+            "cut": [],
+            "delivered": 4.666666666666667,
+            "demand": 8,
+            "explanation": "F2 (P1, 8 Mbps): path B1-D1-C1-LMS invalid (L6 down). 3.33 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F2",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 3.3333333333333335
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 2,
+            "cut": [],
+            "delivered": 0.0,
+            "demand": 5,
+            "explanation": "F3 (P2, 5 Mbps): path B1-D1-C1-INET invalid (L6 down). 5 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F3",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 5.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F4 (P0, 2 Mbps): path B2-D1-C1-AUTH invalid (L6 down).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F4",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 1,
+            "cut": [],
+            "delivered": 4.666666666666667,
+            "demand": 8,
+            "explanation": "F5 (P1, 8 Mbps): path B2-D1-C1-LMS invalid (L6 down). 3.33 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F5",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 3.3333333333333335
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 2,
+            "cut": [],
+            "delivered": 0.0,
+            "demand": 5,
+            "explanation": "F6 (P2, 5 Mbps): path B2-D1-C1-INET invalid (L6 down). 5 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F6",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 5.0
+          },
+          {
+            "attempts": [],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F7 (P0, 2 Mbps): path B3-D1-C1-AUTH invalid (L6 down).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F7",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 1,
+            "cut": [],
+            "delivered": 4.666666666666667,
+            "demand": 8,
+            "explanation": "F8 (P1, 8 Mbps): path B3-D1-C1-LMS invalid (L6 down). 3.33 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F8",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 3.3333333333333335
+          },
+          {
+            "attempts": [],
+            "cause": "OVERLOAD_LOSS",
+            "cls": 2,
+            "cut": [],
+            "delivered": 0.0,
+            "demand": 5,
+            "explanation": "F9 (P2, 5 Mbps): path B3-D1-C1-INET invalid (L6 down). 5 Mbps lost to overload.",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F9",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 5.0
+          }
+        ],
+        "link_state": {
+          "L1": "up",
+          "L10": "up",
+          "L11": "up",
+          "L12": "up",
+          "L13": "up",
+          "L14": "up",
+          "L15": "up",
+          "L16": "up",
+          "L17": "up",
+          "L18": "up",
+          "L19": "up",
+          "L2": "up",
+          "L20": "up",
+          "L21": "up",
+          "L3": "up",
+          "L4": "up",
+          "L5": "up",
+          "L6": "down",
+          "L7": "up",
+          "L8": "up",
+          "L9": "up"
+        },
+        "metrics": {
+          "arcs_above_90": 1,
+          "churn_flows": 9,
+          "churn_rate": 45,
+          "compute_ms": 1.2040429999160551,
+          "dr": 0.7058823529411765,
+          "dr_by_class": {
+            "0": 1.0,
+            "1": 0.75,
+            "2": 0.5454545454545454
+          },
+          "dr_reach": 0.7058823529411765,
+          "latency_stretch": 1.1111111111111112,
+          "link_util": {
+            "L1": 0.45,
+            "L10": 0.75,
+            "L11": 0.0,
+            "L12": 0.75,
+            "L13": 0.0,
+            "L14": 0.75,
+            "L15": 0.0,
+            "L16": 0.75,
+            "L17": 0.0,
+            "L18": 0.75,
+            "L19": 0.0,
+            "L2": 0.1,
+            "L20": 0.5,
+            "L21": 0.5,
+            "L3": 0.02,
+            "L4": 0.4,
+            "L5": 0.33,
+            "L6": 0.0,
+            "L7": 2.25,
+            "L8": 0.8,
+            "L9": 0.0
+          },
+          "max_util": 2.25,
+          "mean_util": 0.2275,
+          "overload_excess": 25,
+          "overloaded_arcs": 1,
+          "p0_greedy_gap": 0.0,
+          "recovery_ratio": 0.4444444444444445,
+          "unserved_by_cause": {
+            "OVERLOAD_LOSS": 25.0
+          }
+        },
+        "step": 1
+      }
+    ],
+    "S2": [
+      {
+        "affected_flows": [],
+        "allocation": {
+          "arc_load": {
+            "L10:B1>D1": 15,
+            "L10:D1>B1": 0,
+            "L11:B1>D2": 0,
+            "L11:D2>B1": 0,
+            "L12:B2>D1": 15,
+            "L12:D1>B2": 0,
+            "L13:B2>D2": 0,
+            "L13:D2>B2": 0,
+            "L14:B3>D1": 15,
+            "L14:D1>B3": 0,
+            "L15:B3>D2": 0,
+            "L15:D2>B3": 0,
+            "L16:B4>D2": 15,
+            "L16:D2>B4": 0,
+            "L17:B4>D1": 0,
+            "L17:D1>B4": 0,
+            "L18:B5>D2": 15,
+            "L18:D2>B5": 0,
+            "L19:B5>D1": 0,
+            "L19:D1>B5": 0,
+            "L1:C1>C2": 0,
+            "L1:C2>C1": 0,
+            "L20:D2>H1": 0,
+            "L20:H1>D2": 5,
+            "L21:D2>H2": 0,
+            "L21:H2>D2": 5,
+            "L2:AUTH>C1": 0,
+            "L2:C1>AUTH": 10,
+            "L3:C1>EMRG": 2,
+            "L3:EMRG>C1": 0,
+            "L4:C1>LMS": 40,
+            "L4:LMS>C1": 0,
+            "L5:C1>INET": 33,
+            "L5:INET>C1": 0,
+            "L6:C1>D1": 0,
+            "L6:D1>C1": 45,
+            "L7:C2>D1": 0,
+            "L7:D1>C2": 0,
+            "L8:C1>D2": 0,
+            "L8:D2>C1": 40,
+            "L9:C2>D2": 0,
+            "L9:D2>C2": 0
+          },
+          "results": {
+            "F1": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F1",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L6:D1>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F10": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F10",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F11": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F11",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F12": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F12",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F13": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F13",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F14": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F14",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F15": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F15",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F16": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F16",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F17": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F17",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F18": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F18",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F19": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F19",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F2": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F2",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L6:D1>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F3": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F3",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L6:D1>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F4": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F4",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L6:D1>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F5": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F5",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L6:D1>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F6": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F6",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L6:D1>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F7": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F7",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L6:D1>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F8": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F8",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L6:D1>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F9": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F9",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L6:D1>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            }
+          }
+        },
+        "decisions": [
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "bottleneck": 20,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F1 (P0, 2 Mbps): path B1-D1-C1-AUTH used. Placed 2 Mbps to B1-D1-C1-AUTH (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F1",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "bottleneck": 20,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F10 (P0, 2 Mbps): path B4-D2-C1-AUTH used. Placed 2 Mbps to B4-D2-C1-AUTH (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F10",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "bottleneck": 20,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F13 (P0, 2 Mbps): path B5-D2-C1-AUTH used. Placed 2 Mbps to B5-D2-C1-AUTH (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F13",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "bottleneck": 20,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F4 (P0, 2 Mbps): path B2-D1-C1-AUTH used. Placed 2 Mbps to B2-D1-C1-AUTH (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F4",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "bottleneck": 20,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F7 (P0, 2 Mbps): path B3-D1-C1-AUTH used. Placed 2 Mbps to B3-D1-C1-AUTH (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F7",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L20:H1>D2",
+                  "L8:D2>C1",
+                  "L3:C1>EMRG"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 1
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F16 (P0, 1 Mbps): path H1-D2-C1-EMRG used. Placed 1 Mbps to H1-D2-C1-EMRG (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F16",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L21:H2>D2",
+                  "L8:D2>C1",
+                  "L3:C1>EMRG"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 1
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F18 (P0, 1 Mbps): path H2-D2-C1-EMRG used. Placed 1 Mbps to H2-D2-C1-EMRG (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F18",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 18,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 8
+              }
+            ],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F11 (P1, 8 Mbps): path B4-D2-C1-LMS used. Placed 8 Mbps to B4-D2-C1-LMS (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F11",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 18,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 8
+              }
+            ],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F14 (P1, 8 Mbps): path B5-D2-C1-LMS used. Placed 8 Mbps to B5-D2-C1-LMS (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F14",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 18,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 8
+              }
+            ],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F2 (P1, 8 Mbps): path B1-D1-C1-LMS used. Placed 8 Mbps to B1-D1-C1-LMS (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F2",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 18,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 8
+              }
+            ],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F5 (P1, 8 Mbps): path B2-D1-C1-LMS used. Placed 8 Mbps to B2-D1-C1-LMS (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F5",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 18,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 8
+              }
+            ],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F8 (P1, 8 Mbps): path B3-D1-C1-LMS used. Placed 8 Mbps to B3-D1-C1-LMS (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F8",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 5
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F12 (P2, 5 Mbps): path B4-D2-C1-INET used. Placed 5 Mbps to B4-D2-C1-INET (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F12",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 5
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F15 (P2, 5 Mbps): path B5-D2-C1-INET used. Placed 5 Mbps to B5-D2-C1-INET (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F15",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 5
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F3 (P2, 5 Mbps): path B1-D1-C1-INET used. Placed 5 Mbps to B1-D1-C1-INET (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F3",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 5
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F6 (P2, 5 Mbps): path B2-D1-C1-INET used. Placed 5 Mbps to B2-D1-C1-INET (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F6",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 5
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F9 (P2, 5 Mbps): path B3-D1-C1-INET used. Placed 5 Mbps to B3-D1-C1-INET (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F9",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L20:H1>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 9,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 4
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F17 (P2, 4 Mbps): path H1-D2-C1-INET used. Placed 4 Mbps to H1-D2-C1-INET (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F17",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L21:H2>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 9,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 4
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F19 (P2, 4 Mbps): path H2-D2-C1-INET used. Placed 4 Mbps to H2-D2-C1-INET (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F19",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 0,
+            "unserved": 0.0
+          }
+        ],
+        "link_state": {
+          "L1": "up",
+          "L10": "up",
+          "L11": "up",
+          "L12": "up",
+          "L13": "up",
+          "L14": "up",
+          "L15": "up",
+          "L16": "up",
+          "L17": "up",
+          "L18": "up",
+          "L19": "up",
+          "L2": "up",
+          "L20": "up",
+          "L21": "up",
+          "L3": "up",
+          "L4": "up",
+          "L5": "up",
+          "L6": "up",
+          "L7": "up",
+          "L8": "up",
+          "L9": "up"
+        },
+        "metrics": {
+          "arcs_above_90": 0,
+          "churn_flows": 0,
+          "churn_rate": 0,
+          "compute_ms": 1.8527469999298773,
+          "dr": 1.0,
+          "dr_by_class": {
+            "0": 1.0,
+            "1": 1.0,
+            "2": 1.0
+          },
+          "dr_reach": 1.0,
+          "latency_stretch": 1.0,
+          "link_util": {
+            "L1": 0.0,
+            "L10": 0.75,
+            "L11": 0.0,
+            "L12": 0.75,
+            "L13": 0.0,
+            "L14": 0.75,
+            "L15": 0.0,
+            "L16": 0.75,
+            "L17": 0.0,
+            "L18": 0.75,
+            "L19": 0.0,
+            "L2": 0.1,
+            "L20": 0.5,
+            "L21": 0.5,
+            "L3": 0.02,
+            "L4": 0.4,
+            "L5": 0.33,
+            "L6": 0.9,
+            "L7": 0.0,
+            "L8": 0.8,
+            "L9": 0.0
+          },
+          "max_util": 0.9,
+          "mean_util": 0.1738095238095238,
+          "overload_excess": 0,
+          "overloaded_arcs": 0,
+          "p0_greedy_gap": 0.0,
+          "recovery_ratio": null,
+          "unserved_by_cause": {}
+        },
+        "step": 0
+      },
+      {
+        "affected_flows": [
+          "F1",
+          "F2",
+          "F3",
+          "F4",
+          "F5",
+          "F6",
+          "F7",
+          "F8",
+          "F9"
+        ],
+        "allocation": {
+          "arc_load": {
+            "L10:B1>D1": 10,
+            "L10:D1>B1": 3,
+            "L11:B1>D2": 8,
+            "L11:D2>B1": 0,
+            "L12:B2>D1": 8,
+            "L12:D1>B2": 0,
+            "L13:B2>D2": 7,
+            "L13:D2>B2": 0,
+            "L14:B3>D1": 5,
+            "L14:D1>B3": 0,
+            "L15:B3>D2": 10,
+            "L15:D2>B3": 0,
+            "L16:B4>D2": 15,
+            "L16:D2>B4": 0,
+            "L17:B4>D1": 0,
+            "L17:D1>B4": 0,
+            "L18:B5>D2": 15,
+            "L18:D2>B5": 0,
+            "L19:B5>D1": 0,
+            "L19:D1>B5": 0,
+            "L1:C1>C2": 0,
+            "L1:C2>C1": 35,
+            "L20:D2>H1": 0,
+            "L20:H1>D2": 5,
+            "L21:D2>H2": 0,
+            "L21:H2>D2": 5,
+            "L2:AUTH>C1": 0,
+            "L2:C1>AUTH": 10,
+            "L3:C1>EMRG": 2,
+            "L3:EMRG>C1": 0,
+            "L4:C1>LMS": 40,
+            "L4:LMS>C1": 0,
+            "L5:C1>INET": 33,
+            "L5:INET>C1": 0,
+            "L7:C2>D1": 0,
+            "L7:D1>C2": 20,
+            "L8:C1>D2": 0,
+            "L8:D2>C1": 50,
+            "L9:C2>D2": 0,
+            "L9:D2>C2": 15
+          },
+          "results": {
+            "F1": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F1",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F10": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F10",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F11": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F11",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F12": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F12",
+              "paths": [
+                {
+                  "arcs": [
+                    "L16:B4>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F13": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F13",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F14": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F14",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F15": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F15",
+              "paths": [
+                {
+                  "arcs": [
+                    "L18:B5>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F16": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F16",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F17": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F17",
+              "paths": [
+                {
+                  "arcs": [
+                    "L20:H1>D2",
+                    "L9:D2>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F18": {
+              "cause": "NONE",
+              "delivered": 1.0,
+              "flow_id": "F18",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L8:D2>C1",
+                    "L3:C1>EMRG"
+                  ],
+                  "rate": 1
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F19": {
+              "cause": "NONE",
+              "delivered": 4.0,
+              "flow_id": "F19",
+              "paths": [
+                {
+                  "arcs": [
+                    "L21:H2>D2",
+                    "L9:D2>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 4
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F2": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F2",
+              "paths": [
+                {
+                  "arcs": [
+                    "L10:B1>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F3": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F3",
+              "paths": [
+                {
+                  "arcs": [
+                    "L11:B1>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 5
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F4": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F4",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F5": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F5",
+              "paths": [
+                {
+                  "arcs": [
+                    "L12:B2>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 6
+                },
+                {
+                  "arcs": [
+                    "L13:B2>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F6": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F6",
+              "paths": [
+                {
+                  "arcs": [
+                    "L13:B2>D2",
+                    "L8:D2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 3
+                },
+                {
+                  "arcs": [
+                    "L13:B2>D2",
+                    "L9:D2>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F7": {
+              "cause": "NONE",
+              "delivered": 2.0,
+              "flow_id": "F7",
+              "paths": [
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L7:D1>C2",
+                    "L1:C2>C1",
+                    "L2:C1>AUTH"
+                  ],
+                  "rate": 2
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F8": {
+              "cause": "NONE",
+              "delivered": 8.0,
+              "flow_id": "F8",
+              "paths": [
+                {
+                  "arcs": [
+                    "L15:B3>D2",
+                    "L8:D2>C1",
+                    "L4:C1>LMS"
+                  ],
+                  "rate": 8
+                }
+              ],
+              "unserved": 0.0
+            },
+            "F9": {
+              "cause": "NONE",
+              "delivered": 5.0,
+              "flow_id": "F9",
+              "paths": [
+                {
+                  "arcs": [
+                    "L15:B3>D2",
+                    "L9:D2>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 2
+                },
+                {
+                  "arcs": [
+                    "L14:B3>D1",
+                    "L10:D1>B1",
+                    "L11:B1>D2",
+                    "L9:D2>C2",
+                    "L1:C2>C1",
+                    "L5:C1>INET"
+                  ],
+                  "rate": 3
+                }
+              ],
+              "unserved": 0.0
+            }
+          }
+        },
+        "decisions": [
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L7:D1>C2",
+                  "L1:C2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "bottleneck": 20,
+                "cost": 4,
+                "iter": 1,
+                "latency": 4,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F1 (P0, 2 Mbps): path B1-D1-C1-AUTH invalid (L6 down). Moved 2 Mbps to B1-D1-C2-C1-AUTH (latency 4 ms).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F1",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "bottleneck": 20,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F10 (P0, 2 Mbps): path B4-D2-C1-AUTH used. Moved 2 Mbps to B4-D2-C1-AUTH (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F10",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "bottleneck": 20,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F13 (P0, 2 Mbps): path B5-D2-C1-AUTH used. Moved 2 Mbps to B5-D2-C1-AUTH (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F13",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L7:D1>C2",
+                  "L1:C2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "bottleneck": 18,
+                "cost": 4,
+                "iter": 1,
+                "latency": 4,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F4 (P0, 2 Mbps): path B2-D1-C1-AUTH invalid (L6 down). Moved 2 Mbps to B2-D1-C2-C1-AUTH (latency 4 ms).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F4",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L7:D1>C2",
+                  "L1:C2>C1",
+                  "L2:C1>AUTH"
+                ],
+                "bottleneck": 16,
+                "cost": 4,
+                "iter": 1,
+                "latency": 4,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 2.0,
+            "demand": 2,
+            "explanation": "F7 (P0, 2 Mbps): path B3-D1-C1-AUTH invalid (L6 down). Moved 2 Mbps to B3-D1-C2-C1-AUTH (latency 4 ms).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F7",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L2:C1>AUTH"
+                ],
+                "rate": 2
+              }
+            ],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L2:C1>AUTH"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L20:H1>D2",
+                  "L8:D2>C1",
+                  "L3:C1>EMRG"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 1
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F16 (P0, 1 Mbps): path H1-D2-C1-EMRG used. Moved 1 Mbps to H1-D2-C1-EMRG (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F16",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L20:H1>D2",
+                  "L8:D2>C1",
+                  "L3:C1>EMRG"
+                ],
+                "rate": 1
+              }
+            ],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L21:H2>D2",
+                  "L8:D2>C1",
+                  "L3:C1>EMRG"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 1
+              }
+            ],
+            "cause": "NONE",
+            "cls": 0,
+            "cut": [],
+            "delivered": 1.0,
+            "demand": 1,
+            "explanation": "F18 (P0, 1 Mbps): path H2-D2-C1-EMRG used. Moved 1 Mbps to H2-D2-C1-EMRG (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F18",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L21:H2>D2",
+                  "L8:D2>C1",
+                  "L3:C1>EMRG"
+                ],
+                "rate": 1
+              }
+            ],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L3:C1>EMRG"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 18,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 8
+              }
+            ],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F11 (P1, 8 Mbps): path B4-D2-C1-LMS used. Moved 8 Mbps to B4-D2-C1-LMS (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F11",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 18,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 8
+              }
+            ],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F14 (P1, 8 Mbps): path B5-D2-C1-LMS used. Moved 8 Mbps to B5-D2-C1-LMS (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F14",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L7:D1>C2",
+                  "L1:C2>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 14,
+                "cost": 4,
+                "iter": 1,
+                "latency": 4,
+                "pushed": 8
+              }
+            ],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F2 (P1, 8 Mbps): path B1-D1-C1-LMS invalid (L6 down). Moved 8 Mbps to B1-D1-C2-C1-LMS (latency 4 ms).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F2",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L7:D1>C2",
+                  "L1:C2>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 6,
+                "cost": 4,
+                "iter": 1,
+                "latency": 4,
+                "pushed": 6
+              },
+              {
+                "arcs": [
+                  "L13:B2>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 10,
+                "cost": 5,
+                "iter": 2,
+                "latency": 5,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F5 (P1, 8 Mbps): path B2-D1-C1-LMS invalid (L6 down). Moved 6 Mbps to B2-D1-C2-C1-LMS (latency 4 ms). Moved 2 Mbps to B2-D2-C1-LMS (latency 5 ms).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F5",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L15:B3>D2",
+                  "L8:D2>C1",
+                  "L4:C1>LMS"
+                ],
+                "bottleneck": 10,
+                "cost": 5,
+                "iter": 1,
+                "latency": 5,
+                "pushed": 8
+              }
+            ],
+            "cause": "NONE",
+            "cls": 1,
+            "cut": [],
+            "delivered": 8.0,
+            "demand": 8,
+            "explanation": "F8 (P1, 8 Mbps): path B3-D1-C1-LMS invalid (L6 down). Moved 8 Mbps to B3-D2-C1-LMS (latency 5 ms).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F8",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L4:C1>LMS"
+                ],
+                "rate": 8
+              }
+            ],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L4:C1>LMS"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 5
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F12 (P2, 5 Mbps): path B4-D2-C1-INET used. Moved 5 Mbps to B4-D2-C1-INET (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F12",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L16:B4>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L16:B4>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 10,
+                "cost": 3,
+                "iter": 1,
+                "latency": 3,
+                "pushed": 5
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F15 (P2, 5 Mbps): path B5-D2-C1-INET used. Moved 5 Mbps to B5-D2-C1-INET (latency 3 ms).",
+            "failed_links": [],
+            "flow_id": "F15",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L18:B5>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L18:B5>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "USED",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L11:B1>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 8,
+                "cost": 5,
+                "iter": 1,
+                "latency": 5,
+                "pushed": 5
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F3 (P2, 5 Mbps): path B1-D1-C1-INET invalid (L6 down). Moved 5 Mbps to B1-D2-C1-INET (latency 5 ms).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F3",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L10:B1>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L10:B1>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L13:B2>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 3,
+                "cost": 5,
+                "iter": 1,
+                "latency": 5,
+                "pushed": 3
+              },
+              {
+                "arcs": [
+                  "L13:B2>D2",
+                  "L9:D2>C2",
+                  "L1:C2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 5,
+                "cost": 6,
+                "iter": 2,
+                "latency": 6,
+                "pushed": 2
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F6 (P2, 5 Mbps): path B2-D1-C1-INET invalid (L6 down). Moved 3 Mbps to B2-D2-C1-INET (latency 5 ms). Moved 2 Mbps to B2-D2-C2-C1-INET (latency 6 ms).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F6",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L12:B2>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L12:B2>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L15:B3>D2",
+                  "L9:D2>C2",
+                  "L1:C2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 2,
+                "cost": 6,
+                "iter": 1,
+                "latency": 6,
+                "pushed": 2
+              },
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L10:D1>B1",
+                  "L11:B1>D2",
+                  "L9:D2>C2",
+                  "L1:C2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 5,
+                "cost": 8,
+                "iter": 2,
+                "latency": 8,
+                "pushed": 3
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 5.0,
+            "demand": 5,
+            "explanation": "F9 (P2, 5 Mbps): path B3-D1-C1-INET invalid (L6 down). Moved 2 Mbps to B3-D2-C2-C1-INET (latency 6 ms). Moved 3 Mbps to B3-D1-B1-D2-C2-C1-INET (latency 8 ms).",
+            "failed_links": [
+              "L6"
+            ],
+            "flow_id": "F9",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L14:B3>D1",
+                  "L6:D1>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 5
+              }
+            ],
+            "reference_path": [
+              "L14:B3>D1",
+              "L6:D1>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "INVALID: L6 down",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L20:H1>D2",
+                  "L9:D2>C2",
+                  "L1:C2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 9,
+                "cost": 4,
+                "iter": 1,
+                "latency": 4,
+                "pushed": 4
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F17 (P2, 4 Mbps): path H1-D2-C1-INET limited by L8 (saturated). Moved 4 Mbps to H1-D2-C2-C1-INET (latency 4 ms).",
+            "failed_links": [],
+            "flow_id": "F17",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L20:H1>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 4
+              }
+            ],
+            "reference_path": [
+              "L20:H1>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "PARTIAL: L8:D2>C1 saturated",
+            "step": 1,
+            "unserved": 0.0
+          },
+          {
+            "attempts": [
+              {
+                "arcs": [
+                  "L21:H2>D2",
+                  "L9:D2>C2",
+                  "L1:C2>C1",
+                  "L5:C1>INET"
+                ],
+                "bottleneck": 9,
+                "cost": 4,
+                "iter": 1,
+                "latency": 4,
+                "pushed": 4
+              }
+            ],
+            "cause": "NONE",
+            "cls": 2,
+            "cut": [],
+            "delivered": 4.0,
+            "demand": 4,
+            "explanation": "F19 (P2, 4 Mbps): path H2-D2-C1-INET limited by L8 (saturated). Moved 4 Mbps to H2-D2-C2-C1-INET (latency 4 ms).",
+            "failed_links": [],
+            "flow_id": "F19",
+            "greedy_gap": null,
+            "maxflow_bound": null,
+            "previous": [
+              {
+                "arcs": [
+                  "L21:H2>D2",
+                  "L8:D2>C1",
+                  "L5:C1>INET"
+                ],
+                "rate": 4
+              }
+            ],
+            "reference_path": [
+              "L21:H2>D2",
+              "L8:D2>C1",
+              "L5:C1>INET"
+            ],
+            "reference_status": "PARTIAL: L8:D2>C1 saturated",
+            "step": 1,
+            "unserved": 0.0
+          }
+        ],
+        "link_state": {
+          "L1": "up",
+          "L10": "up",
+          "L11": "up",
+          "L12": "up",
+          "L13": "up",
+          "L14": "up",
+          "L15": "up",
+          "L16": "up",
+          "L17": "up",
+          "L18": "up",
+          "L19": "up",
+          "L2": "up",
+          "L20": "up",
+          "L21": "up",
+          "L3": "up",
+          "L4": "up",
+          "L5": "up",
+          "L6": "down",
+          "L7": "up",
+          "L8": "up",
+          "L9": "up"
+        },
+        "metrics": {
+          "arcs_above_90": 3,
+          "churn_flows": 11,
+          "churn_rate": 53,
+          "compute_ms": 1.769469000009849,
+          "dr": 1.0,
+          "dr_by_class": {
+            "0": 1.0,
+            "1": 1.0,
+            "2": 1.0
+          },
+          "dr_reach": 1.0,
+          "latency_stretch": 1.3568627450980393,
+          "link_util": {
+            "L1": 0.35,
+            "L10": 0.5,
+            "L11": 0.8,
+            "L12": 0.4,
+            "L13": 0.7,
+            "L14": 0.25,
+            "L15": 1.0,
+            "L16": 0.75,
+            "L17": 0.0,
+            "L18": 0.75,
+            "L19": 0.0,
+            "L2": 0.1,
+            "L20": 0.5,
+            "L21": 0.5,
+            "L3": 0.02,
+            "L4": 0.4,
+            "L5": 0.33,
+            "L6": 0.0,
+            "L7": 1.0,
+            "L8": 1.0,
+            "L9": 0.75
+          },
+          "max_util": 1.0,
+          "mean_util": 0.25625,
+          "overload_excess": 0,
+          "overloaded_arcs": 0,
+          "p0_greedy_gap": 0.0,
+          "recovery_ratio": 1.0,
+          "unserved_by_cause": {}
+        },
+        "step": 1
+      }
+    ]
+  },
+  "table": [
+    {
+      "metrics": {
+        "arcs_above_90": 1,
+        "churn_flows": 9,
+        "churn_rate": 45,
+        "compute_ms": 1.2040429999160551,
+        "dr": 0.7058823529411765,
+        "dr_by_class": {
+          "0": 1.0,
+          "1": 0.75,
+          "2": 0.5454545454545454
+        },
+        "dr_reach": 0.7058823529411765,
+        "latency_stretch": 1.1111111111111112,
+        "link_util": {
+          "L1": 0.45,
+          "L10": 0.75,
+          "L11": 0.0,
+          "L12": 0.75,
+          "L13": 0.0,
+          "L14": 0.75,
+          "L15": 0.0,
+          "L16": 0.75,
+          "L17": 0.0,
+          "L18": 0.75,
+          "L19": 0.0,
+          "L2": 0.1,
+          "L20": 0.5,
+          "L21": 0.5,
+          "L3": 0.02,
+          "L4": 0.4,
+          "L5": 0.33,
+          "L6": 0.0,
+          "L7": 2.25,
+          "L8": 0.8,
+          "L9": 0.0
+        },
+        "max_util": 2.25,
+        "mean_util": 0.2275,
+        "overload_excess": 25,
+        "overloaded_arcs": 1,
+        "p0_greedy_gap": 0.0,
+        "recovery_ratio": 0.4444444444444445,
+        "unserved_by_cause": {
+          "OVERLOAD_LOSS": 25.0
+        }
+      },
+      "policy": "S0-QoS"
+    },
+    {
+      "metrics": {
+        "arcs_above_90": 1,
+        "churn_flows": 9,
+        "churn_rate": 45,
+        "compute_ms": 1.2302119998821581,
+        "dr": 0.7058823529411765,
+        "dr_by_class": {
+          "0": 0.7222222222222222,
+          "1": 0.6666666666666666,
+          "2": 0.7474747474747475
+        },
+        "dr_reach": 0.7058823529411765,
+        "latency_stretch": 1.1111111111111112,
+        "link_util": {
+          "L1": 0.45,
+          "L10": 0.75,
+          "L11": 0.0,
+          "L12": 0.75,
+          "L13": 0.0,
+          "L14": 0.75,
+          "L15": 0.0,
+          "L16": 0.75,
+          "L17": 0.0,
+          "L18": 0.75,
+          "L19": 0.0,
+          "L2": 0.1,
+          "L20": 0.5,
+          "L21": 0.5,
+          "L3": 0.02,
+          "L4": 0.4,
+          "L5": 0.33,
+          "L6": 0.0,
+          "L7": 2.25,
+          "L8": 0.8,
+          "L9": 0.0
+        },
+        "max_util": 2.25,
+        "mean_util": 0.2275,
+        "overload_excess": 25,
+        "overloaded_arcs": 1,
+        "p0_greedy_gap": 0.0,
+        "recovery_ratio": 0.4444444444444444,
+        "unserved_by_cause": {
+          "OVERLOAD_LOSS": 25.0
+        }
+      },
+      "policy": "S0"
+    },
+    {
+      "metrics": {
+        "arcs_above_90": 3,
+        "churn_flows": 11,
+        "churn_rate": 53,
+        "compute_ms": 1.769469000009849,
+        "dr": 1.0,
+        "dr_by_class": {
+          "0": 1.0,
+          "1": 1.0,
+          "2": 1.0
+        },
+        "dr_reach": 1.0,
+        "latency_stretch": 1.3568627450980393,
+        "link_util": {
+          "L1": 0.35,
+          "L10": 0.5,
+          "L11": 0.8,
+          "L12": 0.4,
+          "L13": 0.7,
+          "L14": 0.25,
+          "L15": 1.0,
+          "L16": 0.75,
+          "L17": 0.0,
+          "L18": 0.75,
+          "L19": 0.0,
+          "L2": 0.1,
+          "L20": 0.5,
+          "L21": 0.5,
+          "L3": 0.02,
+          "L4": 0.4,
+          "L5": 0.33,
+          "L6": 0.0,
+          "L7": 1.0,
+          "L8": 1.0,
+          "L9": 0.75
+        },
+        "max_util": 1.0,
+        "mean_util": 0.25625,
+        "overload_excess": 0,
+        "overloaded_arcs": 0,
+        "p0_greedy_gap": 0.0,
+        "recovery_ratio": 1.0,
+        "unserved_by_cause": {}
+      },
+      "policy": "S2"
+    }
+  ],
+  "topology": {
+    "links": [
+      {
+        "capacity": 100,
+        "id": "L1",
+        "latency": 1,
+        "status": "up",
+        "u": "C1",
+        "v": "C2"
+      },
+      {
+        "capacity": 100,
+        "id": "L2",
+        "latency": 1,
+        "status": "up",
+        "u": "C1",
+        "v": "AUTH"
+      },
+      {
+        "capacity": 100,
+        "id": "L3",
+        "latency": 1,
+        "status": "up",
+        "u": "C1",
+        "v": "EMRG"
+      },
+      {
+        "capacity": 100,
+        "id": "L4",
+        "latency": 1,
+        "status": "up",
+        "u": "C1",
+        "v": "LMS"
+      },
+      {
+        "capacity": 100,
+        "id": "L5",
+        "latency": 1,
+        "status": "up",
+        "u": "C1",
+        "v": "INET"
+      },
+      {
+        "capacity": 50,
+        "id": "L6",
+        "latency": 1,
+        "status": "up",
+        "u": "D1",
+        "v": "C1"
+      },
+      {
+        "capacity": 20,
+        "id": "L7",
+        "latency": 1,
+        "status": "up",
+        "u": "D1",
+        "v": "C2"
+      },
+      {
+        "capacity": 50,
+        "id": "L8",
+        "latency": 1,
+        "status": "up",
+        "u": "D2",
+        "v": "C1"
+      },
+      {
+        "capacity": 20,
+        "id": "L9",
+        "latency": 1,
+        "status": "up",
+        "u": "D2",
+        "v": "C2"
+      },
+      {
+        "capacity": 20,
+        "id": "L10",
+        "latency": 1,
+        "status": "up",
+        "u": "B1",
+        "v": "D1"
+      },
+      {
+        "capacity": 10,
+        "id": "L11",
+        "latency": 3,
+        "status": "up",
+        "u": "B1",
+        "v": "D2"
+      },
+      {
+        "capacity": 20,
+        "id": "L12",
+        "latency": 1,
+        "status": "up",
+        "u": "B2",
+        "v": "D1"
+      },
+      {
+        "capacity": 10,
+        "id": "L13",
+        "latency": 3,
+        "status": "up",
+        "u": "B2",
+        "v": "D2"
+      },
+      {
+        "capacity": 20,
+        "id": "L14",
+        "latency": 1,
+        "status": "up",
+        "u": "B3",
+        "v": "D1"
+      },
+      {
+        "capacity": 10,
+        "id": "L15",
+        "latency": 3,
+        "status": "up",
+        "u": "B3",
+        "v": "D2"
+      },
+      {
+        "capacity": 20,
+        "id": "L16",
+        "latency": 1,
+        "status": "up",
+        "u": "B4",
+        "v": "D2"
+      },
+      {
+        "capacity": 10,
+        "id": "L17",
+        "latency": 3,
+        "status": "up",
+        "u": "B4",
+        "v": "D1"
+      },
+      {
+        "capacity": 20,
+        "id": "L18",
+        "latency": 1,
+        "status": "up",
+        "u": "B5",
+        "v": "D2"
+      },
+      {
+        "capacity": 10,
+        "id": "L19",
+        "latency": 3,
+        "status": "up",
+        "u": "B5",
+        "v": "D1"
+      },
+      {
+        "capacity": 10,
+        "id": "L20",
+        "latency": 1,
+        "status": "up",
+        "u": "H1",
+        "v": "D2"
+      },
+      {
+        "capacity": 10,
+        "id": "L21",
+        "latency": 1,
+        "status": "up",
+        "u": "H2",
+        "v": "D2"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "C1",
+        "name": "Core 1",
+        "type": "core"
+      },
+      {
+        "id": "C2",
+        "name": "Core 2",
+        "type": "core"
+      },
+      {
+        "id": "AUTH",
+        "name": "Auth server",
+        "type": "service"
+      },
+      {
+        "id": "EMRG",
+        "name": "Emergency",
+        "type": "service"
+      },
+      {
+        "id": "LMS",
+        "name": "Learning platform",
+        "type": "service"
+      },
+      {
+        "id": "INET",
+        "name": "Internet gateway",
+        "type": "service"
+      },
+      {
+        "id": "D1",
+        "name": "Distribution 1",
+        "type": "distribution"
+      },
+      {
+        "id": "D2",
+        "name": "Distribution 2",
+        "type": "distribution"
+      },
+      {
+        "id": "B1",
+        "name": "Engineering",
+        "type": "building"
+      },
+      {
+        "id": "B2",
+        "name": "Science",
+        "type": "building"
+      },
+      {
+        "id": "B3",
+        "name": "Library",
+        "type": "building"
+      },
+      {
+        "id": "B4",
+        "name": "Admin",
+        "type": "building"
+      },
+      {
+        "id": "B5",
+        "name": "Labs",
+        "type": "building"
+      },
+      {
+        "id": "H1",
+        "name": "Boys' hostel",
+        "type": "hostel"
+      },
+      {
+        "id": "H2",
+        "name": "Girls' hostel",
+        "type": "hostel"
+      }
+    ]
+  }
+}

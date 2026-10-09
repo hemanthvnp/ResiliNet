@@ -1,0 +1,88 @@
+[
+  {
+    "detail": {
+      "high": 15.093155731767059,
+      "low": 13.05532340780955,
+      "mean": 14.024660268647262,
+      "median": 13.853286873822668,
+      "n": 30
+    },
+    "id": "H1",
+    "measured": "mean +14.02 pp, median +13.85, 95% CI [+13.06, +15.09], n=30",
+    "passed": true,
+    "statement": "On stress cases S2 beats S0-QoS on DR by at least 10 points, with the 95% interval above 0"
+  },
+  {
+    "detail": {
+      "high": 0.0,
+      "low": 0.0,
+      "mean": 0.0,
+      "median": 0.0,
+      "n": 30
+    },
+    "id": "H1b",
+    "measured": "mean +0.00 pp, median +0.00, 95% CI [+0.00, +0.00], n=30",
+    "passed": true,
+    "statement": "On stress cases S2 DR_P0 is not below S0-QoS DR_P0 by more than 1 point"
+  },
+  {
+    "detail": {
+      "dr": {
+        "high": 2.5801463284182,
+        "low": 1.63118010833255,
+        "mean": 2.1036239258682334,
+        "median": 2.0037185354691065,
+        "n": 30
+      },
+      "dr_p0": {
+        "high": 0.0,
+        "low": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "n": 30
+      }
+    },
+    "id": "H2",
+    "measured": "DR mean +2.10 pp, median +2.00, 95% CI [+1.63, +2.58], n=30; DR_P0 mean +0.00 pp, median +0.00, 95% CI [+0.00, +0.00], n=30",
+    "passed": false,
+    "statement": "On uncongested cases S2 DR and DR_P0 are within 1 point of S0-QoS"
+  },
+  {
+    "detail": {
+      "baseline_stress_rows": {
+        "S0": 60,
+        "S0-QoS": 60
+      },
+      "s2_rows": 1800,
+      "s2_violations": 0
+    },
+    "id": "H3",
+    "measured": "S2 rows with an overloaded arc: 0 of 1800; stress rows with one: S0 60, S0-QoS 60",
+    "passed": true,
+    "statement": "S2 has no overloaded arc; S0 and S0-QoS have some in the stress cases"
+  },
+  {
+    "detail": {
+      "case": "uplink",
+      "load_factor": 1.0,
+      "median": 51.42,
+      "policy": "S2",
+      "repeats": 5
+    },
+    "id": "H4",
+    "measured": "median 51 ms over 5 runs (uplink, load 1.0)",
+    "passed": true,
+    "statement": "The S2 recompute at demo size is under 1 second"
+  },
+  {
+    "detail": {
+      "non_zero": [],
+      "runs": 720,
+      "share_zero": 1.0
+    },
+    "id": "H5",
+    "measured": "zero in 100.0% of 720 runs; 0 with a gap",
+    "passed": true,
+    "statement": "The P0 greedy gap is zero in at least 95% of the default S2 runs"
+  }
+]
