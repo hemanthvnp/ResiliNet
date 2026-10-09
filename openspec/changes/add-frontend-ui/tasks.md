@@ -13,7 +13,7 @@
 - [x] 2.3 Add click-to-fail and click-to-recover with a loading state and a click lock while in flight, with tests: an up link sends `fail`, a down link sends `recover`, a click during a request is ignored
 - [x] 2.4 Add the flow table (class colour, service, demand, delivered, status) sorted by class then id, with a test of an unserved row
 - [x] 2.5 Show request errors while keeping the last good snapshot, with a test of a failed event request
-- [ ] 2.6 M1 check at H4 with the team: click a link and see both baselines reroute with metrics
+- [x] 2.6 M1 check at H4 with the team: click a link and see both baselines reroute with metrics
 
 ## 3. Comparison view (C, H4 to H8)
 
@@ -30,7 +30,7 @@
 - [x] 4.3 Add the scenario selector, seed display and reset button, with tests: the seed is visible, reset returns both panels to step 0
 - [x] 4.4 Add the generate-network form (buildings, redundancy, seed) showing the effective seed, with a test that it posts a generator scenario and loads both panels
 - [ ] 4.5 If behind at H12: show the decision record as formatted text; ship a seed field only
-- [ ] 4.6 M3 check at H12 with the team: the demo scenario runs baseline and S2 with an explanation, and a generated network loads
+- [x] 4.6 M3 check at H12 with the team: the demo scenario runs baseline and S2 with an explanation, and a generated network loads
 
 ## 5. Charts and polish (C, H12 to H16)
 
