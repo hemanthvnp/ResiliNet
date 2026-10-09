@@ -44,4 +44,5 @@
 - [x] 6.1 Run the full test suite with `pytest`, and `check_invariants` on every snapshot of the fallback run
 - [x] 6.2 Rebase onto `main`
 - [x] 6.3 Run `sh .github/scripts/check-history.sh`
-- [ ] 6.4 Open the pull request from `.github/pull_request_template.md`
+- [x] 6.4 Open the pull request from `.github/pull_request_template.md`
+  - Done in #24 (CLI and property tests) and #35 (results and demo).

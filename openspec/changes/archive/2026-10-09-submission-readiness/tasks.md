@@ -32,4 +32,5 @@
 ## 4. Integrate
 
 - [x] 4.1 Run the full suite with `pytest`. Verify that it passes.
-- [ ] 4.2 Rebase onto `main`, run `sh .github/scripts/check-history.sh`, and open the pull request from `.github/pull_request_template.md`.
+- [x] 4.2 Rebase onto `main`, run `sh .github/scripts/check-history.sh`, and open the pull request from `.github/pull_request_template.md`.
+  - Done in #27, which carried #32.
