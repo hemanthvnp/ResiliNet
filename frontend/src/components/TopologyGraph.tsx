@@ -30,7 +30,13 @@ const LAYER_OF_TYPE: Record<string, number> = {
 };
 const WIDTH = 800;
 const ROW_GAP = 120;
-const MAX_PER_ROW = 12; // a wider layer (e.g. 37 generated buildings) wraps onto further rows
+const MAX_PER_ROW = 12;
+const LABEL_ALL_UP_TO = 20; // above this many nodes, building labels overlap and only the backbone is named
+
+/** A node's label: every node on a small network, only services, core and distribution on a large one. */
+export function getNodeLabel(node: { name: string; type: string }, nodeCount: number): string {
+  return nodeCount <= LABEL_ALL_UP_TO || (LAYER_OF_TYPE[node.type] ?? 4) < 3 ? node.name : '';
+} // a wider layer (e.g. 37 generated buildings) wraps onto further rows
 
 /**
  * Deterministic node coordinates: nodes are placed in rows by type (services, core,
@@ -38,7 +44,8 @@ const MAX_PER_ROW = 12; // a wider layer (e.g. 37 generated buildings) wraps ont
  * A topology whose nodes all share one row (e.g. the diamond) is drawn on a circle instead.
  */
 export function getDeterministicPositions(topology: Topology): Record<string, { x: number; y: number }> {
-  const sortedNodes = [...topology.nodes].sort((a, b) => a.id.localeCompare(b.id));
+  // numeric-aware, so generated ids run N2, N3 ... N10 rather than N10, N11, N2
+  const sortedNodes = [...topology.nodes].sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true }));
   const layerOf = (type: string) => LAYER_OF_TYPE[type] ?? 4;
   const rows = new Map<number, string[]>();
   for (const node of sortedNodes) {
@@ -182,7 +189,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
         group: 'nodes' as const,
         data: {
           id: node.id,
-          label: node.name,
+          label: getNodeLabel(node, topology.nodes.length),
           type: node.type,
         },
         position: positions[node.id],
@@ -333,7 +340,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
     <div
       ref={containerRef}
       className={`topology-graph-container ${className}`}
-      style={{ width: '100%', height: '100%', minHeight: '380px', position: 'relative' }}
+      style={{ width: '100%', height: '100%', position: 'relative' }} // min-height in .topology-graph (index.css)
       data-testid="topology-graph"
     />
   );

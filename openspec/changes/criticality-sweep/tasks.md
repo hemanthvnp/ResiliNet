@@ -10,19 +10,19 @@
 
 ## 1. Branch, review and tests first
 
-- [ ] 1.1 Create the branch `feat/criticality-sweep` from an up-to-date `main` after the cycle-2 plan PR is merged. Verify that `git log -1 main` matches `origin/main`.
+- [x] 1.1 Create the branch `feat/criticality-sweep` from an up-to-date `main` after the cycle-2 plan PR is merged. Verify that `git log -1 main` matches `origin/main`.
 - [ ] 1.2 A human (D, or another member) re-works by hand the diamond and two-node numbers in `specs/criticality-sweep/spec.md`, and records "checked by <name>" in the PR description. Verify that every scenario value matches.
 - [ ] 1.3 D sends `proposal.md`, `design.md` and the spec to ChatGPT for an adversarial review (PLAN-CYCLE2.md §6). Record each finding and its resolution in the PR. If a finding is accepted, update the spec and design first.
 - [ ] 1.4 D asks ChatGPT to write `ext/tests/test_sweep.py` from the spec scenarios only, pasting the facts in section 0 into the prompt. Commit the tests on their own. Verify that they fail only because `ext/sweep.py` does not exist yet.
 
 ## 2. Sweep
 
-- [ ] 2.1 In `ext/sweep.py`, implement the per-link fail, read and reset loop over one `Simulation` per policy, with links in ascending id order. Verify that the diamond S2, diamond S0-QoS and healthy-state-restored scenarios pass.
-- [ ] 2.2 Add bridge detection on the healthy topology, the structural and operational groups, the drop columns (healthy minus post-failure, per policy) and the shared-tie ranking. Exact ties share a rank, and link id only orders rows. Verify that the two-node structural, all-operational diamond and shared-rank scenarios pass.
+- [x] 2.1 In `ext/sweep.py`, implement the per-link fail, read and reset loop over one `Simulation` per policy, with links in ascending id order. Verify that the diamond S2, diamond S0-QoS and healthy-state-restored scenarios pass.
+- [x] 2.2 Add bridge detection on the healthy topology, the structural and operational groups, the drop columns (healthy minus post-failure, per policy) and the shared-tie ranking. Exact ties share a rank, and link id only orders rows. Verify that the two-node structural, all-operational diamond and shared-rank scenarios pass.
 
 ## 3. Command and output
 
-- [ ] 3.1 Add `python -m ext sweep --scenario <file|id> [--policies ...] [--out file.csv]` to `ext/__main__.py`:
+- [x] 3.1 Add `python -m ext sweep --scenario <file|id> [--policies ...] [--out file.csv]` to `ext/__main__.py`:
   - default policies are S2 and S0-QoS, plus ECMP-QoS if it is registered
   - CSV rows are sorted by policy, then link id
   - the printout shows every structural link and the top 5 operational links
@@ -33,5 +33,5 @@
 ## 4. Integrate
 
 - [ ] 4.1 Send the diff to Gemini or ChatGPT for an adversarial review. Fix accepted findings in the branch and record them in the PR.
-- [ ] 4.2 Run the full suite with `pytest`, and `check_invariants` on every snapshot the sweep produces on `01_normal` (pass `check=True` to each `Simulation`). Verify that all pass.
+- [x] 4.2 Run the full suite with `pytest`, and `check_invariants` on every snapshot the sweep produces on `01_normal` (pass `check=True` to each `Simulation`). Verify that all pass.
 - [ ] 4.3 Rebase onto `main`, run `sh .github/scripts/check-history.sh`, and open the pull request from `.github/pull_request_template.md`.
