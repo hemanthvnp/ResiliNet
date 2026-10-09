@@ -26,11 +26,11 @@
 - [x] 4.3 B writes the S0 snapshot with a non-integer `delivered` (a 7 Mbps flow scaled by 0.4) by hand, with a test that 2.8 and 4.2 are preserved
 - [x] 4.4 Save the section 10 decision-record JSON as a fixture, with a test that it validates as a `DecisionRecord`
 - [x] 4.5 Add the freeze test: import every section 7 name and validate every file under `fixtures/` against its model
-- [ ] 4.6 All four members confirm the contract in chat once the freeze test passes; record the freeze in `CHANGELOG.md`
+- [x] 4.6 All four members confirm the contract in chat once the freeze test passes; record the freeze in `CHANGELOG.md`
 
 ## 5. Integrate
 
-- [ ] 5.1 Run the full test suite with `pytest`. `check_invariants` does not exist until `add-metrics-invariants`; the freeze test is the gate for this change
-- [ ] 5.2 Rebase onto `main`
-- [ ] 5.3 Run `sh .github/scripts/check-history.sh`
-- [ ] 5.4 Open the pull request from `.github/pull_request_template.md`
+- [x] 5.1 Run the full test suite with `pytest`. `check_invariants` does not exist until `add-metrics-invariants`; the freeze test is the gate for this change
+- [x] 5.2 Rebase onto `main`
+- [x] 5.3 Run `sh .github/scripts/check-history.sh`
+- [x] 5.4 Open the pull request from `.github/pull_request_template.md`
