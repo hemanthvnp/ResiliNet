@@ -1,9 +1,9 @@
 ## 1. Branch and property tests (D, H4 to H8)
 
-- [ ] 1.1 Create the branch `feat/add-cli-benchmark` from an up-to-date `main`
-- [ ] 1.2 Add a hypothesis strategy in `tests/property/` that draws a seed, size and event list and builds a scenario through the generators, with a test asserting I1 to I10 through B's checker on every snapshot for all four policies, under a fixed derandomized profile
-- [ ] 1.3 Make a failing property test print the seed and parameters for replay, with a test of the message on a forced failure
-- [ ] 1.4 Add I11 to the property test once decision records carry the cut and the bound
+- [x] 1.1 Create the branch `feat/add-cli-benchmark` from an up-to-date `main`
+- [x] 1.2 Add a hypothesis strategy in `tests/property/` that draws a seed, size and event list and builds a scenario through the generators, with a test asserting I1 to I10 through B's checker on every snapshot for all four policies, under a fixed derandomized profile
+- [x] 1.3 Make a failing property test print the seed and parameters for replay, with a test of the message on a forced failure
+- [x] 1.4 Add I11 to the property test once decision records carry the cut and the bound
 
 ## 2. CLI (D, H4 to H8)
 
