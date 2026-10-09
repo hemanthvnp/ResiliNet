@@ -3,7 +3,7 @@
 Start:      uvicorn api.app:app --reload                 (port 8000; the Vite dev proxy targets it)
 Mock mode:  REROUTER_MOCK=1 uvicorn api.app:app --reload  (answers from fixtures/)
 
-Live mode answers 501 until core/sim lands (change add-rest-api, tasks 2.1 to 2.4).
+Live mode answers 501 until core/sim lands (change add-rest-api, tasks 2.2 to 2.4).
 """
 
 from __future__ import annotations

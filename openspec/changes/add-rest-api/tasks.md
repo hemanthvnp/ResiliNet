@@ -9,7 +9,7 @@
 
 ## 2. Sessions and live baselines (D, H1.5 to H4)
 
-- [ ] 2.1 Add the session store (run ids, per-session lock, eviction by creation counter), with tests: two runs are isolated, the oldest run is evicted at the cap
+- [x] 2.1 Add the session store (run ids, per-session lock, eviction by creation counter), with tests: two runs are isolated, the oldest run is evicted at the cap
 - [ ] 2.2 Add `GET /scenarios` from the scenario fixtures, sorted by id, with a test of the listing
 - [ ] 2.3 Add live `POST /runs` for a scenario id and for an inline scenario, returning topology, flows and the step-0 snapshot, wired to `S0` and `S0-QoS`, with tests: diamond run at step 0, unknown policy gives 422, unknown scenario gives 404
 - [ ] 2.4 Add `POST /runs/{id}/events` and `POST /runs/{id}/reset`, with tests: fail a link, unknown run gives 404, unknown link gives 422 and leaves the run unchanged, reset equals step 0
