@@ -6,9 +6,12 @@ import { FlowTable, CLASS_COLORS } from './components/FlowTable';
 import { DecisionPanel } from './components/DecisionPanel';
 import { apiClient } from './api/client';
 import { BaselinePolicy, NetworkProvider, useNetwork } from './context/NetworkStore';
-import { CompareResponse, Event, ScenarioInfo, Snapshot } from './types/contract';
+import { CompareResponse, Event, Scenario, ScenarioInfo, Snapshot } from './types/contract';
 
 export type ViewLayoutMode = 'side-by-side' | 'stacked' | 'toggle';
+
+// The seed a generated topology was actually built with (after any retry), else the scenario's
+const effectiveSeed = (sc: Scenario) => ('generator' in sc.topology ? sc.topology.seed : sc.seed);
 
 // FileReader rather than file.text(): same result in browsers, and it also runs under jsdom in tests
 const readText = (file: File) =>
@@ -58,6 +61,28 @@ export const ResiliNetDashboard: React.FC = () => {
   const [scenarios, setScenarios] = useState<ScenarioInfo[]>([]);
   const [isMock, setIsMock] = useState(false); // the API answered from fixtures (X-Mock header)
 
+  // Generate-network form (task 4.4). Defaults are B's campus generator defaults (about 50 nodes).
+  const [generated, setGenerated] = useState<Scenario | null>(null);
+  const [gen, setGen] = useState({ buildings: 37, redundancy: 0.5, seed: 1 });
+  const generateNetwork = () =>
+    loadScenario(
+      {
+        id: `generated-b${gen.buildings}-r${gen.redundancy}-s${gen.seed}`,
+        seed: gen.seed,
+        topology: { generator: 'campus', buildings: gen.buildings, redundancy: gen.redundancy, seed: gen.seed },
+        traffic: {
+          generator: 'campus',
+          n_flows: 200,
+          load_factor: 0.5,
+          class_mix: { 0: 0.1, 1: 0.4, 2: 0.5 },
+          seed: gen.seed,
+        },
+        events: [],
+        config: { order: 'class_size_desc', max_paths: 3, congestion_lambda: 0, util_cap: 1.0 },
+      },
+      leftPanel.policy as BaselinePolicy,
+    );
+
   // A saved `compare --out` file, played back with no server (task 5.2): the demo's fallback
   const [saved, setSaved] = useState<{ name: string; left: Snapshot[]; right: Snapshot[] } | null>(null);
   const [savedIndex, setSavedIndex] = useState(0);
@@ -99,19 +124,23 @@ export const ResiliNetDashboard: React.FC = () => {
   };
 
   // Two runs per scenario, one per panel (Task 3.1); the baseline panel keeps its chosen policy
-  const loadScenario = async (scenario_id: string, baseline: BaselinePolicy) => {
+  // `source` is a built-in scenario id, or an inline scenario such as a generated campus
+  const loadScenario = async (source: string | Scenario, baseline: BaselinePolicy) => {
+    const choice = typeof source === 'string' ? { scenario_id: source } : { scenario: source };
     try {
       dispatch({ type: 'SET_IN_FLIGHT', payload: true });
       const [leftRes, rightRes] = await Promise.all([
-        apiClient.createRun({ scenario_id, policy: baseline }),
-        apiClient.createRun({ scenario_id, policy: 'S2' }),
+        apiClient.createRun({ ...choice, policy: baseline }),
+        apiClient.createRun({ ...choice, policy: 'S2' }),
       ]);
+      // Replays of a generated network need the scenario itself, as the server ran it
+      setGenerated(typeof source === 'string' ? null : rightRes.scenario);
 
       dispatch({
         type: 'INIT_SCENARIO',
         payload: {
-          scenarioId: scenario_id,
-          seed: rightRes.scenario.seed,
+          scenarioId: rightRes.scenario.id,
+          seed: effectiveSeed(rightRes.scenario),
           scenarioEvents: rightRes.scenario.events,
           topology: rightRes.topology,
           flows: rightRes.flows,
@@ -123,7 +152,7 @@ export const ResiliNetDashboard: React.FC = () => {
     } catch (err: any) {
       dispatch({
         type: 'APPLY_EVENT_FAILURE',
-        payload: { error: err.message || `Failed to load scenario ${scenario_id}` },
+        payload: { error: err.message || `Failed to load scenario ${typeof source === 'string' ? source : source.id}` },
       });
     }
   };
@@ -135,7 +164,15 @@ export const ResiliNetDashboard: React.FC = () => {
       .then((list) => {
         if (list.length === 0) throw new Error('The API lists no scenarios');
         setScenarios(list);
-        return loadScenario(list[0].id, 'S0-QoS');
+        // ?scenario=<id> opens a given scenario, e.g. 02_uplink_failure for the demo; otherwise the first
+        const wanted = new URLSearchParams(window.location.search).get('scenario');
+        const chosen = list.find((sc) => sc.id === wanted) ?? list[0];
+        return loadScenario(chosen.id, 'S0-QoS').then(() => {
+          if (wanted && chosen.id !== wanted) {
+            const ids = list.map((sc) => sc.id).join(', ');
+            throw new Error(`Unknown scenario '${wanted}' in the URL; showing ${chosen.id}. Known: ${ids}`);
+          }
+        });
       })
       .catch((err) => dispatch({ type: 'APPLY_EVENT_FAILURE', payload: { error: err.message } }));
 
@@ -195,7 +232,7 @@ export const ResiliNetDashboard: React.FC = () => {
     try {
       // Create new session for the selected baseline policy
       const { run_id, snapshot: initSnapshot } = await apiClient.createRun({
-        scenario_id: scenarioId,
+        ...(generated ? { scenario: generated } : { scenario_id: scenarioId }),
         policy: newPolicy,
       });
 
@@ -296,6 +333,7 @@ export const ResiliNetDashboard: React.FC = () => {
                 {sc.name}
               </option>
             ))}
+            {generated && <option value={generated.id}>Generated network</option>}
           </select>
 
           {isMock && !saved && (
@@ -411,6 +449,56 @@ export const ResiliNetDashboard: React.FC = () => {
         )}
 
         {/* Interactive Failure Injection Toolbar */}
+        <form
+          className="failure-toolbar generate-form"
+          data-testid="generate-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            generateNetwork();
+          }}
+        >
+          <div className="failure-toolbar-title">
+            <span>Generate network:</span>
+          </div>
+          <label>
+            Buildings{' '}
+            <input
+              type="number"
+              min={1}
+              max={60}
+              value={gen.buildings}
+              onChange={(e) => setGen({ ...gen, buildings: Number(e.target.value) })}
+              data-testid="gen-buildings"
+            />
+          </label>
+          <label>
+            Redundancy{' '}
+            <input
+              type="number"
+              min={0}
+              max={1}
+              step={0.1}
+              value={gen.redundancy}
+              onChange={(e) => setGen({ ...gen, redundancy: Number(e.target.value) })}
+              data-testid="gen-redundancy"
+            />
+          </label>
+          <label>
+            Seed{' '}
+            <input
+              type="number"
+              min={0}
+              step={1}
+              value={gen.seed}
+              onChange={(e) => setGen({ ...gen, seed: Number(e.target.value) })}
+              data-testid="gen-seed"
+            />
+          </label>
+          <button type="submit" className="btn-secondary" disabled={locked} data-testid="generate-btn">
+            Generate
+          </button>
+        </form>
+
         <div className="failure-toolbar" data-testid="failure-toolbar">
           <div className="failure-toolbar-title">
             <span className="failure-icon">⚡</span>

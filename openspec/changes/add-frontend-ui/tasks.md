@@ -2,7 +2,7 @@
 
 - [x] 1.1 Create the branch `feat/add-frontend-ui` from an up-to-date `main`
 - [x] 1.2 Add the Vite + React + TypeScript project in `frontend/` with Cytoscape.js, Recharts and a test runner, with one render test so the frontend build and tests pass
-- [ ] 1.3 Add the script that generates the typed client from the committed OpenAPI file, with a check that the generated types compile
+- [x] 1.3 Add the script that generates the typed client from the committed OpenAPI file, with a check that the generated types compile
 - [x] 1.4 Add the graph component rendering a topology from a fixture with a fixed-seed layout, with a test that the same topology gives the same node positions
 - [x] 1.5 Fetch a mocked snapshot from the API and render it (H1.5 exit criterion), with a test against a mocked response
 
@@ -28,7 +28,7 @@
 - [x] 4.1 Highlight the selected flow's routes on both graphs in the class colour, with a test that a two-path flow highlights both paths
 - [x] 4.2 Add the decision panel (explanation line, attempts, cause, cut, max-flow bound, greedy gap), with tests: the section 10 fixture shows its explanation text unchanged, a `DISCONNECTED` flow is shown as physically disconnected
 - [x] 4.3 Add the scenario selector, seed display and reset button, with tests: the seed is visible, reset returns both panels to step 0
-- [ ] 4.4 Add the generate-network form (buildings, redundancy, seed) showing the effective seed, with a test that it posts a generator scenario and loads both panels
+- [x] 4.4 Add the generate-network form (buildings, redundancy, seed) showing the effective seed, with a test that it posts a generator scenario and loads both panels
 - [ ] 4.5 If behind at H12: show the decision record as formatted text; ship a seed field only
 - [ ] 4.6 M3 check at H12 with the team: the demo scenario runs baseline and S2 with an explanation, and a generated network loads
 
@@ -46,7 +46,7 @@
 
 ## 7. Integrate
 
-- [ ] 7.1 Run the frontend build and tests, and the full backend suite with `pytest`, which runs `check_invariants` on the snapshots the UI consumes
-- [ ] 7.2 Rebase onto `main`
-- [ ] 7.3 Run `sh .github/scripts/check-history.sh`
-- [ ] 7.4 Open the pull request from `.github/pull_request_template.md`
+- [x] 7.1 Run the frontend build and tests, and the full backend suite with `pytest`, which runs `check_invariants` on the snapshots the UI consumes
+- [x] 7.2 Rebase onto `main`
+- [x] 7.3 Run `sh .github/scripts/check-history.sh`
+- [x] 7.4 Open the pull request from `.github/pull_request_template.md`

@@ -626,3 +626,14 @@ body {
   color: #fbbf24;
   font-weight: 700;
 }
+
+.generate-form label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.generate-form input {
+  width: 64px;
+}

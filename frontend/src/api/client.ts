@@ -4,6 +4,7 @@ import {
   EventRequest,
   PolicyConfig,
   RunResponse,
+  Scenario,
   ScenarioInfo,
   Snapshot,
 } from '../types/contract';
@@ -56,7 +57,10 @@ export class ApiClient {
     return this.request('/scenarios');
   }
 
-  createRun(params: { scenario_id: string; policy: Policy; config?: PolicyConfig }): Promise<RunResponse> {
+  /** A run of a built-in scenario (`scenario_id`) or of an inline one, e.g. a generated campus. */
+  createRun(
+    params: ({ scenario_id: string } | { scenario: Scenario }) & { policy: Policy; config?: PolicyConfig },
+  ): Promise<RunResponse> {
     return this.post('/runs', params);
   }
 

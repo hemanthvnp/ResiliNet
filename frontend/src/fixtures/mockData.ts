@@ -320,6 +320,8 @@ export const MOCK_STEP1_S0_QOS_SNAPSHOT: Snapshot = {
       unserved: 270,
       cause: 'OVERLOAD_LOSS',
       cut: [],
+      maxflow_bound: null, // baselines leave the bound and gap empty (DecisionRecord in types.py)
+      greedy_gap: null,
       explanation: 'F03 (P1, 450 Mbps): S0-QoS queue scaled down due to 1.75x overload on L_DC_BCK. 270 Mbps lost to overload queueing.',
     },
   ],

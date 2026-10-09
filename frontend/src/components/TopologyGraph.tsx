@@ -30,6 +30,7 @@ const LAYER_OF_TYPE: Record<string, number> = {
 };
 const WIDTH = 800;
 const ROW_GAP = 120;
+const MAX_PER_ROW = 12; // a wider layer (e.g. 37 generated buildings) wraps onto further rows
 
 /**
  * Deterministic node coordinates: nodes are placed in rows by type (services, core,
@@ -57,12 +58,16 @@ export function getDeterministicPositions(topology: Topology): Record<string, { 
     return positions;
   }
 
-  [...rows.keys()].sort((a, b) => a - b).forEach((layer, rowIdx) => {
+  let rowIdx = 0;
+  for (const layer of [...rows.keys()].sort((a, b) => a - b)) {
     const ids = rows.get(layer)!;
-    ids.forEach((id, i) => {
-      positions[id] = { x: Math.round(((i + 1) * WIDTH) / (ids.length + 1)), y: 60 + rowIdx * ROW_GAP };
-    });
-  });
+    for (let start = 0; start < ids.length; start += MAX_PER_ROW, rowIdx++) {
+      const row = ids.slice(start, start + MAX_PER_ROW);
+      row.forEach((id, i) => {
+        positions[id] = { x: Math.round(((i + 1) * WIDTH) / (row.length + 1)), y: 60 + rowIdx * ROW_GAP };
+      });
+    }
+  }
   return positions;
 }
 
