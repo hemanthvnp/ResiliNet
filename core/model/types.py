@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import Literal, Protocol
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 
 class _Model(BaseModel):
@@ -44,6 +44,21 @@ class Link(_Model):
 class Topology(_Model):
     nodes: list[Node]
     links: list[Link]
+
+    @model_validator(mode="after")
+    def _ids_are_consistent(self) -> Topology:
+        node_ids = [n.id for n in self.nodes]
+        link_ids = [l.id for l in self.links]
+        for kind, ids in (("node", node_ids), ("link", link_ids)):
+            dupes = sorted({i for i in ids if ids.count(i) > 1})
+            if dupes:
+                raise ValueError(f"duplicate {kind} id: {', '.join(dupes)}")
+        known = set(node_ids)
+        for link in self.links:
+            missing = sorted({link.u, link.v} - known)
+            if missing:
+                raise ValueError(f"link {link.id} refers to unknown node: {', '.join(missing)}")
+        return self
 
 
 class Flow(_Model):

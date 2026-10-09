@@ -13,6 +13,7 @@ from core.model.types import (
     FlowResult,
     Link,
     PolicyConfig,
+    Topology,
 )
 
 CONTRACT_MODELS = [
@@ -56,6 +57,34 @@ def test_link_rejects_non_integer_latency():
 def test_link_rejects_unknown_status():
     with pytest.raises(ValidationError):
         link(status="degraded")
+
+
+def diamond_topology(nodes=("A", "B", "C", "D"), link_ids=("L2", "L7", "L5", "L6")):
+    ends = [("A", "B"), ("B", "D"), ("A", "C"), ("C", "D")]
+    return dict(
+        nodes=[dict(id=n, type="switch", name=n) for n in nodes],
+        links=[dict(id=i, u=u, v=v, capacity=10, latency=1, status="up")
+               for i, (u, v) in zip(link_ids, ends)],
+    )
+
+
+def test_topology_accepts_consistent_ids():
+    Topology(**diamond_topology())
+
+
+def test_topology_rejects_duplicate_node_id():
+    with pytest.raises(ValidationError, match="duplicate node id"):
+        Topology(**diamond_topology(nodes=("A", "B", "C", "D", "A")))
+
+
+def test_topology_rejects_duplicate_link_id():
+    with pytest.raises(ValidationError, match="duplicate link id"):
+        Topology(**diamond_topology(link_ids=("L1", "L1", "L5", "L6")))
+
+
+def test_topology_rejects_link_to_unknown_node():
+    with pytest.raises(ValidationError, match="unknown node"):
+        Topology(**diamond_topology(nodes=("A", "B", "C")))
 
 
 def test_flow_rejects_non_integer_rate():
