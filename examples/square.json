@@ -1,0 +1,32 @@
+{
+  "id": "square",
+  "seed": 0,
+  "topology": {
+    "template": "square"
+  },
+  "events": [],
+  "config": {
+    "order": "class_size_desc",
+    "max_paths": 3,
+    "congestion_lambda": 0,
+    "util_cap": 1.0
+  },
+  "traffic": [
+    {
+      "id": "F1",
+      "src": "A",
+      "dst": "D",
+      "rate": 15,
+      "cls": 0,
+      "service": "critical"
+    },
+    {
+      "id": "F2",
+      "src": "A",
+      "dst": "D",
+      "rate": 10,
+      "cls": 2,
+      "service": "bulk"
+    }
+  ]
+}

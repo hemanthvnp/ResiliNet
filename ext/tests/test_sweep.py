@@ -87,14 +87,16 @@ def test_all_diamond_links_tie_at_rank_1_in_link_id_order():
 
 # --- command and output ------------------------------------------------------
 
-def test_default_run_writes_eight_rows_in_order(tmp_path):
+def test_default_run_writes_twelve_rows_in_order(tmp_path):
     out = tmp_path / "sweep.csv"
     assert main(["sweep", "--scenario", "07_diamond", "--out", str(out)]) == 0
     header, *rows = out.read_text().splitlines()
     assert header == ("policy,group,rank,link_id,dr_p0,dr,dr_p0_drop,dr_drop,"
                       "overloaded_arcs,unreachable_demand")
+    # ECMP-QoS joins the defaults once ecmp-baseline registers it (PLAN-CYCLE2.md section 3.2)
     assert [tuple(r.split(",")[:4]) for r in rows] == (
-        [("S0-QoS", "operational", "1", link) for link in DIAMOND_LINKS]
+        [("ECMP-QoS", "operational", "1", link) for link in DIAMOND_LINKS]
+        + [("S0-QoS", "operational", "1", link) for link in DIAMOND_LINKS]
         + [("S2", "operational", "1", link) for link in DIAMOND_LINKS])
 
 

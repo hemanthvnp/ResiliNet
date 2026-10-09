@@ -1,0 +1,24 @@
+{
+  "id": "eight-paths",
+  "seed": 0,
+  "topology": {
+    "template": "eight-paths"
+  },
+  "events": [],
+  "config": {
+    "order": "class_size_desc",
+    "max_paths": 3,
+    "congestion_lambda": 0,
+    "util_cap": 1.0
+  },
+  "traffic": [
+    {
+      "id": "F1",
+      "src": "S",
+      "dst": "T",
+      "rate": 100,
+      "cls": 0,
+      "service": "critical"
+    }
+  ]
+}

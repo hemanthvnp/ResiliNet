@@ -51,13 +51,13 @@ Source: PLAN-CYCLE2.md sections 3.2 and 10 (C3.1).
 ### Requirement: Output
 The sweep SHALL write a CSV with one row per (policy, link). The columns are `policy, group, rank, link_id, dr_p0, dr, dr_p0_drop, dr_drop, overloaded_arcs, unreachable_demand`, where the drops are healthy value minus post-failure value for that policy. Rows SHALL be sorted by policy name, then group (`structural` before `operational`), then rank, then link id.
 
-The sweep SHALL also print, per policy, every structural link and the top 5 operational ranks. With no policy list it SHALL run S2 and S0-QoS. Two runs with the same arguments SHALL write byte-identical CSV files.
+The sweep SHALL also print, per policy, every structural link and the top 5 operational ranks. With no policy list it SHALL run S2 and S0-QoS, plus ECMP-QoS when it is registered (PLAN-CYCLE2.md section 3.2), which `python -m ext` does once `ecmp-baseline` lands. Two runs with the same arguments SHALL write byte-identical CSV files.
 
 Source: PLAN.md sections 7 and 9 (reproducibility). PLAN-CYCLE2.md section 10 (C3.2, C3.4).
 
 #### Scenario: Default run
 - **WHEN** `python -m ext sweep --scenario 07_diamond --out sweep.csv` is run
-- **THEN** it exits 0, and `sweep.csv` has 8 data rows (2 policies × 4 links) in the stated order
+- **THEN** it exits 0, and `sweep.csv` has 12 data rows (ECMP-QoS, S0-QoS and S2, × 4 links) in the stated order
 
 #### Scenario: Repeat run
 - **WHEN** the same sweep command is run twice
