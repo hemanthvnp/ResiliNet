@@ -4,6 +4,7 @@ import { KpiStrip } from './components/KpiStrip';
 import { Legend } from './components/Legend';
 import { FlowTable, CLASS_COLORS } from './components/FlowTable';
 import { DecisionPanel } from './components/DecisionPanel';
+import { Pair, Stage, StagePlayer, changedLinks, stageCaption, stageSnapshot } from './components/StagePlayer';
 import { BenchmarkChart, BenchmarkRow, parseBenchmarkCsv } from './components/BenchmarkChart';
 import { apiClient } from './api/client';
 import { BaselinePolicy, NetworkProvider, useNetwork } from './context/NetworkStore';
@@ -68,7 +69,19 @@ export const ResiliNetDashboard: React.FC = () => {
       dispatch({ type: 'APPLY_EVENT_FAILURE', payload: { error: `Cannot load ${file.name}: ${err.message}` } });
     }
   };
-  const [isMock, setIsMock] = useState(false); // the API answered from fixtures (X-Mock header)
+  const [isMock, setIsMock] = useState(false);
+
+  // Stage player for the last event (task 5.6): the two panels' snapshots from before it
+  const [before, setBefore] = useState<Pair | null>(null);
+  const [stage, setStage] = useState<Stage | null>(null);
+  const forgetLastEvent = () => {
+    setBefore(null);
+    setStage(null);
+  };
+  // A new scenario, a baseline switch (a new left run) or a saved run starts with no last event
+  useEffect(() => {
+    forgetLastEvent();
+  }, [leftPanel.runId, rightPanel.runId, scenarioId]); // the API answered from fixtures (X-Mock header)
 
   // Generate-network form (task 4.4). Defaults are B's campus generator defaults (about 50 nodes).
   const [generated, setGenerated] = useState<Scenario | null>(null);
@@ -100,6 +113,8 @@ export const ResiliNetDashboard: React.FC = () => {
 
   const showSaved = (run: { left: Snapshot[]; right: Snapshot[] }, index: number) => {
     setSavedIndex(index);
+    setBefore(index > 0 ? { left: run.left[index - 1], right: run.right[index - 1] } : null);
+    setStage(null);
     dispatch({ type: 'SHOW_SNAPSHOTS', payload: { left: run.left[index], right: run.right[index] } });
   };
 
@@ -126,6 +141,7 @@ export const ResiliNetDashboard: React.FC = () => {
         },
       });
       setSaved({ name: file.name, left, right });
+      forgetLastEvent(); // a second saved file in a row keeps the same (empty) run ids
       setSavedIndex(0);
     } catch (err: any) {
       dispatch({ type: 'APPLY_EVENT_FAILURE', payload: { error: `Cannot load ${file.name}: ${err.message}` } });
@@ -207,6 +223,7 @@ export const ResiliNetDashboard: React.FC = () => {
 
     dispatch({ type: 'SET_IN_FLIGHT', payload: true });
     const event: Event = { step: currentStep + 1, kind, links };
+    const previous: Pair = { left: leftPanel.snapshot, right: rightPanel.snapshot };
 
     try {
       // Parallel dispatch to both baseline and S2 engines (Task 3.1)
@@ -223,6 +240,8 @@ export const ResiliNetDashboard: React.FC = () => {
           rightSnapshot,
         },
       });
+      setBefore(previous);
+      setStage(null);
     } catch (err: any) {
       dispatch({
         type: 'APPLY_EVENT_FAILURE',
@@ -277,6 +296,7 @@ export const ResiliNetDashboard: React.FC = () => {
         apiClient.resetRun(rightPanel.runId),
       ]);
       dispatch({ type: 'RESET', payload: { left, right } });
+      forgetLastEvent();
     } catch (err: any) {
       dispatch({
         type: 'APPLY_EVENT_FAILURE',
@@ -289,6 +309,28 @@ export const ResiliNetDashboard: React.FC = () => {
   const decisionFor = (snapshot: Snapshot) => snapshot.decisions.find((d) => d.flow_id === selectedFlowId);
 
   // Each panel highlights its own routes for the selected flow, in the flow's class colour
+  // What each panel shows: the current step, or a stage of the last event
+  const leftShown = stage !== null && before ? stageSnapshot(stage, before.left, leftPanel.snapshot) : leftPanel.snapshot;
+  const rightShown = stage !== null && before ? stageSnapshot(stage, before.right, rightPanel.snapshot) : rightPanel.snapshot;
+  const stageLabel =
+    stage === null
+      ? `Step ${displayStep}`
+      : ['Before the event', 'Link fails: routes not yet recomputed', 'Rerouted'][stage];
+  const eventLabel = before && changedLinks(before.right, rightPanel.snapshot).failed.length === 0 ? 'Link recovers' : 'Link fails';
+  const caption =
+    stage !== null && before
+      ? stageCaption(
+          stage,
+          before,
+          { left: leftPanel.snapshot, right: rightPanel.snapshot },
+          { left: leftPanel.policy, right: 'S2' },
+          topology,
+        )
+      : '';
+  // In "Link fails" the affected flows' old routes are marked red; in "Rerouted" their new routes move
+  const affectedPaths = (current: Snapshot, routes: Snapshot) =>
+    current.affected_flows.flatMap((f) => routes.allocation.results[f]?.paths ?? []);
+
   // The selected flow's Mbps per link in a panel's own snapshot, animated on its graph (task 5.5)
   const flowRatesFor = (snapshot: Snapshot) =>
     flowRatesByLink(selectedFlowId ? snapshot.allocation.results[selectedFlowId]?.paths ?? [] : []);
@@ -297,6 +339,16 @@ export const ResiliNetDashboard: React.FC = () => {
     (selectedFlowId ? snapshot.allocation.results[selectedFlowId]?.paths ?? [] : []).flatMap((p) => p.arcs);
   const selectedCls = flows.find((f) => f.id === selectedFlowId)?.cls;
   const highlightColor = selectedCls === undefined ? undefined : CLASS_COLORS[selectedCls];
+  const graphProps = (current: Snapshot, shown: Snapshot, side: 'left' | 'right') => {
+    if (stage === 1 && before) {
+      return { highlightedArcs: affectedPaths(current, before[side]).flatMap((p) => p.arcs), highlightColor: '#ef4444', flowRates: {} };
+    }
+    if (stage === 2) {
+      const paths = affectedPaths(current, current);
+      return { highlightedArcs: paths.flatMap((p) => p.arcs), highlightColor: '#38bdf8', flowRates: flowRatesByLink(paths) };
+    }
+    return { highlightedArcs: arcsFor(shown), highlightColor, flowRates: flowRatesFor(shown) };
+  };
 
   return (
     <div className={`app-container ${demoMode ? 'demo-mode' : ''}`} data-testid="app-root">
@@ -587,6 +639,8 @@ export const ResiliNetDashboard: React.FC = () => {
           </div>
         )}
 
+        {before && <StagePlayer stage={stage} onStage={setStage} caption={caption} eventLabel={eventLabel} />}
+
         {/* Comparison Grid (Side-by-side vs Stacked vs Toggle) */}
         <div
           className={`comparison-grid ${
@@ -619,20 +673,18 @@ export const ResiliNetDashboard: React.FC = () => {
               </div>
 
               <KpiStrip
-                metrics={leftPanel.snapshot.metrics}
+                metrics={leftShown.metrics}
                 policyName={leftPanel.policy}
-                label={`Step ${displayStep}`}
+                label={stageLabel}
               />
 
               <div className="graph-viewport-wrapper">
                 <div className="graph-instruction-banner">Click any link to fail / recover</div>
                 <TopologyGraph
                   topology={topology}
-                  snapshot={leftPanel.snapshot}
+                  snapshot={leftShown}
                   onLinkClick={handleLinkClick}
-                  highlightedArcs={arcsFor(leftPanel.snapshot)}
-                  flowRates={flowRatesFor(leftPanel.snapshot)}
-                  highlightColor={highlightColor}
+                  {...graphProps(leftPanel.snapshot, leftShown, 'left')}
                   readOnly={locked}
                   viewport={sharedViewport}
                   onViewportChange={setSharedViewport}
@@ -640,8 +692,8 @@ export const ResiliNetDashboard: React.FC = () => {
               </div>
 
               <DecisionPanel
-                decision={decisionFor(leftPanel.snapshot)}
-                result={selectedFlowId ? leftPanel.snapshot.allocation.results[selectedFlowId] : undefined}
+                decision={decisionFor(leftShown)}
+                result={selectedFlowId ? leftShown.allocation.results[selectedFlowId] : undefined}
               />
 
               <Legend />
@@ -661,20 +713,18 @@ export const ResiliNetDashboard: React.FC = () => {
               </div>
 
               <KpiStrip
-                metrics={rightPanel.snapshot.metrics}
+                metrics={rightShown.metrics}
                 policyName="S2"
-                label={`Step ${displayStep}`}
+                label={stageLabel}
               />
 
               <div className="graph-viewport-wrapper">
                 <div className="graph-instruction-banner">Synchronized parallel view</div>
                 <TopologyGraph
                   topology={topology}
-                  snapshot={rightPanel.snapshot}
+                  snapshot={rightShown}
                   onLinkClick={handleLinkClick}
-                  highlightedArcs={arcsFor(rightPanel.snapshot)}
-                  flowRates={flowRatesFor(rightPanel.snapshot)}
-                  highlightColor={highlightColor}
+                  {...graphProps(rightPanel.snapshot, rightShown, 'right')}
                   readOnly={locked}
                   viewport={sharedViewport}
                   onViewportChange={setSharedViewport}
@@ -682,8 +732,8 @@ export const ResiliNetDashboard: React.FC = () => {
               </div>
 
               <DecisionPanel
-                decision={decisionFor(rightPanel.snapshot)}
-                result={selectedFlowId ? rightPanel.snapshot.allocation.results[selectedFlowId] : undefined}
+                decision={decisionFor(rightShown)}
+                result={selectedFlowId ? rightShown.allocation.results[selectedFlowId] : undefined}
               />
 
               <Legend />
