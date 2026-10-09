@@ -1,0 +1,92 @@
+{
+  "scenario": {
+    "id": "04_congestion",
+    "seed": 0,
+    "topology": {
+      "template": "congestion"
+    },
+    "traffic": [
+      {
+        "id": "F1",
+        "src": "S",
+        "dst": "T",
+        "rate": 9,
+        "cls": 0
+      },
+      {
+        "id": "F2",
+        "src": "S",
+        "dst": "T",
+        "rate": 1,
+        "cls": 1
+      }
+    ],
+    "events": [],
+    "config": {
+      "congestion_lambda": 2
+    }
+  },
+  "expect": {
+    "source": "Hand-worked by B from PLAN.md sections 4, 5, 8 and 9; confirmed by B (Group 2 of add-simulation-engine); all four members agreed to the fixture",
+    "paths": {
+      "S1": [
+        {
+          "F1": [
+            [
+              [
+                "L1:S>X",
+                "L2:X>T"
+              ],
+              9
+            ]
+          ],
+          "F2": [
+            [
+              [
+                "L1:S>X",
+                "L2:X>T"
+              ],
+              1
+            ]
+          ]
+        }
+      ],
+      "S2": [
+        {
+          "F1": [
+            [
+              [
+                "L1:S>X",
+                "L2:X>T"
+              ],
+              9
+            ]
+          ],
+          "F2": [
+            [
+              [
+                "L3:S>Y",
+                "L4:Y>T"
+              ],
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    "delivered": {
+      "S1": [
+        {
+          "F1": 9,
+          "F2": 1
+        }
+      ],
+      "S2": [
+        {
+          "F1": 9,
+          "F2": 1
+        }
+      ]
+    }
+  }
+}

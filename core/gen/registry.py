@@ -40,6 +40,8 @@ MAX_ATTEMPTS = 20  # PLAN.md section 9
 TEMPLATES: dict[str, tuple[str, str | None]] = {
     "campus": ("campus.json", CAMPUS_PRIMARY_UPLINK),
     "diamond": ("diamond.json", None),
+    "congestion": ("congestion.json", None),  # scenario 4
+    "line": ("line.json", None),  # scenario 5
 }
 
 TOPOLOGY_GENERATORS: dict[str, Callable[[GeneratedTopologySpec], ResolvedTopology]] = {

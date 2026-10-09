@@ -1,0 +1,24 @@
+{
+  "nodes": [
+    {
+      "id": "A",
+      "type": "switch",
+      "name": "A"
+    },
+    {
+      "id": "B",
+      "type": "switch",
+      "name": "B"
+    }
+  ],
+  "links": [
+    {
+      "id": "L1",
+      "u": "A",
+      "v": "B",
+      "capacity": 10,
+      "latency": 1,
+      "status": "up"
+    }
+  ]
+}

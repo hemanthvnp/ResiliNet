@@ -1,0 +1,21 @@
+{
+  "scenario": {
+    "id": "07_diamond",
+    "seed": 0,
+    "topology": {"template": "diamond"},
+    "traffic": [
+      {"id": "F1", "src": "A", "dst": "D", "rate": 15, "cls": 0},
+      {"id": "F2", "src": "A", "dst": "D", "rate": 10, "cls": 2}
+    ],
+    "events": [{"step": 1, "kind": "fail", "links": ["L7"]}],
+    "config": {}
+  },
+  "expect": {
+    "source": "PLAN.md section 4 diamond table, hand-worked; confirmed by B (Group 1 of add-simulation-engine)",
+    "delivered": {
+      "S0":     [{"F1": 6, "F2": 4}, {"F1": 6, "F2": 4}],
+      "S0-QoS": [{"F1": 10, "F2": 0}, {"F1": 10, "F2": 0}],
+      "S2":     [{"F1": 15, "F2": 5}, {"F1": 10, "F2": 0}]
+    }
+  }
+}

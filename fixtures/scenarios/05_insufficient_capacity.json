@@ -1,0 +1,68 @@
+{
+  "scenario": {
+    "id": "05_insufficient_capacity",
+    "seed": 0,
+    "topology": {
+      "template": "line"
+    },
+    "traffic": [
+      {
+        "id": "F1",
+        "src": "A",
+        "dst": "B",
+        "rate": 4,
+        "cls": 0
+      },
+      {
+        "id": "F2",
+        "src": "A",
+        "dst": "B",
+        "rate": 4,
+        "cls": 1
+      },
+      {
+        "id": "F3",
+        "src": "A",
+        "dst": "B",
+        "rate": 4,
+        "cls": 2
+      }
+    ],
+    "events": [],
+    "config": {}
+  },
+  "expect": {
+    "source": "Hand-worked by B from PLAN.md sections 4, 5, 8 and 9; confirmed by B (Group 2 of add-simulation-engine); all four members agreed to the fixture",
+    "delivered": {
+      "S2": [
+        {
+          "F1": 4,
+          "F2": 4,
+          "F3": 2
+        }
+      ]
+    },
+    "decisions": {
+      "S2": [
+        {
+          "F3": {
+            "cause": "INSUFFICIENT_CAPACITY",
+            "maxflow_bound": 2,
+            "greedy_gap": 0.0,
+            "cut": [
+              {
+                "arc": "L1:A>B",
+                "state": "saturated",
+                "load_by_class": {
+                  "0": 4,
+                  "1": 4,
+                  "2": 2
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
