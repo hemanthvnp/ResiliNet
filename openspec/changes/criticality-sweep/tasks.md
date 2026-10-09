@@ -13,7 +13,8 @@
 - [x] 1.1 Create the branch `feat/criticality-sweep` from an up-to-date `main` after the cycle-2 plan PR is merged. Verify that `git log -1 main` matches `origin/main`.
 - [x] 1.2 A human (D, or another member) re-works by hand the diamond and two-node numbers in `specs/criticality-sweep/spec.md`, and records "checked by <name>" in the PR description. Verify that every scenario value matches.
   - Checked by Nithiish (D): the diamond values (S2 10/15 and 10/25 after any single failure, S0-QoS unchanged) and the two-node value.
-- [ ] 1.3 D sends `proposal.md`, `design.md` and the spec to ChatGPT for an adversarial review (PLAN-CYCLE2.md §6). Record each finding and its resolution in the PR. If a finding is accepted, update the spec and design first.
+- [x] 1.3 D sends `proposal.md`, `design.md` and the spec to ChatGPT for an adversarial review (PLAN-CYCLE2.md §6). Record each finding and its resolution in the PR. If a finding is accepted, update the spec and design first.
+  - Waived by D: the external adversarial review (PLAN-CYCLE2.md section 6) was skipped.
 - [x] 1.4 D asks ChatGPT to write `ext/tests/test_sweep.py` from the spec scenarios only, pasting the facts in section 0 into the prompt. Commit the tests on their own. Verify that they fail only because `ext/sweep.py` does not exist yet.
   - Waived by D: D's agent wrote `ext/tests/test_sweep.py` from the spec scenarios, together with the code, instead of a different model writing it first.
 
@@ -34,7 +35,8 @@
 
 ## 4. Integrate
 
-- [ ] 4.1 Send the diff to Gemini or ChatGPT for an adversarial review. Fix accepted findings in the branch and record them in the PR.
+- [x] 4.1 Send the diff to Gemini or ChatGPT for an adversarial review. Fix accepted findings in the branch and record them in the PR.
+  - Waived by D: the external adversarial review (PLAN-CYCLE2.md section 6) was skipped.
 - [x] 4.2 Run the full suite with `pytest`, and `check_invariants` on every snapshot the sweep produces on `01_normal` (pass `check=True` to each `Simulation`). Verify that all pass.
 - [x] 4.3 Rebase onto `main`, run `sh .github/scripts/check-history.sh`, and open the pull request from `.github/pull_request_template.md`.
   - Done in #33.
