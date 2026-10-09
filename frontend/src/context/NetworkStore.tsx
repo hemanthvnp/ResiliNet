@@ -117,6 +117,7 @@ export function networkReducer(state: NetworkState, action: NetworkAction): Netw
         topology,
         flows,
         eventHistory: [],
+        selectedFlowId: null,
         leftPanel: left,
         rightPanel: right,
         lastGoodSnapshots: { left: left.snapshot, right: right.snapshot },

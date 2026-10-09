@@ -4,7 +4,7 @@ import { MOCK_STEP0_SNAPSHOT, MOCK_STEP1_S2_SNAPSHOT, MOCK_STEP1_S0_QOS_SNAPSHOT
 
 describe('Network Reducer (Task 2.1)', () => {
   it('handles INIT_SCENARIO properly', () => {
-    const nextState = networkReducer(initialNetworkState, {
+    const nextState = networkReducer({ ...initialNetworkState, selectedFlowId: 'F03' }, {
       type: 'INIT_SCENARIO',
       payload: {
         scenarioId: 'campus-template',
@@ -22,6 +22,7 @@ describe('Network Reducer (Task 2.1)', () => {
     expect(nextState.topology).toBe(CAMPUS_TOPOLOGY);
     expect([nextState.leftPanel.runId, nextState.rightPanel.runId]).toEqual(['run-left', 'run-right']);
     expect(nextState.eventHistory).toEqual([]);
+    expect(nextState.selectedFlowId).toBeNull(); // a flow id from the old scenario must not carry over
     expect(nextState.leftPanel.snapshot.step).toBe(0);
     expect(nextState.rightPanel.snapshot.step).toBe(0);
     expect(nextState.inFlight).toBe(false);

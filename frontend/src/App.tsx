@@ -4,8 +4,8 @@ import { KpiStrip } from './components/KpiStrip';
 import { FlowTable, CLASS_COLORS } from './components/FlowTable';
 import { DecisionPanel } from './components/DecisionPanel';
 import { apiClient } from './api/client';
-import { NetworkProvider, useNetwork } from './context/NetworkStore';
-import { Event, Snapshot } from './types/contract';
+import { BaselinePolicy, NetworkProvider, useNetwork } from './context/NetworkStore';
+import { Event, ScenarioInfo, Snapshot } from './types/contract';
 
 export type ViewLayoutMode = 'side-by-side' | 'stacked' | 'toggle';
 
@@ -41,39 +41,47 @@ export const ResiliNetDashboard: React.FC = () => {
   const scriptedFailure = scenarioEvents.find((e) => e.kind === 'fail' && e.links.length > 0)?.links ?? [];
   const scriptedDown = scriptedFailure.length > 0 && scriptedFailure.every((l) => rightPanel.snapshot.link_state[l] === 'down');
 
-  // Initialize initial sessions on mount (Task 3.1: two runs per scenario)
-  useEffect(() => {
-    async function loadInitial() {
-      try {
-        dispatch({ type: 'SET_IN_FLIGHT', payload: true });
-        const scenarios = await apiClient.getScenarios();
-        if (scenarios.length === 0) throw new Error('The API lists no scenarios');
-        const scenario_id = scenarios[0].id;
-        const [leftRes, rightRes] = await Promise.all([
-          apiClient.createRun({ scenario_id, policy: 'S0-QoS' }),
-          apiClient.createRun({ scenario_id, policy: 'S2' }),
-        ]);
+  const [scenarios, setScenarios] = useState<ScenarioInfo[]>([]);
 
-        dispatch({
-          type: 'INIT_SCENARIO',
-          payload: {
-            scenarioId: scenario_id,
-            seed: rightRes.scenario.seed,
-            scenarioEvents: rightRes.scenario.events,
-            topology: rightRes.topology,
-            flows: rightRes.flows,
-            left: { policy: 'S0-QoS', runId: leftRes.run_id, snapshot: leftRes.snapshot },
-            right: { policy: 'S2', runId: rightRes.run_id, snapshot: rightRes.snapshot },
-          },
-        });
-      } catch (err: any) {
-        dispatch({
-          type: 'APPLY_EVENT_FAILURE',
-          payload: { error: err.message || 'Failed to initialize sessions' },
-        });
-      }
+  // Two runs per scenario, one per panel (Task 3.1); the baseline panel keeps its chosen policy
+  const loadScenario = async (scenario_id: string, baseline: BaselinePolicy) => {
+    try {
+      dispatch({ type: 'SET_IN_FLIGHT', payload: true });
+      const [leftRes, rightRes] = await Promise.all([
+        apiClient.createRun({ scenario_id, policy: baseline }),
+        apiClient.createRun({ scenario_id, policy: 'S2' }),
+      ]);
+
+      dispatch({
+        type: 'INIT_SCENARIO',
+        payload: {
+          scenarioId: scenario_id,
+          seed: rightRes.scenario.seed,
+          scenarioEvents: rightRes.scenario.events,
+          topology: rightRes.topology,
+          flows: rightRes.flows,
+          left: { policy: baseline, runId: leftRes.run_id, snapshot: leftRes.snapshot },
+          right: { policy: 'S2', runId: rightRes.run_id, snapshot: rightRes.snapshot },
+        },
+      });
+    } catch (err: any) {
+      dispatch({
+        type: 'APPLY_EVENT_FAILURE',
+        payload: { error: err.message || `Failed to load scenario ${scenario_id}` },
+      });
     }
-    loadInitial();
+  };
+
+  // Load the first listed scenario on mount
+  useEffect(() => {
+    apiClient
+      .getScenarios()
+      .then((list) => {
+        if (list.length === 0) throw new Error('The API lists no scenarios');
+        setScenarios(list);
+        return loadScenario(list[0].id, 'S0-QoS');
+      })
+      .catch((err) => dispatch({ type: 'APPLY_EVENT_FAILURE', payload: { error: err.message } }));
   }, [dispatch]);
 
   // Click-to-fail / Click-to-recover handler with click lock (Task 2.3 & 3.1)
@@ -208,6 +216,21 @@ export const ResiliNetDashboard: React.FC = () => {
               Toggle
             </button>
           </div>
+
+          <select
+            className="panel-selector"
+            value={scenarioId}
+            onChange={(e) => loadScenario(e.target.value, leftPanel.policy as BaselinePolicy)}
+            disabled={inFlight}
+            data-testid="scenario-select"
+            aria-label="Scenario"
+          >
+            {scenarios.map((sc) => (
+              <option key={sc.id} value={sc.id} title={sc.description}>
+                {sc.name}
+              </option>
+            ))}
+          </select>
 
           <div className="badge-seed">
             <span>Seed:</span>

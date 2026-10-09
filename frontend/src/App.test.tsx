@@ -204,15 +204,33 @@ describe('App Component (Phase 1 & Phase 2)', () => {
     });
   });
 
-  it('resets both panels to the snapshots the server returns', async () => {
+  it('resets both panels to step 0 after an event (Task 4.3)', async () => {
     render(<App />);
-    await screen.findByTestId('quick-fail-btn');
+    fireEvent.click(await screen.findByTestId('quick-fail-btn'));
+    await waitFor(() => expect(screen.getAllByText('Step 1')).toHaveLength(2));
 
     fireEvent.click(screen.getByText('Reset'));
 
     await waitFor(() => {
       expect(apiClient.resetRun).toHaveBeenCalledWith('run-S0-QoS');
       expect(apiClient.resetRun).toHaveBeenCalledWith('run-S2');
+      expect(screen.getAllByText('Step 0')).toHaveLength(2);
+    });
+  });
+
+  it('loads a selected scenario into both panels (Task 4.3)', async () => {
+    vi.mocked(apiClient.getScenarios).mockResolvedValue([
+      { id: 'campus-template', name: 'Campus', description: 'test campus' },
+      { id: 'diamond', name: 'Diamond', description: 'four nodes' },
+    ]);
+    render(<App />);
+    await screen.findByTestId('quick-fail-btn');
+
+    fireEvent.change(screen.getByTestId('scenario-select'), { target: { value: 'diamond' } });
+
+    await waitFor(() => {
+      expect(apiClient.createRun).toHaveBeenCalledWith({ scenario_id: 'diamond', policy: 'S0-QoS' });
+      expect(apiClient.createRun).toHaveBeenCalledWith({ scenario_id: 'diamond', policy: 'S2' });
     });
   });
 });

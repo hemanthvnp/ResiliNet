@@ -27,7 +27,7 @@
 
 - [x] 4.1 Highlight the selected flow's routes on both graphs in the class colour, with a test that a two-path flow highlights both paths
 - [x] 4.2 Add the decision panel (explanation line, attempts, cause, cut, max-flow bound, greedy gap), with tests: the section 10 fixture shows its explanation text unchanged, a `DISCONNECTED` flow is shown as physically disconnected
-- [ ] 4.3 Add the scenario selector, seed display and reset button, with tests: the seed is visible, reset returns both panels to step 0
+- [x] 4.3 Add the scenario selector, seed display and reset button, with tests: the seed is visible, reset returns both panels to step 0
 - [ ] 4.4 Add the generate-network form (buildings, redundancy, seed) showing the effective seed, with a test that it posts a generator scenario and loads both panels
 - [ ] 4.5 If behind at H12: show the decision record as formatted text; ship a seed field only
 - [ ] 4.6 M3 check at H12 with the team: the demo scenario runs baseline and S2 with an explanation, and a generated network loads
