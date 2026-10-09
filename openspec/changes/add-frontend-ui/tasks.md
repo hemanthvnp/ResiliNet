@@ -2,7 +2,7 @@
 
 - [x] 1.1 Create the branch `feat/add-frontend-ui` from an up-to-date `main`
 - [x] 1.2 Add the Vite + React + TypeScript project in `frontend/` with Cytoscape.js, Recharts and a test runner, with one render test so the frontend build and tests pass
-- [ ] 1.3 Add the script that generates the typed client from the committed OpenAPI file, with a check that the generated types compile
+- [x] 1.3 Add the script that generates the typed client from the committed OpenAPI file, with a check that the generated types compile
 - [x] 1.4 Add the graph component rendering a topology from a fixture with a fixed-seed layout, with a test that the same topology gives the same node positions
 - [x] 1.5 Fetch a mocked snapshot from the API and render it (H1.5 exit criterion), with a test against a mocked response
 

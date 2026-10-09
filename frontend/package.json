@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate-client": "node scripts/generate-client.mjs"
+    "generate-client": "openapi-typescript ../api/openapi.json -o src/types/openapi.gen.ts"
   },
   "dependencies": {
     "cytoscape": "^3.30.4",
@@ -26,6 +26,7 @@
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^26.0.0",
+    "openapi-typescript": "7.13.0",
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
     "vitest": "^3.0.5"
