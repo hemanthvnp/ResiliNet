@@ -578,7 +578,7 @@ export const ResiliNetDashboard: React.FC = () => {
               className={`btn-secondary ${activeTogglePolicy === 's2' ? 'btn-primary' : ''}`}
               onClick={() => setActiveTogglePolicy('s2')}
             >
-              S2 Resilient (Ours)
+              S2 Priority Residual Routing
             </button>
           </div>
         )}
@@ -648,7 +648,7 @@ export const ResiliNetDashboard: React.FC = () => {
             <div className="panel-card" data-testid="s2-panel">
               <div className="panel-header">
                 <div className="panel-title-area">
-                  <span className="panel-title">S2 Priority Residual Routing (Ours)</span>
+                  <span className="panel-title">S2 Priority Residual Routing</span>
                   <span className="policy-badge" style={{ background: 'rgba(16, 185, 129, 0.15)', color: '#34d399' }}>
                     Splitting m=3
                   </span>
@@ -657,7 +657,7 @@ export const ResiliNetDashboard: React.FC = () => {
 
               <KpiStrip
                 metrics={rightPanel.snapshot.metrics}
-                policyName="S2-Resilient"
+                policyName="S2"
                 label={`Step ${displayStep}`}
               />
 
