@@ -15,17 +15,17 @@
 - [x] 3.1 Add S0 routes and offered `arc_load`, flows sorted by id, with tests: both diamond flows on A-B-D with load 25, a disconnected flow
 - [x] 3.2 Add the S0 single-pass delivery model and causes, with tests from `expected_diamond.json` (both rows) and the non-integer case (2.8 of 7)
 - [x] 3.3 Add S0-QoS per-arc, per-class scale factors on the S0 routes, with tests from `expected_diamond.json`, routes equal to S0, and P0 and P1 unchanged when P2 is removed
-- [ ] 3.4 Add the policy registry with `S0` and `S0-QoS`, with tests: lookup by name, unknown name raises, repeat run gives an equal allocation
+- [x] 3.4 Add the policy registry with `S0` and `S0-QoS`, with tests: lookup by name, unknown name raises, repeat run gives an equal allocation
 
 ## 4. Allocator (A, H4 to H8)
 
 - [x] 4.1 Add the ordering policies (`arrival`, `class_size_desc`, `class_size_asc`) with flow id as the last key, with tests: critical flow first, arrival ignores class
 - [x] 4.2 Add the integer cost function with Fortz-Thorup slopes and integer threshold comparison, with tests: lambda 0 is pure latency, slope at each threshold
-- [ ] 4.3 Add the push loop on the residual graph with the ledger, `max_paths` and `util_cap`, with tests from `expected_diamond.json` (S2, both rows) and capacity never exceeded
+- [x] 4.3 Add the push loop on the residual graph with the ledger, `max_paths` and `util_cap`, with tests from `expected_diamond.json` (S2, both rows) and capacity never exceeded
 - [x] 4.4 Add cause assignment (`DISCONNECTED` from components, `PATH_LIMIT`, `INSUFFICIENT_CAPACITY`), with tests from `expected_cases.json`
 - [x] 4.5 Handle `src == dst` and zero-rate flows, with a test for each
-- [ ] 4.6 Collect per-flow facts and call the record builder in `core/explain/`, with a test that one record is returned per flow
-- [ ] 4.7 Register `S1` and `S2` as configurations of the allocator, with tests: S1 never splits, `prev` is ignored, class isolation when P2 is removed
+- [x] 4.6 Collect per-flow facts and call the record builder in `core/explain/`, with a test that one record is returned per flow
+- [x] 4.7 Register `S1` and `S2` as configurations of the allocator, with tests: S1 never splits, `prev` is ignored, class isolation when P2 is removed
 - [ ] 4.8 Run the H8 headline check with the team (S0, S0-QoS, S2 on the campus template, uplink failed) and record `DR`, `DR_P1`, `DR_P0` in the pull request description
 
 ## 5. Ablation and tuning (A, H8 to H16)

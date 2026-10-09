@@ -5,7 +5,7 @@
 
 ## 2. Record builder (A, H4 to H8)
 
-- [ ] 2.1 Add the builder interface in `core/explain/records.py` (facts in, `DecisionRecord` out) with baseline records, with tests: one record per flow, unique ids, empty `attempts` and `cut`, bound fields unset
+- [x] 2.1 Add the builder interface in `core/explain/records.py` (facts in, `DecisionRecord` out) with baseline records, with tests: one record per flow, unique ids, empty `attempts` and `cut`, bound fields unset
 - [x] 2.2 Add the reference path and its status strings (`USED`, `PARTIAL`, `INVALID`, `NONE`), with a test for each status
 - [x] 2.3 Copy `previous` paths and `failed_links` into the record, with the L7 test from the section 10 fixture
 - [x] 2.4 Record attempts, with tests: two attempts for F1 on the healthy diamond, pushed amounts sum to delivered
@@ -25,7 +25,7 @@
 - [x] 5.1 Add `template.py` with the header, reference and attempt segments, printing paths as node sequences, with a test of the first two sentences of the section 10 line
 - [x] 5.2 Add the unserved segment, branching on `greedy_gap`, with tests: the full section 10 line matches exactly, and the heuristic wording
 - [x] 5.3 Add the `OVERLOAD_LOSS` and `DISCONNECTED` segments, with tests for each and for identical output on repeat
-- [ ] 5.4 Add a test that the builder reproduces the section 10 fixture record exactly; a mismatch is raised with all four members, and the fixture is not edited to fit
+- [x] 5.4 Add a test that the builder reproduces the section 10 fixture record exactly; a mismatch is raised with all four members, and the fixture is not edited to fit
 
 ## 6. Lazy mode (A, only if the A3 cut line triggers)
 
