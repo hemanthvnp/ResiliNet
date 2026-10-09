@@ -24,8 +24,8 @@ None. The cycle-1 `baseline-routing` and `capacity-aware-allocation` requirement
 
 ## Owner and scope
 
-- **Owner:** nithiish, as a cycle-2 contributor. This needs team agreement (PLAN-CYCLE2.md §8); the project config expects one of A to D.
-- **Folders:** `ext/` (new) and `examples/` (new). No member's folder is edited.
+- **Owner:** D (integration and QA), who owns `ext/` and `examples/` for cycle 2 (PLAN-CYCLE2.md §7, §8).
+- **Folders:** `ext/` (new) and `examples/` (new). No cycle-1 folder is edited.
 - **Plan sections:** PLAN-CYCLE2.md §3.1, §7. PLAN.md §3 (approach table), §5 (baseline delivery models), §14 (policies register by name).
 - **Frozen contract:** not touched. Path rates stay integers, so `PathAlloc.rate: int` holds.
 

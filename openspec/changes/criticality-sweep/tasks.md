@@ -13,7 +13,7 @@
 ## 3. Command and output
 
 - [ ] 3.1 Add the `sweep` subcommand to `ext/__main__.py` with the CSV writer and the structural and top-5 operational printout; verify the default-run, repeat-run (byte-identical) and unknown-policy scenarios
-- [ ] 3.2 Run the sweep on the campus template, record the structural list and the top-5 operational table in the PR description, and add a "Single-link sensitivity" paragraph using the PLAN-CYCLE2.md §4 wording to the README text handed to D; verify that the documented command runs as written
+- [ ] 3.2 Run the sweep on the campus template, record the structural list and the top-5 operational table in the PR description, and add a "Single-link sensitivity" paragraph using the PLAN-CYCLE2.md §4 wording to the README; verify that the documented command runs as written
 
 ## 4. Integrate
 

@@ -19,8 +19,8 @@ See proposal.md for the motivation. The cycle-1 CLI already runs a scenario file
 **Examples reference the campus template and node ids by name**, and are written after B's template is final (the H8 to H10 tuning in PLAN.md §12).
 - *Rejected: writing them earlier.* Template ids may change during tuning, and the examples would break.
 
-**README text goes to D as a pull-request comment or a file D pastes in. It is not committed to the README by anyone but D.**
-- *Rejected: editing the README directly.* D writes it during H16 to H22 (change `add-cli-benchmark` tasks 5.1 to 5.6), and two writers would conflict.
+**D writes the new README sections directly, alongside the cycle-1 README work (change `add-cli-benchmark` tasks 5.1 to 5.6).**
+- *Rejected: drafting the text elsewhere and handing it over.* D owns both the README and this change, so a hand-off only adds a copy step.
 
 **The AI disclosure lists each member's tools and what each was used for.** It is collected from every member, not written by one person.
 - The team's commit rules strip AI attribution from commits, so the README is the only disclosure the rulebook's §6.5 receives.
@@ -30,4 +30,4 @@ See proposal.md for the motivation. The cycle-1 CLI already runs a scenario file
 ## Risks / Trade-offs
 
 - **[The campus template's ids change late]** → The judge-kit test fails in CI, and the examples are fixed before the H22 tag.
-- **[A member does not report their AI use]** → D's README task blocks the final tag until every member has added a line.
+- **[A member does not report their AI use]** → D blocks the final tag until every member has added a line.

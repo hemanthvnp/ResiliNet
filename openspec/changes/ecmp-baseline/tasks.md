@@ -19,7 +19,7 @@
 
 ## 4. Docs
 
-- [ ] 4.1 Add an "ECMP-style baseline" paragraph to the README text handed to D. It covers the idealised next-hop split, the fact that routers hash flows, the square and eight-route results, and why S2 is also reported at `max_paths` 8. Use the PLAN-CYCLE2.md §4 wording; verify that the documented commands run as written
+- [ ] 4.1 Add an "ECMP-style baseline" paragraph to the README. It covers the idealised next-hop split, the fact that routers hash flows, the square and eight-route results, and why S2 is also reported at `max_paths` 8. Use the PLAN-CYCLE2.md §4 wording; verify that the documented commands run as written
 
 ## 5. Integrate
 

@@ -19,8 +19,8 @@ None.
 
 ## Owner and scope
 
-- **Owner:** nithiish, as a cycle-2 contributor. This needs team agreement (PLAN-CYCLE2.md §8).
-- **Folders:** `ext/` (new). No member's folder is edited.
+- **Owner:** D (integration and QA), who owns `ext/` and `examples/` for cycle 2 (PLAN-CYCLE2.md §7, §8).
+- **Folders:** `ext/` (new). No cycle-1 folder is edited.
 - **Plan sections:** PLAN-CYCLE2.md §3.2, §7. PLAN.md §8 (metrics), §9 (identical conditions across policies), §14 (roadmap: vulnerability analyzer).
 - **Frozen contract:** not touched. It reads `Snapshot` and `Metrics` as they are.
 

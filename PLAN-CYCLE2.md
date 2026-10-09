@@ -32,7 +32,7 @@ The items that fit in the time left are in section 3. The rest is in section 5.
 The order favours demo value: the rulebook items first, then the feature the problem statement names as standout, then the judge-question answer.
 
 ### 3.0 Submission readiness (about 1 hour, docs and data; mostly before H16)
-- **README fields required by the rulebook (§8).** Cycle 1 already covers setup and run instructions and the solution description (PLAN §15 and D's README tasks). These are missing and go to D, who owns the README, as text:
+- **README fields required by the rulebook (§8).** Cycle 1 already covers setup and run instructions and the solution description (PLAN §15 and D's README tasks). These are missing; D, who owns the README and the cycle-2 work, writes them:
   - team name and members
   - the selected problem statement (Problem Statement 4)
   - technologies and tools
@@ -149,7 +149,7 @@ Every tool used is listed in the README's AI section (rulebook §6.5), since com
 
 ## 7. Where the code lives and what it needs from cycle 1
 
-**Folders.** All cycle-2 code lives in a new top-level `ext/` folder and example data in `examples/`. No member's folder is edited, and code is not put into A's or D's folder after their freeze. `ext/` and `examples/` need an owner on record: the team adds the cycle-2 contributor to the ownership list in CLAUDE.md, or assigns them to D.
+**Folders.** All cycle-2 code lives in a new top-level `ext/` folder and example data in `examples/`. No member's folder is edited, and code is not put into A's or D's folder after their freeze. `ext/` and `examples/` are owned by D, who also owns `cli/` and the README.
 - `ext/` imports `core/` and `cli/` but is imported by neither.
 - `python -m ext run|compare|sweep` registers the ECMP policies, then hands `run` and `compare` to the cycle-1 CLI unchanged.
 - `ext/` keeps the same purity rule as `core/`: no FastAPI or frontend imports.
@@ -160,14 +160,14 @@ Every tool used is listed in the README's AI section (rulebook §6.5), since com
 |---|---|---|
 | A | The policy registry accepts new names at import time, for example a `register(name, policy)` function next to the S0 to S2 entries | `ext` wraps the registry lookup itself |
 | A | The S0 and S0-QoS delivery models are callable on any allocation, including flows with several paths | `ext` repeats the two delivery formulas (about 15 lines), tested against the S0 and S0-QoS diamond numbers |
-| D | The CLI entry point is a function, `main(argv)`, not only a `__main__` block | `ext` runs the CLI as a subprocess |
+| D | The CLI entry point is a function, `main(argv)`, not only a `__main__` block | **Already in place:** `cli/main.py` defines `main(argv)` |
 
 **Capabilities.** Cycle-2 OpenSpec changes add **new** capabilities only (`ecmp-routing`, `criticality-sweep`, `judge-kit`). None modifies a cycle-1 capability, so they can be archived after the nine cycle-1 changes in any order.
 
 ## 8. Open items before cycle 2 starts
 1. **Team exception for the freeze (blocker for 3.1 and 3.2):** all four members agree that `ext/`-only code may land until H20. Otherwise those sections become pitch "next steps". **Agreed;** recorded in CLAUDE.md.
 2. **Team membership:** every cycle-2 contributor must be a registered member of this team (rulebook §1, §10).
-3. **Ownership of `ext/` and `examples/`** recorded in CLAUDE.md by the team. **Done:** nithiishsd, in CLAUDE.md and AGENTS.md.
+3. **Ownership of `ext/` and `examples/`** recorded in CLAUDE.md by the team. **Done:** assigned to D, in CLAUDE.md, AGENTS.md and the OpenSpec config.
 4. **Hand-worked numbers:** the expected values in the cycle-2 specs were worked out by the spec author and checked again in review (section 10). A human re-checks them by hand before any test uses them (team testing rule), and the implementation is not written by the model that writes the tests.
 
 ## 9. Concepts the presenters must be able to explain

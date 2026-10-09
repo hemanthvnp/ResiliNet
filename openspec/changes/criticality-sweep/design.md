@@ -35,7 +35,7 @@ See proposal.md for the motivation. Cycle 1 provides `Simulation(scenario, polic
 - *Rejected: running policies in parallel processes.* The sweep takes minutes, and a process pool adds nondeterministic output order.
 
 **The command is a `sweep` subcommand in `ext/__main__.py`** that uses the cycle-1 scenario loader.
-- *Rejected: adding it to `cli/`.* That folder is D's, and post-H16 it is frozen.
+- *Rejected: adding it to `cli/`.* `cli/` is frozen after H16 even for D; the freeze exception covers only `ext/` and `examples/`.
 
 **Determinism.**
 - Links are processed in ascending id order.
