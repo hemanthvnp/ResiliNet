@@ -38,6 +38,8 @@
 - [x] 5.2 Add loading a saved run file with no server, with a test that both panels render the saved snapshots
 - [ ] 5.3 Add the utilization legend and text labels, and check contrast and non-colour cues on the projector
 - [x] 5.4 Add the demo-mode layout (large KPIs, hidden secondary labels)
+- [ ] 5.5 Animate the selected flow's routes in each panel (thickness by the flow's Mbps per link, red sparse dashes on an overloaded link) with a fluid-model note, with tests: a two-path flow animates both paths, and only the panel where the link is overloaded draws it red
+- [ ] 5.6 Add the stage player for the last event (Before, Link fails, Rerouted) with captions from the snapshots, with tests: the three stages show the right step, the affected flows are marked in Link fails, and another event closes the player
 
 ## 6. Rehearsal (C, H16 to H22)
 
