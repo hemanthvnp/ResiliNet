@@ -8,6 +8,15 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- Simulation engine (`core/sim/`): `Simulation` builds step 0 from a scenario and
+  a policy, applies fail and recover events (links or a node) atomically with a
+  full recompute, lists affected flows, times the route call and can check every
+  snapshot's invariants; `reset`, `from_inputs`, `run_scenario` and `serialize`
+  (I8 form, `compute_ms` masked). The eight PLAN.md section 9 scenarios are
+  fixtures under `fixtures/scenarios/`, each with its hand-worked `expect` block,
+  plus the `congestion` and `line` topologies (agreed by all four members).
+  Simultaneous and sequential failures give the same state; the event measures
+  (`affected_flows`, recovery ratio, churn) describe each event and differ.
 - Metrics and the invariant checker (`core/metrics/`): `compute_metrics` gives every
   PLAN.md section 8 measure from the topology, flows and allocation alone, and
   `check_invariants` reports every violation of I1 to I11 at once, sorted, sharing
