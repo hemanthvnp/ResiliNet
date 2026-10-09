@@ -17,6 +17,12 @@ Notable changes to this project, newest first. The format follows
   plus the `congestion` and `line` topologies (agreed by all four members).
   Simultaneous and sequential failures give the same state; the event measures
   (`affected_flows`, recovery ratio, churn) describe each event and differ.
+- Frontend comparison UI (`frontend/`) wired to the REST API: two synced panels
+  (baseline and S2) with KPI strips, flow table, route highlight, decision panel,
+  scenario selector, labelled link states with one legend, a MOCK DATA badge in
+  mock mode, a demo mode (`?demo=1`) and playback of a saved `compare` file with
+  no server. Contract types are generated from `api/openapi.json`
+  (`npm run generate-client`).
 - Metrics and the invariant checker (`core/metrics/`): `compute_metrics` gives every
   PLAN.md section 8 measure from the topology, flows and allocation alone, and
   `check_invariants` reports every violation of I1 to I11 at once, sorted, sharing
