@@ -5,7 +5,8 @@
 - [x] 1.3 Add request and response schemas in `api/schemas.py` from the shared models and declare all six routes with their status codes, with a test that each route is registered
 - [x] 1.4 Add mock mode serving the snapshot fixtures, with tests that each mocked response validates against its schema
 - [ ] 1.5 Export the OpenAPI schema to a committed file, with the schema-is-current test; all four members confirm it as part of the H1.5 freeze
-- [ ] 1.6 Confirm with C that the frontend renders a mocked snapshot fetched from the API (H1.5 exit criterion) and note it in the pull request description
+  - Note (D): the schema is committed and tested (#19), and the frontend's types are generated from it (#22). A and B have since handed off, so the four-member confirmation was never formally recorded; C and D now own the contract.
+- [x] 1.6 Confirm with C that the frontend renders a mocked snapshot fetched from the API (H1.5 exit criterion) and note it in the pull request description
 
 ## 2. Sessions and live baselines (D, H1.5 to H4)
 
@@ -15,6 +16,7 @@
 - [x] 2.4 Add `POST /runs/{id}/events` and `POST /runs/{id}/reset`, with tests: fail a link, unknown run gives 404, unknown link gives 422 and leaves the run unchanged, reset equals step 0
 - [x] 2.5 Map core errors to 404 and 422 in one place, with a test per error type
 - [ ] 2.6 M1 check at H4 with the team: a click in the UI reroutes both baselines and updates the metrics
+  - Assigned to C with the other manual testing. C's session checked M1 at the API level (two runs on `02_uplink_failure`, L6 failed: S0-QoS DR 0.706 with 1 overloaded link, S2 DR 1.0 with none); the browser click-through remains.
 
 ## 3. Compare, decisions and generators (D, H4 to H12)
 
@@ -32,6 +34,6 @@
 ## 5. Integrate
 
 - [x] 5.1 Run the full test suite with `pytest`, and `check_invariants` on every snapshot the API tests receive in live mode
-- [ ] 5.2 Rebase onto `main`
-- [ ] 5.3 Run `sh .github/scripts/check-history.sh`
-- [ ] 5.4 Open the pull request from `.github/pull_request_template.md`
+- [x] 5.2 Rebase onto `main`
+- [x] 5.3 Run `sh .github/scripts/check-history.sh`
+- [x] 5.4 Open the pull request from `.github/pull_request_template.md`
