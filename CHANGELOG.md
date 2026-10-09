@@ -30,6 +30,10 @@ Notable changes to this project, newest first. The format follows
     `unserved_by_cause` lists only causes with unserved traffic; `arcs_above_90`
     counts utilization above 0.9; `mean_util` is over all available arcs;
     `compute_ms` is 0.0 in fixtures.
+  - Changed (agreed by A, B, C and D): `diamond_healthy_s1.json` now carries the
+    S1 decision records for F1 and F2, so its `p0_greedy_gap` of 5.0 can be
+    recomputed from the snapshot (invariant I9). The other diamond snapshots keep
+    empty `decisions`.
 - `AGENTS.md` with the rules shared by every member's coding agent.
 - S2 defaults confirmed by ablation on 30 campus networks: `class_size_desc`,
   `max_paths` 3, `congestion_lambda` 0, `util_cap` 1.0. The congestion cost
