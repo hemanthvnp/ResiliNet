@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import cytoscape, { Core, ElementDefinition, LayoutOptions } from 'cytoscape';
 import { Topology, Snapshot } from '../types/contract';
 
@@ -131,6 +131,17 @@ export function getLinkLabel(util: number | undefined, isDown: boolean): string 
   return '';
 }
 
+/** The hint shown while the mouse is over a link, e.g. "Click to fail L6: Core 1 ↔ Distribution 1". */
+export function getLinkHint(topology: Topology, snapshot: Snapshot, linkId: string): string {
+  const link = topology.links.find((l) => l.id === linkId);
+  if (!link) return '';
+  const name = (id: string) => topology.nodes.find((n) => n.id === id)?.name ?? id;
+  const verb = snapshot.link_state[linkId] === 'down' ? 'recover' : 'fail';
+  return `Click to ${verb} ${linkId}: ${name(link.u)} ↔ ${name(link.v)} (${link.capacity} Mbps)`;
+}
+
+export const ZOOM_STEP = 1.3;
+
 export function getEdgeElements(
   topology: Topology,
   snapshot: Snapshot,
@@ -143,7 +154,8 @@ export function getEdgeElements(
     const isHighlighted = highlightedArcs.some((arc) => arc.startsWith(`${link.id}:`));
 
     // Capacity scaled thickness: 2px (500M) to 7px (2000M)
-    const width = Math.min(8, Math.max(2.5, Math.round((link.capacity / 2000) * 7)));
+    // at least 3.5 px, so a line is easy to hit with the mouse when the campus is zoomed out
+    const width = Math.min(8, Math.max(3.5, Math.round((link.capacity / 2000) * 7)));
 
     return {
       group: 'edges' as const,
@@ -177,6 +189,15 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const cyRef = useRef<Core | null>(null);
+  const [hint, setHint] = useState('');
+
+  // Zoom about the centre of the view; the 'zoom' event then syncs the partner panel
+  const zoomBy = (factor: number) => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    cy.zoom({ level: cy.zoom() * factor, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } });
+  };
+  const fitView = () => cyRef.current?.fit(undefined, 24);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -263,6 +284,15 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
             'text-background-color': '#0f172a',
             'text-background-opacity': 0.85,
             'text-background-padding': '2px' as any,
+            'text-events': 'yes', // a click on a "DOWN" or "225%" label counts as a click on its link
+          },
+        },
+        {
+          selector: 'edge.hovered',
+          style: {
+            'underlay-opacity': 0.45,
+            'underlay-padding': 8,
+            'z-index': 10,
           },
         },
         {
@@ -278,16 +308,23 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
       } as LayoutOptions,
       userZoomingEnabled: true,
       userPanningEnabled: true,
+      wheelSensitivity: 3, // the default zooms about 5% per scroll, too little to be useful
+      minZoom: 0.3,
+      maxZoom: 4,
       boxSelectionEnabled: false,
       autoungrabify: true, // nodes locked in deterministic positions
     });
 
     if (!readOnly && onLinkClick) {
-      cy.on('mouseover', 'edge', () => {
+      cy.on('mouseover', 'edge', (evt) => {
         if (containerRef.current) containerRef.current.style.cursor = 'pointer';
+        evt.target.addClass('hovered');
+        setHint(getLinkHint(topology, snapshot, evt.target.id()));
       });
-      cy.on('mouseout', 'edge', () => {
+      cy.on('mouseout', 'edge', (evt) => {
         if (containerRef.current) containerRef.current.style.cursor = 'default';
+        evt.target.removeClass('hovered');
+        setHint('');
       });
 
       cy.on('tap', 'edge', (evt) => {
@@ -319,6 +356,24 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
     };
   }, [topology, snapshot, highlightedArcs, highlightColor, readOnly, onLinkClick, onViewportChange]);
 
+  // Re-fit when the container changes size (switching to Stacked or Toggle, or resizing the
+  // window): cytoscape does not notice on its own and keeps the old, smaller drawing.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    let last = { w: el.clientWidth, h: el.clientHeight };
+    const observer = new ResizeObserver(() => {
+      const cy = cyRef.current;
+      const size = { w: el.clientWidth, h: el.clientHeight };
+      if (!cy || (size.w === last.w && size.h === last.h)) return;
+      last = size;
+      cy.resize();
+      cy.fit(undefined, 24);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   // Synchronize viewport updates when received from partner panel
   useEffect(() => {
     if (!cyRef.current || !viewport) return;
@@ -337,11 +392,23 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
   }, [viewport]);
 
   return (
-    <div
-      ref={containerRef}
-      className={`topology-graph-container ${className}`}
-      style={{ width: '100%', height: '100%', position: 'relative' }} // min-height in .topology-graph (index.css)
-      data-testid="topology-graph"
-    />
+    <div className="topology-graph-wrap">
+      <div
+        ref={containerRef}
+        className={`topology-graph-container ${className}`}
+        style={{ width: '100%', height: '100%', position: 'relative' }} // min-height in .topology-graph-container (index.css)
+        data-testid="topology-graph"
+      />
+      {hint && (
+        <div className="graph-hover-hint" data-testid="graph-hover-hint">
+          {hint}
+        </div>
+      )}
+      <div className="graph-zoom-controls">
+        <button type="button" onClick={() => zoomBy(ZOOM_STEP)} aria-label="Zoom in">+</button>
+        <button type="button" onClick={() => zoomBy(1 / ZOOM_STEP)} aria-label="Zoom out">−</button>
+        <button type="button" onClick={fitView} aria-label="Fit to view">Fit</button>
+      </div>
+    </div>
   );
 };

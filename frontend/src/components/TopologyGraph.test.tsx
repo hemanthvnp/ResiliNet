@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getDeterministicPositions, getEdgeElements, getLinkColor, getLinkLabel, getLinkLineStyle, getNodeLabel } from './TopologyGraph';
+import { getDeterministicPositions, getEdgeElements, getLinkColor, getLinkHint, getLinkLabel, getLinkLineStyle, getNodeLabel } from './TopologyGraph';
 import { CAMPUS_TOPOLOGY, MOCK_STEP1_S2_SNAPSHOT } from '../fixtures/mockData';
 import { Topology } from '../types/contract';
 
@@ -125,5 +125,22 @@ describe('Selected flow route highlight (Task 4.1)', () => {
     expect(getNodeLabel({ name: 'Core 1', type: 'core' }, 50)).toBe('Core 1');
     expect(getNodeLabel({ name: 'Auth server', type: 'service' }, 50)).toBe('Auth server');
     expect(getNodeLabel({ name: 'Distribution 3', type: 'distribution' }, 50)).toBe('Distribution 3');
+  });
+
+  it('names the hovered link and what a click will do', () => {
+    const topo: Topology = {
+      nodes: [node('C1', 'core'), { id: 'D1', type: 'distribution', name: 'Distribution 1' }],
+      links: [{ id: 'L6', u: 'C1', v: 'D1', capacity: 20, latency: 1, status: 'up' }],
+    };
+    const snap = (state: 'up' | 'down') => ({ ...MOCK_STEP1_S2_SNAPSHOT, link_state: { L6: state } });
+
+    expect(getLinkHint(topo, snap('up'), 'L6')).toBe('Click to fail L6: C1 ↔ Distribution 1 (20 Mbps)');
+    expect(getLinkHint(topo, snap('down'), 'L6')).toBe('Click to recover L6: C1 ↔ Distribution 1 (20 Mbps)');
+    expect(getLinkHint(topo, snap('up'), 'L99')).toBe('');
+  });
+
+  it('draws every link at least 3.5 px wide so it is easy to click', () => {
+    const edges = getEdgeElements(CAMPUS_TOPOLOGY, MOCK_STEP1_S2_SNAPSHOT, [], '#38bdf8');
+    expect(Math.min(...edges.map((e) => e.data.width as number))).toBeGreaterThanOrEqual(3.5);
   });
 });
