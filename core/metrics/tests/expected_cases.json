@@ -1,0 +1,172 @@
+{
+  "source": "Hand-worked by B from PLAN.md section 8 and the metrics spec scenarios; confirmed as cases E1 to E7 of Group 1 before any metric code existed.",
+  "cases": {
+    "E1_dr_reach": {
+      "topology": {
+        "nodes": [{"id": "A", "type": "switch", "name": "A"}, {"id": "B", "type": "switch", "name": "B"},
+                  {"id": "C", "type": "switch", "name": "C"}],
+        "links": [{"id": "L1", "u": "A", "v": "B", "capacity": 10, "latency": 1, "status": "up"}]
+      },
+      "flows": [{"id": "F1", "src": "A", "dst": "B", "rate": 10, "cls": 1},
+                {"id": "F2", "src": "A", "dst": "C", "rate": 10, "cls": 1}],
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L1:A>B"], "rate": 10}], "delivered": 10.0, "unserved": 0.0, "cause": "NONE"},
+          "F2": {"flow_id": "F2", "paths": [], "delivered": 0.0, "unserved": 10.0, "cause": "DISCONNECTED"}
+        },
+        "arc_load": {"L1:A>B": 10, "L1:B>A": 0}
+      },
+      "healthy_latency": {"F1": 1},
+      "expected": {"dr": 0.5, "dr_reach": 1.0}
+    },
+    "E2_detour": {
+      "topology": {
+        "nodes": [{"id": "A", "type": "switch", "name": "A"}, {"id": "B", "type": "switch", "name": "B"},
+                  {"id": "C", "type": "switch", "name": "C"}],
+        "links": [{"id": "L1", "u": "A", "v": "B", "capacity": 10, "latency": 2, "status": "up"},
+                  {"id": "L2", "u": "B", "v": "C", "capacity": 10, "latency": 2, "status": "up"},
+                  {"id": "L3", "u": "A", "v": "C", "capacity": 10, "latency": 2, "status": "down"}]
+      },
+      "flows": [{"id": "F1", "src": "A", "dst": "C", "rate": 5, "cls": 0}],
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L1:A>B", "L2:B>C"], "rate": 5}], "delivered": 5.0, "unserved": 0.0, "cause": "NONE"}
+        },
+        "arc_load": {"L1:A>B": 5, "L1:B>A": 0, "L2:B>C": 5, "L2:C>B": 0}
+      },
+      "healthy_latency": {"F1": 2},
+      "expected": {"latency_stretch": 2.0}
+    },
+    "E2b_shortest": {
+      "topology": {
+        "nodes": [{"id": "A", "type": "switch", "name": "A"}, {"id": "B", "type": "switch", "name": "B"}],
+        "links": [{"id": "L1", "u": "A", "v": "B", "capacity": 10, "latency": 3, "status": "up"}]
+      },
+      "flows": [{"id": "F1", "src": "A", "dst": "B", "rate": 4, "cls": 0}],
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L1:A>B"], "rate": 4}], "delivered": 4.0, "unserved": 0.0, "cause": "NONE"}
+        },
+        "arc_load": {"L1:A>B": 4, "L1:B>A": 0}
+      },
+      "healthy_latency": {"F1": 3},
+      "expected": {"latency_stretch": 1.0}
+    },
+    "E3_recovery": {
+      "topology": {
+        "nodes": [{"id": "A", "type": "switch", "name": "A"}, {"id": "B", "type": "switch", "name": "B"}],
+        "links": [{"id": "L1", "u": "A", "v": "B", "capacity": 20, "latency": 1, "status": "down"},
+                  {"id": "L2", "u": "A", "v": "B", "capacity": 15, "latency": 1, "status": "up"}]
+      },
+      "flows": [{"id": "F1", "src": "A", "dst": "B", "rate": 20, "cls": 0}],
+      "previous": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L1:A>B"], "rate": 20}], "delivered": 20.0, "unserved": 0.0, "cause": "NONE"}
+        },
+        "arc_load": {"L1:A>B": 20, "L1:B>A": 0, "L2:A>B": 0, "L2:B>A": 0}
+      },
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L2:A>B"], "rate": 15}], "delivered": 15.0, "unserved": 5.0, "cause": "INSUFFICIENT_CAPACITY"}
+        },
+        "arc_load": {"L2:A>B": 15, "L2:B>A": 0}
+      },
+      "affected": ["F1"],
+      "healthy_latency": {"F1": 1},
+      "expected": {"recovery_ratio": 0.75}
+    },
+    "E3b_no_affected": {
+      "topology": {
+        "nodes": [{"id": "A", "type": "switch", "name": "A"}, {"id": "B", "type": "switch", "name": "B"}],
+        "links": [{"id": "L1", "u": "A", "v": "B", "capacity": 10, "latency": 1, "status": "up"}]
+      },
+      "flows": [{"id": "F1", "src": "A", "dst": "B", "rate": 5, "cls": 0}],
+      "previous": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L1:A>B"], "rate": 5}], "delivered": 5.0, "unserved": 0.0, "cause": "NONE"}
+        },
+        "arc_load": {"L1:A>B": 5, "L1:B>A": 0}
+      },
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L1:A>B"], "rate": 5}], "delivered": 5.0, "unserved": 0.0, "cause": "NONE"}
+        },
+        "arc_load": {"L1:A>B": 5, "L1:B>A": 0}
+      },
+      "affected": [],
+      "healthy_latency": {"F1": 1},
+      "expected": {"recovery_ratio": null, "churn_flows": 0, "churn_rate": 0}
+    },
+    "E4_churn": {
+      "topology": {
+        "nodes": [{"id": "A", "type": "switch", "name": "A"}, {"id": "B", "type": "switch", "name": "B"}],
+        "links": [{"id": "L1", "u": "A", "v": "B", "capacity": 20, "latency": 1, "status": "up"},
+                  {"id": "L2", "u": "A", "v": "B", "capacity": 20, "latency": 1, "status": "up"}]
+      },
+      "flows": [{"id": "F1", "src": "A", "dst": "B", "rate": 10, "cls": 1},
+                {"id": "F2", "src": "A", "dst": "B", "rate": 5, "cls": 1}],
+      "previous": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L1:A>B"], "rate": 10}], "delivered": 10.0, "unserved": 0.0, "cause": "NONE"},
+          "F2": {"flow_id": "F2", "paths": [{"arcs": ["L1:A>B"], "rate": 5}], "delivered": 5.0, "unserved": 0.0, "cause": "NONE"}
+        },
+        "arc_load": {"L1:A>B": 15, "L1:B>A": 0, "L2:A>B": 0, "L2:B>A": 0}
+      },
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L2:A>B"], "rate": 10}], "delivered": 10.0, "unserved": 0.0, "cause": "NONE"},
+          "F2": {"flow_id": "F2", "paths": [{"arcs": ["L1:A>B"], "rate": 5}], "delivered": 5.0, "unserved": 0.0, "cause": "NONE"}
+        },
+        "arc_load": {"L1:A>B": 5, "L1:B>A": 0, "L2:A>B": 10, "L2:B>A": 0}
+      },
+      "affected": [],
+      "healthy_latency": {"F1": 1, "F2": 1},
+      "expected": {"churn_flows": 1, "churn_rate": 10}
+    },
+    "E5_no_flows": {
+      "topology": {
+        "nodes": [{"id": "A", "type": "switch", "name": "A"}, {"id": "B", "type": "switch", "name": "B"}],
+        "links": [{"id": "L1", "u": "A", "v": "B", "capacity": 10, "latency": 1, "status": "up"}]
+      },
+      "flows": [],
+      "allocation": {"results": {}, "arc_load": {"L1:A>B": 0, "L1:B>A": 0}},
+      "healthy_latency": {},
+      "expected": {"dr": 1.0, "dr_reach": 1.0, "latency_stretch": 1.0}
+    },
+    "E6_unserved_by_cause": {
+      "topology": {
+        "nodes": [{"id": "A", "type": "switch", "name": "A"}, {"id": "B", "type": "switch", "name": "B"},
+                  {"id": "C", "type": "switch", "name": "C"}],
+        "links": [{"id": "L1", "u": "A", "v": "B", "capacity": 5, "latency": 1, "status": "up"}]
+      },
+      "flows": [{"id": "F1", "src": "A", "dst": "B", "rate": 10, "cls": 1},
+                {"id": "F2", "src": "A", "dst": "C", "rate": 10, "cls": 2}],
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L1:A>B"], "rate": 5}], "delivered": 5.0, "unserved": 5.0, "cause": "INSUFFICIENT_CAPACITY"},
+          "F2": {"flow_id": "F2", "paths": [], "delivered": 0.0, "unserved": 10.0, "cause": "DISCONNECTED"}
+        },
+        "arc_load": {"L1:A>B": 5, "L1:B>A": 0}
+      },
+      "healthy_latency": {"F1": 1},
+      "expected": {"unserved_by_cause": {"DISCONNECTED": 10.0, "INSUFFICIENT_CAPACITY": 5.0}}
+    },
+    "E7_link_util": {
+      "topology": {
+        "nodes": [{"id": "A", "type": "switch", "name": "A"}, {"id": "B", "type": "switch", "name": "B"}],
+        "links": [{"id": "L1", "u": "A", "v": "B", "capacity": 10, "latency": 1, "status": "up"}]
+      },
+      "flows": [{"id": "F1", "src": "A", "dst": "B", "rate": 8, "cls": 1},
+                {"id": "F2", "src": "B", "dst": "A", "rate": 2, "cls": 1}],
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L1:A>B"], "rate": 8}], "delivered": 8.0, "unserved": 0.0, "cause": "NONE"},
+          "F2": {"flow_id": "F2", "paths": [{"arcs": ["L1:B>A"], "rate": 2}], "delivered": 2.0, "unserved": 0.0, "cause": "NONE"}
+        },
+        "arc_load": {"L1:A>B": 8, "L1:B>A": 2}
+      },
+      "healthy_latency": {"F1": 1, "F2": 1},
+      "expected": {"link_util": {"L1": 0.8}}
+    }
+  }
+}

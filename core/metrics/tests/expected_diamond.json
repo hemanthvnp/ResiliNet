@@ -1,0 +1,81 @@
+{
+  "source": "Hand-worked by B from PLAN.md sections 4 and 8 and the add-metrics-invariants design; confirmed before any metric code existed (Group 1). Healthy values are the confirmed snapshot fixtures.",
+  "healthy_latency": {"F1": 2, "F2": 2},
+  "healthy": {
+    "S0": "snapshots/diamond_healthy_s0.json",
+    "S0-QoS": "snapshots/diamond_healthy_s0qos.json",
+    "S2": "snapshots/diamond_healthy_s2.json"
+  },
+  "bd_failed": {
+    "failed_link": "L7",
+    "S0": {
+      "previous": "snapshots/diamond_healthy_s0.json",
+      "affected": ["F1", "F2"],
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L5:A>C", "L6:C>D"], "rate": 15}],
+                 "delivered": 6.0, "unserved": 9.0, "cause": "OVERLOAD_LOSS"},
+          "F2": {"flow_id": "F2", "paths": [{"arcs": ["L5:A>C", "L6:C>D"], "rate": 10}],
+                 "delivered": 4.0, "unserved": 6.0, "cause": "OVERLOAD_LOSS"}
+        },
+        "arc_load": {"L2:A>B": 0, "L2:B>A": 0, "L5:A>C": 25, "L5:C>A": 0, "L6:C>D": 25, "L6:D>C": 0}
+      },
+      "greedy_gap": {},
+      "expected": {
+        "dr": 0.4, "dr_by_class": {"0": 0.4, "2": 0.4}, "dr_reach": 0.4,
+        "unserved_by_cause": {"OVERLOAD_LOSS": 15.0},
+        "overloaded_arcs": 2, "overload_excess": 30,
+        "max_util": 2.5, "mean_util": 0.8333333333333334, "arcs_above_90": 2,
+        "link_util": {"L2": 0.0, "L5": 2.5, "L6": 2.5, "L7": 0.0},
+        "latency_stretch": 2.0, "recovery_ratio": 1.0,
+        "churn_flows": 2, "churn_rate": 25, "p0_greedy_gap": 0.0
+      }
+    },
+    "S0-QoS": {
+      "previous": "snapshots/diamond_healthy_s0qos.json",
+      "affected": ["F1", "F2"],
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L5:A>C", "L6:C>D"], "rate": 15}],
+                 "delivered": 10.0, "unserved": 5.0, "cause": "OVERLOAD_LOSS"},
+          "F2": {"flow_id": "F2", "paths": [{"arcs": ["L5:A>C", "L6:C>D"], "rate": 10}],
+                 "delivered": 0.0, "unserved": 10.0, "cause": "OVERLOAD_LOSS"}
+        },
+        "arc_load": {"L2:A>B": 0, "L2:B>A": 0, "L5:A>C": 25, "L5:C>A": 0, "L6:C>D": 25, "L6:D>C": 0}
+      },
+      "greedy_gap": {},
+      "expected": {
+        "dr": 0.4, "dr_by_class": {"0": 0.6666666666666666, "2": 0.0}, "dr_reach": 0.4,
+        "unserved_by_cause": {"OVERLOAD_LOSS": 15.0},
+        "overloaded_arcs": 2, "overload_excess": 30,
+        "max_util": 2.5, "mean_util": 0.8333333333333334, "arcs_above_90": 2,
+        "link_util": {"L2": 0.0, "L5": 2.5, "L6": 2.5, "L7": 0.0},
+        "latency_stretch": 2.0, "recovery_ratio": 1.0,
+        "churn_flows": 2, "churn_rate": 25, "p0_greedy_gap": 0.0
+      }
+    },
+    "S2": {
+      "previous": "snapshots/diamond_healthy_s2.json",
+      "affected": ["F1"],
+      "allocation": {
+        "results": {
+          "F1": {"flow_id": "F1", "paths": [{"arcs": ["L5:A>C", "L6:C>D"], "rate": 10}],
+                 "delivered": 10.0, "unserved": 5.0, "cause": "INSUFFICIENT_CAPACITY"},
+          "F2": {"flow_id": "F2", "paths": [],
+                 "delivered": 0.0, "unserved": 10.0, "cause": "INSUFFICIENT_CAPACITY"}
+        },
+        "arc_load": {"L2:A>B": 0, "L2:B>A": 0, "L5:A>C": 10, "L5:C>A": 0, "L6:C>D": 10, "L6:D>C": 0}
+      },
+      "greedy_gap": {"F1": 0.0, "F2": 0.0},
+      "expected": {
+        "dr": 0.4, "dr_by_class": {"0": 0.6666666666666666, "2": 0.0}, "dr_reach": 0.4,
+        "unserved_by_cause": {"INSUFFICIENT_CAPACITY": 15.0},
+        "overloaded_arcs": 0, "overload_excess": 0,
+        "max_util": 1.0, "mean_util": 0.3333333333333333, "arcs_above_90": 2,
+        "link_util": {"L2": 0.0, "L5": 1.0, "L6": 1.0, "L7": 0.0},
+        "latency_stretch": 2.0, "recovery_ratio": 0.6666666666666666,
+        "churn_flows": 2, "churn_rate": 10, "p0_greedy_gap": 0.0
+      }
+    }
+  }
+}
