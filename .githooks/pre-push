@@ -1,0 +1,26 @@
+#!/bin/sh
+# Refuse to delete or force-push main (CLAUDE.md, "Git rules").
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$remote_ref" = "refs/heads/main" ] || continue
+
+  case $local_sha in
+    *[!0]*) ;;
+    *)
+      echo "pre-push: deleting main is not allowed." >&2
+      exit 1
+      ;;
+  esac
+
+  case $remote_sha in
+    *[!0]*) ;;
+    *) continue ;;
+  esac
+
+  if ! git merge-base --is-ancestor "$remote_sha" "$local_sha" 2>/dev/null; then
+    echo "pre-push: this push would rewrite main. Fetch and integrate instead of forcing." >&2
+    exit 1
+  fi
+done
+
+exit 0

@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  history:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Check commits against the Git rules
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: sh .github/scripts/check-history.sh "$BASE" HEAD
+
+  # The backend and frontend jobs skip their steps until the project skeleton exists
+  # (PLAN.md section 12, H0 to 1.5). Replace the install lines with the real ones then.
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: detect
+        run: |
+          if [ -f pyproject.toml ] || [ -f requirements.txt ]; then
+            echo "present=true" >>"$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.detect.outputs.present == 'true'
+        with:
+          python-version: "3.11"
+      - name: Install
+        if: steps.detect.outputs.present == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f pyproject.toml ]; then pip install -e .; fi
+          pip install pytest hypothesis
+      - name: Test
+        if: steps.detect.outputs.present == 'true'
+        run: pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - id: detect
+        working-directory: .
+        run: |
+          if [ -f frontend/package.json ]; then
+            echo "present=true" >>"$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.detect.outputs.present == 'true'
+        with:
+          node-version: "20"
+      - name: Install
+        if: steps.detect.outputs.present == 'true'
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+      - name: Build
+        if: steps.detect.outputs.present == 'true'
+        run: npm run build
+      - name: Test
+        if: steps.detect.outputs.present == 'true'
+        run: npm test --if-present
