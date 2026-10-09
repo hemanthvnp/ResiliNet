@@ -13,14 +13,14 @@
 ## 2. README sections (D, can start at any time)
 
 - [ ] 2.1 Create `README.md` if it does not exist, and write the sections for team name and members, problem statement (Problem Statement 4) and technologies. Verify that they render on GitHub.
-- [ ] 2.2 Write "External resources" with each direct dependency and its license, taken from `pyproject.toml` and `frontend/package.json`. Check every license against the project's own LICENSE file. Expected licenses:
+- [x] 2.2 Write "External resources" with each direct dependency and its license, taken from `pyproject.toml` and `frontend/package.json`. Check every license against the project's own LICENSE file. Expected licenses:
   - backend: pydantic MIT, networkx BSD-3-Clause, FastAPI MIT, uvicorn BSD-3-Clause, pytest MIT, hypothesis MPL-2.0, httpx BSD-3-Clause, scipy BSD-3-Clause (optional, LP reference only)
   - frontend: React MIT, Vite MIT, Cytoscape.js MIT, Recharts MIT, lucide-react ISC, TypeScript Apache-2.0, Vitest MIT, Testing Library MIT, jsdom MIT, openapi-typescript MIT
 
   Verify that every direct dependency in the two manifests is listed.
-- [ ] 2.3 Collect each member's AI tools and what they were used for, and write "AI tools used". This is the only AI disclosure, because commits carry none (rulebook §6.5). Verify that all four members have a line.
-- [ ] 2.4 Start a "Challenges" list, one line per problem met during the hackathon, added as it happens. Verify that it has entries before the H20 rehearsal.
-- [ ] 2.5 Add the "Scope" wording from PLAN-CYCLE2.md §3.3 (a simulation of the controller, an SDN island as the deployment path, Ryu or os-ken with Mininet as future work). Verify that no sentence claims the system controls real switches.
+- [x] 2.3 Collect each member's AI tools and what they were used for, and write "AI tools used". This is the only AI disclosure, because commits carry none (rulebook §6.5). Verify that all four members have a line.
+- [x] 2.4 Start a "Challenges" list, one line per problem met during the hackathon, added as it happens. Verify that it has entries before the H20 rehearsal.
+- [x] 2.5 Add the "Scope" wording from PLAN-CYCLE2.md §3.3 (a simulation of the controller, an SDN island as the deployment path, Ryu or os-ken with Mininet as future work). Verify that no sentence claims the system controls real switches.
 
 ## 3. Judge kit
 

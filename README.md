@@ -51,6 +51,12 @@ We read it as follows. Model a campus network carrying traffic of different impo
   - a max-flow check showing whether more traffic could have fitted.
 - **Keeps every result reproducible.** The same scenario, settings and seed always give the same output.
 
+## Scope
+
+- **What we built** is a steady-state simulation of a central routing controller's decisions. It does not configure or control real switches.
+- **The intended deployment** is an SDN island at the campus aggregation and core layer, which the campus template models. It would route aggregate flows (building × class, about 200), not per-user rules.
+- **The path to deployment is future work and is not built.** Routes computed here would be installed through an SDN controller (Ryu, or its maintained fork os-ken) on Open vSwitch. That would be checked first in Mininet, a network emulator, then on an SDN island beside the existing switches.
+
 ## Technologies
 
 | Part | Stack |
@@ -339,6 +345,19 @@ The core never imports the API or the frontend; a test checks this.
 | One event through the API at 50 nodes and 200 flows | About 60 ms and 144 KiB, of which decision records are 120 KiB | API measurement (PR #23) |
 | Congestion cost (`--lambda` above 0) across 30 networks | 0.2 to 3.3 points less delivery and 7 to 30% more latency, so it is off by default | Ablation (PR #13) |
 
+## Challenges
+
+Problems we met during the hackathon and how we handled them. New entries are added as they happen.
+
+- **Four AI agents writing into one repository.** We set shared rules in `AGENTS.md`: each agent works only in its owner's folders, only humans edit the shared contract, and expected values are worked by hand. Every change went through a pull request with CI.
+- **The UI needed data the contract did not carry.** A saved comparison could not be drawn offline without the topology and flows. These were added to the `/compare` response before the H1.5 freeze, with all members agreeing.
+- **Mock data that looked real.** An external review found that mock-mode events changed link states without rerouting, so a failed link could appear in use. Live mode on the real simulation replaced it, and the UI now shows a MOCK DATA badge whenever mock mode is on.
+- **Would S2 beat the QoS baseline at all?** We ran a headline check at H8 on the campus template before building anything further on that claim. With the uplink failed, S2 delivered 100% of traffic and 100% of P1 traffic, against 70.6% and 75% for S0-QoS.
+- **The congestion cost did not pay off.** The ablation showed it lowered delivery and raised latency, so it is off by default rather than tuned until it looked useful.
+- **Reproducible randomness.** Python randomises `hash()` per process, so every random choice uses its own `random.Random` with a seed derived arithmetically. Any run can be replayed from its seed.
+- **Integration load on one member.** D's benchmark tasks were handed over to A partway through, so the API, command line, README and benchmark could proceed in parallel.
+- **A CI-only failure.** Tests passed locally but failed in CI, because the `cli` package was not listed in `pyproject.toml`. Local runs had found it through the working directory.
+
 ## Limitations
 
 - **The baselines use a single-pass delivery model.** Traffic lost on an upstream link still counts as load further down the path. This makes S0 and S0-QoS look slightly worse than they are, which favours S2.
@@ -373,7 +392,21 @@ The core never imports the API or the frontend; a test checks this.
 
 ## External resources
 
-- **Open-source libraries:** those in the technologies table, used under their own licences.
+- **Open-source libraries,** each used under its own licence. Every licence was read from the package's own LICENSE file, except scipy's: scipy is optional and not installed by default, so its licence is not checked here.
+
+  | Backend | Licence | Frontend | Licence |
+  |---|---|---|---|
+  | pydantic | MIT | React, React DOM | MIT |
+  | networkx | BSD-3-Clause | Vite, @vitejs/plugin-react | MIT |
+  | FastAPI | MIT | Cytoscape.js | MIT |
+  | uvicorn | BSD-3-Clause | Recharts | MIT |
+  | pytest | MIT | lucide-react | ISC |
+  | hypothesis | MPL-2.0 | TypeScript | Apache-2.0 |
+  | httpx | BSD-3-Clause | Vitest | MIT |
+  | scipy (optional) | BSD-3-Clause | Testing Library (react, jest-dom) | MIT |
+  | | | jsdom | MIT |
+  | | | openapi-typescript | MIT |
+  | | | @types/cytoscape, node, react, react-dom | MIT |
 - **The congestion cost** (off by default) uses the piecewise-linear link-cost slopes of B. Fortz and M. Thorup, "Internet traffic engineering by optimizing OSPF weights" (IEEE INFOCOM 2000).
 - **Algorithms:** Dijkstra's shortest path and max-flow come from networkx.
 - **Data:** none external. The campus network and traffic are generated or hand-drawn by the team.
@@ -382,9 +415,12 @@ The core never imports the API or the frontend; a test checks this.
 
 The rulebook (section 6.5) asks for this disclosure.
 
-**Tools:** every member developed with an AI coding agent:
-- **Claude Code** (Anthropic) and **OpenCode**, for writing code, tests and documentation;
-- **ChatGPT** (OpenAI), including for an external review of the REST API.
+**Tools:** all four members used the same AI tools:
+
+| Member | Tools | Used for |
+|---|---|---|
+| A, B, C and D | **Claude Code** (Anthropic) and **OpenCode** | Writing code, tests and documentation from the plan and the OpenSpec changes |
+| A, B, C and D | **ChatGPT** (OpenAI) | Reviews, including an external review of the REST API |
 
 **Rules the team set for the agents** (`AGENTS.md`, `CLAUDE.md`; PLAN.md section 11):
 - Each agent edits only its owner's folders.

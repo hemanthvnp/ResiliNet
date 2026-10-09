@@ -14,6 +14,11 @@ Notable changes to this project, newest first. The format follows
   runs with `python -m cli run --scenario examples/<file>.json --policy S2` under
   all four policies with every invariant checked. Edited classes and ids take
   effect on the next run, and a mistyped id is rejected by name.
+- README sections for submission: scope (a simulation of the controller, with an
+  SDN island as the deployment path), a licence for every direct dependency read
+  from its own LICENSE file, AI use for every member, a challenges list, and
+  "Try your own input" for the judge kit.
+
 - `README.md`: problem and solution, how to run the backend, frontend, command
   line and tests (checked on a fresh clone), demo steps, reproducing a run from a
   seed, the model, the allocator pseudocode, the diamond worked example, an
