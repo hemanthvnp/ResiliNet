@@ -81,5 +81,15 @@ Notable changes to this project, newest first. The format follows
 - REST API skeleton (`api/`): the six PLAN.md section 7 routes, request and
   response envelopes in `api/schemas.py`, local CORS for the Vite dev server, and
   a mock mode (`REROUTER_MOCK=1 uvicorn api.app:app`) answering from `fixtures/`.
-  Live mode answers 501 until the simulation engine lands. The generated OpenAPI
-  schema is committed as `api/openapi.json` for the frontend client.
+  The generated OpenAPI schema is committed as `api/openapi.json` for the frontend
+  client.
+- Live REST API (`uvicorn api.app:app`, port 8000) on the simulation engine: the
+  eight fixture scenarios by id (`01_normal` to `08_recovery`; mock mode now calls
+  the diamond `07_diamond` too), inline scenarios including generator specs, all
+  four policies, events, reset, `/compare` over the scenario's full event list, and
+  the current step's decision record per flow. One run per session with its own
+  lock; the oldest run is evicted at 64. Bad input from core (unknown policy, link,
+  node, template or generator, bad generator parameters, exhausted generator
+  retries) is 422 naming the value; unknown run, scenario or flow is 404. At 50
+  nodes and 200 flows an event takes about 60 ms and returns about 144 KiB, of which
+  decision records are 120 KiB.

@@ -52,12 +52,6 @@ def test_all_six_routes_are_registered():
     assert ROUTES <= registered
 
 
-def test_live_mode_answers_501_until_the_simulation_lands():
-    res = TestClient(create_app()).get("/scenarios")
-    assert res.status_code == 501
-    assert "REROUTER_MOCK=1" in res.json()["detail"]
-
-
 # --- mock mode (1.4) -----------------------------------------------------------
 
 @pytest.mark.parametrize("method, path, body", [

@@ -3,7 +3,7 @@
 The fixtures hold the healthy diamond at step 0 under each policy and no later steps, so an
 event here updates link state and the step number but does not reroute. The decision endpoint
 answers with the section 10 sample record, since the diamond snapshots carry no records.
-Live mode replaces this once core/sim lands (tasks 2.1 to 2.4).
+Live mode (api/live.py) runs the real simulation; mock mode stays for frontend work without the core.
 """
 
 from __future__ import annotations
