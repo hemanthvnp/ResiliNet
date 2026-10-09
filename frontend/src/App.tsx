@@ -56,6 +56,7 @@ export const ResiliNetDashboard: React.FC = () => {
   const scriptedDown = scriptedFailure.length > 0 && scriptedFailure.every((l) => rightPanel.snapshot.link_state[l] === 'down');
 
   const [scenarios, setScenarios] = useState<ScenarioInfo[]>([]);
+  const [isMock, setIsMock] = useState(false); // the API answered from fixtures (X-Mock header)
 
   // A saved `compare --out` file, played back with no server (task 5.2): the demo's fallback
   const [saved, setSaved] = useState<{ name: string; left: Snapshot[]; right: Snapshot[] } | null>(null);
@@ -118,6 +119,7 @@ export const ResiliNetDashboard: React.FC = () => {
           right: { policy: 'S2', runId: rightRes.run_id, snapshot: rightRes.snapshot },
         },
       });
+      setIsMock(apiClient.mock);
     } catch (err: any) {
       dispatch({
         type: 'APPLY_EVENT_FAILURE',
@@ -295,6 +297,16 @@ export const ResiliNetDashboard: React.FC = () => {
               </option>
             ))}
           </select>
+
+          {isMock && !saved && (
+            <div
+              className="badge-seed badge-mock"
+              data-testid="mock-badge"
+              title="The API is in mock mode: snapshots come from fixtures, events do not reroute"
+            >
+              MOCK DATA
+            </div>
+          )}
 
           <div className="badge-seed">
             <span>Seed:</span>

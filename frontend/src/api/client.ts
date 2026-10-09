@@ -1,4 +1,12 @@
-import { DecisionRecord, EventRequest, PolicyConfig, RunResponse, ScenarioInfo, Snapshot } from '../types/contract';
+import {
+  CompareResponse,
+  DecisionRecord,
+  EventRequest,
+  PolicyConfig,
+  RunResponse,
+  ScenarioInfo,
+  Snapshot,
+} from '../types/contract';
 
 export type Policy = 'S0' | 'S0-QoS' | 'S1' | 'S2';
 
@@ -8,6 +16,9 @@ export type Policy = 'S0' | 'S0-QoS' | 'S1' | 'S2';
  * always talks to one contract.
  */
 export class ApiClient {
+  /** True when the last answer came from the API's mock mode (header X-Mock: true): fixtures, not simulation. */
+  mock = false;
+
   constructor(private baseUrl: string = '/api') {}
 
   private async request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -29,6 +40,7 @@ export class ApiClient {
       }
       throw new Error(`HTTP ${res.status}: ${detail}`);
     }
+    this.mock = res.headers.get('X-Mock') === 'true';
     return res.json();
   }
 
@@ -55,6 +67,10 @@ export class ApiClient {
 
   resetRun(runId: string): Promise<Snapshot> {
     return this.post(`/runs/${runId}/reset`);
+  }
+
+  compare(params: { scenario_id: string; policies: Policy[]; config?: PolicyConfig }): Promise<CompareResponse> {
+    return this.post('/compare', params);
   }
 
   getDecision(runId: string, flowId: string): Promise<DecisionRecord> {

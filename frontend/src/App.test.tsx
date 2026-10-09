@@ -60,6 +60,7 @@ vi.mock('cytoscape', () => {
 describe('App Component (Phase 1 & Phase 2)', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    apiClient.mock = false;
     stubApi();
   });
 
@@ -357,5 +358,16 @@ describe('App Component (Phase 1 & Phase 2)', () => {
 
     expect(await screen.findByTestId('error-banner')).toHaveTextContent('Cannot load wrong.json: Not a saved comparison');
     expect(screen.queryByTestId('saved-run-bar')).not.toBeInTheDocument();
+  });
+
+  it('shows a MOCK badge only when the API answered from fixtures (review finding 27)', async () => {
+    const { unmount } = render(<App />);
+    await screen.findByTestId('quick-fail-btn');
+    expect(screen.queryByTestId('mock-badge')).not.toBeInTheDocument();
+    unmount();
+
+    apiClient.mock = true;
+    render(<App />);
+    expect(await screen.findByTestId('mock-badge')).toHaveTextContent('MOCK DATA');
   });
 });

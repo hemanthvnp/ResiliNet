@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { ApiClient } from './client';
 
-function stubFetch(status: number, body: unknown) {
+function stubFetch(status: number, body: unknown, headers: Record<string, string> = {}) {
   const fetchMock = vi.fn().mockResolvedValue(
-    new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } }),
+    new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', ...headers } }),
   );
   vi.stubGlobal('fetch', fetchMock);
   return fetchMock;
@@ -56,5 +56,26 @@ describe('API client against the REST contract (Task 1.5)', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
 
     await expect(new ApiClient('/api').getScenarios()).rejects.toThrow('REROUTER_MOCK=1 uvicorn api.app:app');
+  });
+
+  it('records whether the API answered in mock mode', async () => {
+    const client = new ApiClient('/api');
+    stubFetch(200, [], { 'X-Mock': 'true' });
+    await client.getScenarios();
+    expect(client.mock).toBe(true);
+
+    stubFetch(200, []);
+    await client.getScenarios();
+    expect(client.mock).toBe(false);
+  });
+
+  it('posts a comparison request', async () => {
+    const fetchMock = stubFetch(200, { table: [] });
+
+    await new ApiClient('/api').compare({ scenario_id: 'diamond', policies: ['S0-QoS', 'S2'] });
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe('/api/compare');
+    expect(JSON.parse(init.body)).toEqual({ scenario_id: 'diamond', policies: ['S0-QoS', 'S2'] });
   });
 });

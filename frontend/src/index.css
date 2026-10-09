@@ -620,3 +620,9 @@ body {
 .demo-mode .legend-strip {
   display: none;
 }
+
+.badge-mock {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  font-weight: 700;
+}
