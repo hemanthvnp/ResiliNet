@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import cytoscape from 'cytoscape';
 import App from './App';
 import { apiClient } from './api/client';
 import {
@@ -232,5 +233,63 @@ describe('App Component (Phase 1 & Phase 2)', () => {
       expect(apiClient.createRun).toHaveBeenCalledWith({ scenario_id: 'diamond', policy: 'S0-QoS' });
       expect(apiClient.createRun).toHaveBeenCalledWith({ scenario_id: 'diamond', policy: 'S2' });
     });
+  });
+
+  it('sends recover for a link that is down (Task 2.3)', async () => {
+    render(<App />);
+    fireEvent.click(await screen.findByTestId('quick-fail-btn'));
+    await waitFor(() => expect(screen.getByTestId('quick-fail-btn')).toHaveTextContent(/Recover/));
+
+    fireEvent.click(screen.getByTestId('quick-fail-btn'));
+
+    await waitFor(() =>
+      expect(apiClient.applyEvent).toHaveBeenCalledWith('run-S2', expect.objectContaining({ kind: 'recover', links: ['L_DC_PRI'] })),
+    );
+  });
+
+  it('ignores clicks while a request is in flight (Task 2.3)', async () => {
+    vi.mocked(apiClient.applyEvent).mockImplementation(() => new Promise(() => {})); // never settles
+    render(<App />);
+    fireEvent.click(await screen.findByTestId('quick-fail-btn'));
+    await waitFor(() => expect(apiClient.applyEvent).toHaveBeenCalledTimes(2)); // one per panel
+
+    fireEvent.click(screen.getByTestId('quick-fail-btn'));
+    (global as any).__mockCytoscapeTapEdge({ target: { id: () => 'L_CORE_INTER' } });
+
+    expect(apiClient.applyEvent).toHaveBeenCalledTimes(2);
+  });
+
+  it('gives both panels the same node positions (Task 3.2)', async () => {
+    vi.mocked(cytoscape).mockClear();
+    render(<App />);
+    await screen.findByTestId('quick-fail-btn');
+
+    const positionsOf = (call: any[]) =>
+      Object.fromEntries(
+        call[0].elements.filter((e: any) => e.group === 'nodes').map((e: any) => [e.data.id, e.position]),
+      );
+    const drawn = vi.mocked(cytoscape).mock.calls.map(positionsOf).filter((p) => Object.keys(p).length > 0);
+    expect(drawn.length).toBeGreaterThanOrEqual(2);
+    for (const positions of drawn) expect(positions).toEqual(drawn[0]);
+  });
+
+  it('lands the replayed baseline on the same step after two events (Task 3.3)', async () => {
+    const steps: Record<string, number> = {};
+    vi.mocked(apiClient.applyEvent).mockImplementation(async (runId) => {
+      steps[runId] = (steps[runId] ?? 0) + 1;
+      const base = runId === 'run-S2' ? MOCK_STEP1_S2_SNAPSHOT : MOCK_STEP1_S0_QOS_SNAPSHOT;
+      return { ...base, step: steps[runId] };
+    });
+    render(<App />);
+    fireEvent.click(await screen.findByTestId('quick-fail-btn')); // fail
+    await waitFor(() => expect(screen.getByTestId('quick-fail-btn')).toHaveTextContent(/Recover/));
+    fireEvent.click(screen.getByTestId('quick-fail-btn')); // second event
+    await waitFor(() => expect(screen.getAllByText('Step 2')).toHaveLength(2));
+
+    fireEvent.change(screen.getByTestId('baseline-selector'), { target: { value: 'S0' } });
+
+    await waitFor(() => expect(steps['run-S0']).toBe(2));
+    await waitFor(() => expect((screen.getByTestId('baseline-selector') as HTMLSelectElement).value).toBe('S0'));
+    expect(screen.queryByTestId('error-banner')).not.toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TopologyGraph, ViewportState } from './components/TopologyGraph';
 import { KpiStrip } from './components/KpiStrip';
 import { FlowTable, CLASS_COLORS } from './components/FlowTable';
@@ -85,15 +85,19 @@ export const ResiliNetDashboard: React.FC = () => {
   }, [dispatch]);
 
   // Click-to-fail / Click-to-recover handler with click lock (Task 2.3 & 3.1)
+  const eventLock = useRef(false);
   const handleLinkClick = (linkId: string, currentStatus: 'up' | 'down') =>
     handleLinksEvent([linkId], currentStatus === 'up' ? 'fail' : 'recover');
 
   // One event to both panels; several links fail together as one simultaneous event
   const handleLinksEvent = async (links: string[], kind: 'fail' | 'recover') => {
-    if (inFlight) {
+    // Click lock. `inFlight` only updates on the next render, so a fast double click could
+    // pass it and send the event twice; the ref is set synchronously.
+    if (inFlight || eventLock.current) {
       console.warn('Click ignored: request in flight');
-      return; // Click lock
+      return;
     }
+    eventLock.current = true;
 
     dispatch({ type: 'SET_IN_FLIGHT', payload: true });
     const event: Event = { step: currentStep + 1, kind, links };
@@ -118,6 +122,8 @@ export const ResiliNetDashboard: React.FC = () => {
         type: 'APPLY_EVENT_FAILURE',
         payload: { error: err.message || `Failed to apply ${kind} event for ${links.join(', ')}` },
       });
+    } finally {
+      eventLock.current = false;
     }
   };
 
