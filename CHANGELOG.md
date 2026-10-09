@@ -8,6 +8,14 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- Frontend: selecting a flow animates it along its routes in each panel (thickness by
+  its Mbps per link, red and sparse where an overloaded link loses traffic; a fluid
+  model, not packets), and a stage player replays the last event as Before, Link
+  fails (old routes, affected flows in red) and Rerouted, with captions from the
+  snapshots. Links highlight and name themselves on hover, the graphs pan by dragging
+  from anywhere, zoom with the wheel or the + / - / Fit buttons, and fill the view
+  in the Stacked and Toggle layouts.
+
 - ECMP-style baselines (`ECMP`, `ECMP-QoS`; `ext/ecmp.py`): an idealised equal
   split over equal-cost next hops per router, with integer path rates and at most
   8 next hops, delivered with the S0 and S0-QoS formulas per path. They run through
