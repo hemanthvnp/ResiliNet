@@ -68,6 +68,10 @@ class CompareRow(_Body):
 
 
 class CompareResponse(_Body):
+    """Self-contained, so a saved `compare --out` file renders with no server."""
+
     scenario: Scenario
+    topology: Topology
+    flows: list[Flow]
     table: list[CompareRow]  # in the order of the request's policies
     snapshots: dict[str, list[Snapshot]]  # per policy, one per step

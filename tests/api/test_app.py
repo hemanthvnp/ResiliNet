@@ -150,6 +150,12 @@ def test_compare_has_one_row_per_policy_in_request_order(mock):
     assert next(r for r in body.table if r.policy == "S2").metrics.overloaded_arcs == 0
 
 
+def test_compare_carries_topology_and_flows_for_offline_rendering(mock):
+    body = CompareResponse.model_validate(mock.post("/compare", json={"scenario_id": "diamond", "policies": ["S2"]}).json())
+    assert sorted(l.id for l in body.topology.links) == ["L2", "L5", "L6", "L7"]
+    assert [f.id for f in body.flows] == ["F1", "F2"]
+
+
 def test_decision_for_a_known_flow_validates(mock):
     run_id = new_run(mock)["run_id"]
     DecisionRecord.model_validate(mock.get(f"/runs/{run_id}/flows/F1/decision").json())

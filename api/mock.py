@@ -125,6 +125,8 @@ class MockBackend:
             self._check_policy(policy)
         return CompareResponse(
             scenario=self.scenario,
+            topology=self.topology,
+            flows=self.flows,
             table=[CompareRow(policy=p, metrics=self.step0[p].metrics) for p in req.policies],
             snapshots={p: [self.step0[p]] for p in req.policies},
         )

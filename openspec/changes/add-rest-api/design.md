@@ -23,13 +23,14 @@ PLAN.md section 6 chooses REST only: each event recompute is a request and a res
 | `POST /runs` | `{scenario_id` or `scenario, policy, config?}` | `{run_id, scenario, topology, flows, snapshot}` |
 | `POST /runs/{id}/events` | `{kind, links?, node?}` | `Snapshot` |
 | `POST /runs/{id}/reset` | none | `Snapshot` |
-| `POST /compare` | `{scenario_id` or `scenario, policies[], config?}` | `{scenario, table, snapshots}` |
+| `POST /compare` | `{scenario_id` or `scenario, policies[], config?}` | `{scenario, topology, flows, table, snapshots}` |
 | `GET /runs/{id}/flows/{flow_id}/decision` | none | `DecisionRecord` |
 
 `POST /runs` returns the resolved topology, flows and scenario alongside the step-0 snapshot. A snapshot holds link state and allocation but not capacities or flow demands, and the UI needs those to draw the graph and the flow table; the resolved scenario shows the effective seed after a generator retry.
 *Rejected:* returning only the snapshot and adding a `GET /runs/{id}/topology` endpoint, because that is a seventh endpoint outside section 7 and a second round trip on every load.
 
 **`/compare` runs each policy through the scenario's full event list** on deep copies and returns, per policy, the list of snapshots, plus a `table` of final-step headline metrics. The interactive side-by-side view holds two runs instead; `/compare` serves the scripted comparison and the fallback run JSON.
+It also returns the resolved topology and flows, as `POST /runs` does, so a saved `compare --out` file renders offline (frontend task 5.2).
 *Rejected:* returning only the final snapshot per policy, because the saved fallback run must show the progression.
 
 **Sessions are a dict keyed by a server-generated run id.** The process is single-worker and local. Each simulation call is guarded by a per-session lock, and a session cap evicts the oldest run.

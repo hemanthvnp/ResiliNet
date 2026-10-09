@@ -118,7 +118,15 @@
       },
       "CompareResponse": {
         "additionalProperties": false,
+        "description": "Self-contained, so a saved `compare --out` file renders with no server.",
         "properties": {
+          "flows": {
+            "items": {
+              "$ref": "#/components/schemas/Flow"
+            },
+            "title": "Flows",
+            "type": "array"
+          },
           "scenario": {
             "$ref": "#/components/schemas/Scenario"
           },
@@ -138,10 +146,15 @@
             },
             "title": "Table",
             "type": "array"
+          },
+          "topology": {
+            "$ref": "#/components/schemas/Topology"
           }
         },
         "required": [
           "scenario",
+          "topology",
+          "flows",
           "table",
           "snapshots"
         ],
