@@ -1,0 +1,42 @@
+{
+  "step": 0,
+  "link_state": {"L2": "up", "L5": "up", "L6": "up", "L7": "up"},
+  "allocation": {
+    "results": {
+      "F1": {
+        "flow_id": "F1",
+        "paths": [{"arcs": ["L2:A>B", "L7:B>D"], "rate": 10}],
+        "delivered": 10.0, "unserved": 5.0, "cause": "PATH_LIMIT"
+      },
+      "F2": {
+        "flow_id": "F2",
+        "paths": [{"arcs": ["L5:A>C", "L6:C>D"], "rate": 10}],
+        "delivered": 10.0, "unserved": 0.0, "cause": "NONE"
+      }
+    },
+    "arc_load": {
+      "L2:A>B": 10, "L2:B>A": 0, "L5:A>C": 10, "L5:C>A": 0,
+      "L6:C>D": 10, "L6:D>C": 0, "L7:B>D": 10, "L7:D>B": 0
+    }
+  },
+  "metrics": {
+    "dr": 0.8,
+    "dr_by_class": {"0": 0.6666666666666666, "2": 1.0},
+    "dr_reach": 0.8,
+    "unserved_by_cause": {"PATH_LIMIT": 5.0},
+    "overloaded_arcs": 0,
+    "overload_excess": 0,
+    "max_util": 1.0,
+    "mean_util": 0.5,
+    "arcs_above_90": 4,
+    "link_util": {"L2": 1.0, "L5": 1.0, "L6": 1.0, "L7": 1.0},
+    "latency_stretch": 1.5,
+    "recovery_ratio": null,
+    "churn_flows": 0,
+    "churn_rate": 0,
+    "p0_greedy_gap": 5.0,
+    "compute_ms": 0.0
+  },
+  "affected_flows": [],
+  "decisions": []
+}
