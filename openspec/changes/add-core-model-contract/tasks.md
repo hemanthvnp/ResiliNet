@@ -14,7 +14,7 @@
 
 ## 3. Arc model and ledger (B, H0.5 to H1.5)
 
-- [ ] 3.1 Add `core/model/arcs.py` (expand links to arcs, arc id format, parse arc id, available-arc filter, sorted output), with tests: link gives two arcs, down link gives none, order is stable
+- [x] 3.1 Add `core/model/arcs.py` (expand links to arcs, arc id format, parse arc id, available-arc filter, sorted output), with tests: link gives two arcs, down link gives none, order is stable
 - [ ] 3.2 Add `Ledger` construction and `residual` in `core/model/ledger.py`, with tests: fresh ledger, `util_cap` 0.9 on capacity 15 gives 13, down arcs excluded
 - [ ] 3.3 Add `bottleneck` and `reserve` (raises and changes nothing on overflow), with tests for both outcomes
 - [ ] 3.4 Add `release` and `class_breakdown`, with tests: release restores capacity, breakdown by class in ascending order
