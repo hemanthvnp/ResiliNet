@@ -19,7 +19,14 @@ import random
 
 from core.gen.campus import DEFAULT_TOPOLOGY, DEFAULT_TRAFFIC
 from core.gen.registry import resolve_inputs
-from core.model.types import Event, PolicyConfig, Scenario, Topology
+from core.model.types import (
+    Event,
+    GeneratedTopologySpec,
+    GeneratedTrafficSpec,
+    PolicyConfig,
+    Scenario,
+    Topology,
+)
 
 CASES = ("healthy", "uplink", "multi", "recovered")
 RANDOM_FAILURES = 3
@@ -38,11 +45,13 @@ def draw_links(topology: Topology, seed: int, purpose: int, k: int = RANDOM_FAIL
     return sorted(purpose_rng(seed, purpose).sample(ids, k))
 
 
-def build_cases(seed: int) -> list[Scenario]:
+def build_cases(seed: int, topology_spec: GeneratedTopologySpec = DEFAULT_TOPOLOGY,
+                traffic_spec: GeneratedTrafficSpec = DEFAULT_TRAFFIC) -> list[Scenario]:
     """The four cases of one seed, in CASES order. Every case carries the same topology spec
-    (with the seed the generator actually used) and the same explicit flow list."""
-    resolved, flows = resolve_inputs(DEFAULT_TOPOLOGY.model_copy(update={"seed": seed}),
-                                     DEFAULT_TRAFFIC.model_copy(update={"seed": seed}))
+    (with the seed the generator actually used) and the same explicit flow list. The two specs
+    give the size; the default is the demo size (about 50 nodes and 200 flows)."""
+    resolved, flows = resolve_inputs(topology_spec.model_copy(update={"seed": seed}),
+                                     traffic_spec.model_copy(update={"seed": seed}))
     topology = resolved.topology
     multi = draw_links(topology, seed, PURPOSE_MULTI)
     recovered = draw_links(topology, seed, PURPOSE_RECOVERED)
@@ -53,7 +62,7 @@ def build_cases(seed: int) -> list[Scenario]:
         "recovered": [Event(step=1, kind="fail", links=recovered),
                       Event(step=2, kind="recover", links=recovered)],
     }
-    spec = DEFAULT_TOPOLOGY.model_copy(update={"seed": resolved.seed})
+    spec = topology_spec.model_copy(update={"seed": resolved.seed})
     return [
         Scenario(id=f"seed{seed}-{case}", seed=seed, topology=spec, traffic=flows,
                  events=events[case], config=PolicyConfig())
