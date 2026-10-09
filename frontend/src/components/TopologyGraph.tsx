@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import cytoscape, { Core, ElementDefinition, LayoutOptions } from 'cytoscape';
-import { Topology, Snapshot } from '../types/contract';
+import { PathAlloc, Topology, Snapshot } from '../types/contract';
 
 export interface ViewportState {
   zoom: number;
@@ -12,6 +12,7 @@ export interface TopologyGraphProps {
   snapshot: Snapshot;
   onLinkClick?: (linkId: string, currentStatus: 'up' | 'down') => void;
   highlightedArcs?: string[]; // e.g. ["L_DC_PRI:N_CORE1>N_DC"]
+  flowRates?: Record<string, number>; // link id -> Mbps of the animated flow(s); see flowRatesByLink
   highlightColor?: string;
   className?: string;
   readOnly?: boolean;
@@ -142,12 +143,24 @@ export function getLinkHint(topology: Topology, snapshot: Snapshot, linkId: stri
 
 export const ZOOM_STEP = 1.3;
 
+/** Mbps per link of a flow's paths (task 5.5). A link used by two paths adds both rates. */
+export function flowRatesByLink(paths: PathAlloc[]): Record<string, number> {
+  const rates: Record<string, number> = {};
+  for (const path of paths) {
+    const links = new Set(path.arcs.map((arc) => arc.slice(0, arc.indexOf(':'))));
+    for (const link of links) rates[link] = (rates[link] ?? 0) + path.rate;
+  }
+  return rates;
+}
+
 export function getEdgeElements(
   topology: Topology,
   snapshot: Snapshot,
   highlightedArcs: string[],
   highlightColor: string,
+  flowRates: Record<string, number> = {},
 ): ElementDefinition[] {
+  const maxRate = Math.max(0, ...Object.values(flowRates));
   return topology.links.map((link) => {
     const isDown = snapshot.link_state[link.id] === 'down';
     const util = snapshot.metrics.link_util[link.id];
@@ -169,9 +182,12 @@ export function getEdgeElements(
         util: util !== undefined ? (util * 100).toFixed(0) : '0',
         color: isHighlighted ? highlightColor : getLinkColor(util, isDown),
         lineStyle: isDown ? 'dashed' : 'solid',
-        width: isHighlighted ? width + 2 : width,
+        // a link carrying the animated flow is as thick as its share of the flow (3.5 to 10 px)
+        width: flowRates[link.id] ? 3.5 + (6.5 * flowRates[link.id]) / maxRate : isHighlighted ? width + 2 : width,
         label: getLinkLabel(util, isDown),
       },
+      // flowing: the animated flow uses this link; lossy: and the link is overloaded, so traffic is lost here
+      classes: flowRates[link.id] && !isDown ? ((util ?? 0) > 1 ? 'flowing lossy' : 'flowing') : '',
     };
   });
 }
@@ -181,6 +197,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
   snapshot,
   onLinkClick,
   highlightedArcs = [],
+  flowRates = {},
   highlightColor = '#38bdf8',
   className = '',
   readOnly = false,
@@ -222,7 +239,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
         },
         position: positions[node.id],
       })),
-      ...getEdgeElements(topology, snapshot, highlightedArcs, highlightColor),
+      ...getEdgeElements(topology, snapshot, highlightedArcs, highlightColor, flowRates),
     ];
 
     const cy = cytoscape({
@@ -292,6 +309,22 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
             'text-background-opacity': 0.85,
             'text-background-padding': '2px' as any,
             'text-events': 'yes', // a click on a "DOWN" or "225%" label counts as a click on its link
+          },
+        },
+        {
+          selector: 'edge.flowing',
+          style: {
+            'line-style': 'dashed',
+            'line-dash-pattern': [12, 6] as any,
+            'opacity': 1,
+          },
+        },
+        {
+          // overloaded: red and sparse, because part of the flow is lost on this link
+          selector: 'edge.flowing.lossy',
+          style: {
+            'line-color': '#ef4444',
+            'line-dash-pattern': [3, 14] as any,
           },
         },
         {
@@ -372,12 +405,25 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
 
     cyRef.current = cy;
 
+    // Move the dashes of the animated flow's links along the line, about 30 px a second
+    let frame = 0;
+    const flowing = cy.edges('.flowing');
+    if (flowing.nonempty() && typeof requestAnimationFrame !== 'undefined') {
+      const start = performance.now();
+      const tick = (now: number) => {
+        flowing.style('line-dash-offset', -((now - start) / 33) % 1000);
+        frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    }
+
     return () => {
+      if (frame) cancelAnimationFrame(frame);
       cy.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- callbacks are read through refs;
     // highlightedArcs is compared by value, since App builds a new array on every render
-  }, [topology, snapshot, highlightedArcs.join(','), highlightColor, readOnly]);
+  }, [topology, snapshot, highlightedArcs.join(','), highlightColor, readOnly, JSON.stringify(flowRates)]);
 
   // Re-fit when the container changes size (switching to Stacked or Toggle, or resizing the
   // window): cytoscape does not notice on its own and keeps the old, smaller drawing.

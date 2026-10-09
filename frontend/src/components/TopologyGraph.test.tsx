@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getDeterministicPositions, getEdgeElements, getLinkColor, getLinkHint, getLinkLabel, getLinkLineStyle, getNodeLabel } from './TopologyGraph';
+import { flowRatesByLink, getDeterministicPositions, getEdgeElements, getLinkColor, getLinkHint, getLinkLabel, getLinkLineStyle, getNodeLabel } from './TopologyGraph';
 import { CAMPUS_TOPOLOGY, MOCK_STEP1_S2_SNAPSHOT } from '../fixtures/mockData';
 import { Topology } from '../types/contract';
 
@@ -142,5 +142,53 @@ describe('Selected flow route highlight (Task 4.1)', () => {
   it('draws every link at least 3.5 px wide so it is easy to click', () => {
     const edges = getEdgeElements(CAMPUS_TOPOLOGY, MOCK_STEP1_S2_SNAPSHOT, [], '#38bdf8');
     expect(Math.min(...edges.map((e) => e.data.width as number))).toBeGreaterThanOrEqual(3.5);
+  });
+
+  describe('flow animation (Task 5.5)', () => {
+    // A split flow: 10 Mbps A-B-D and 5 Mbps A-C-D (the PLAN.md section 4 diamond, healthy, under S2)
+    const paths = [
+      { arcs: ['L2:A>B', 'L7:B>D'], rate: 10 },
+      { arcs: ['L5:A>C', 'L6:C>D'], rate: 5 },
+    ];
+    const diamondTopo: Topology = {
+      nodes: ['A', 'B', 'C', 'D'].map((id) => node(id, 'switch')),
+      links: [
+        { id: 'L2', u: 'A', v: 'B', capacity: 10, latency: 1, status: 'up' },
+        { id: 'L7', u: 'B', v: 'D', capacity: 10, latency: 1, status: 'up' },
+        { id: 'L5', u: 'A', v: 'C', capacity: 10, latency: 2, status: 'up' },
+        { id: 'L6', u: 'C', v: 'D', capacity: 10, latency: 2, status: 'up' },
+      ],
+    };
+    const snap = (util: Record<string, number>) => ({
+      ...MOCK_STEP1_S2_SNAPSHOT,
+      link_state: { L2: 'up', L7: 'up', L5: 'up', L6: 'up' } as Record<string, 'up' | 'down'>,
+      metrics: { ...MOCK_STEP1_S2_SNAPSHOT.metrics, link_util: util },
+    });
+    const byId = (edges: ReturnType<typeof getEdgeElements>) => Object.fromEntries(edges.map((e) => [e.data.id, e]));
+
+    it('adds up a flow\'s Mbps per link over its paths', () => {
+      expect(flowRatesByLink(paths)).toEqual({ L2: 10, L7: 10, L5: 5, L6: 5 });
+      expect(flowRatesByLink([{ arcs: ['L1:A>B', 'L2:B>C'], rate: 3 }, { arcs: ['L1:A>B', 'L3:B>C'], rate: 2 }])).toEqual({ L1: 5, L2: 3, L3: 2 });
+    });
+
+    it('animates both paths of a split flow, thicker where it carries more', () => {
+      const e = byId(getEdgeElements(diamondTopo, snap({ L2: 1, L7: 1, L5: 1, L6: 1 }), [], '#38bdf8', flowRatesByLink(paths)));
+      for (const id of ['L2', 'L7', 'L5', 'L6']) expect(e[id].classes).toContain('flowing');
+      expect(e.L2.data.width).toBeGreaterThan(e.L5.data.width);
+    });
+
+    it('draws a link red only in the panel where it is overloaded', () => {
+      const rates = flowRatesByLink(paths);
+      const baseline = byId(getEdgeElements(diamondTopo, snap({ L2: 2.5, L7: 2.5, L5: 0, L6: 0 }), [], '#38bdf8', rates));
+      const s2 = byId(getEdgeElements(diamondTopo, snap({ L2: 1, L7: 1, L5: 0.5, L6: 0.5 }), [], '#38bdf8', rates));
+      expect(baseline.L2.classes).toBe('flowing lossy');
+      expect(baseline.L5.classes).toBe('flowing');
+      expect(s2.L2.classes).toBe('flowing');
+    });
+
+    it('animates nothing when no flow is selected', () => {
+      const e = getEdgeElements(diamondTopo, snap({ L2: 1 }), [], '#38bdf8');
+      expect(e.every((x) => !x.classes)).toBe(true);
+    });
   });
 });
