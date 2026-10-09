@@ -143,3 +143,29 @@ Source: PLAN.md section 13.
 #### Scenario: Load saved run
 - **WHEN** the user loads a saved comparison file with the backend stopped
 - **THEN** both panels render the saved snapshots
+
+### Requirement: Animated flow routes
+When a flow is selected, each panel SHALL animate that flow's routes in its own snapshot: moving dashes in the flow's class colour, with line thickness proportional to the Mbps the flow carries on each link. On a link that is overloaded in that panel (utilization above 1), the flow's dashes SHALL be drawn red and sparse to show traffic lost there. The UI SHALL state that the animation shows computed rates along routes (a fluid model), not individual packets.
+
+Source: a design decision of this change, added after the manual UI test (design.md); PLAN.md section 2 fixes the fluid model.
+
+#### Scenario: Split flow
+- **WHEN** a flow with two paths is selected
+- **THEN** the links of both paths are animated, and a link carrying more of the flow's rate is drawn thicker
+
+#### Scenario: Loss on an overloaded link
+- **WHEN** a selected flow crosses a link whose utilization is above 1 in the baseline panel
+- **THEN** that link is drawn with red, sparse dashes in the baseline panel only
+
+### Requirement: Stage player for the last event
+After an event, the UI SHALL offer three stages for it, shown in both panels: Before (the previous step), Link fails (the previous routes with the event's link state, and the paths of the affected flows marked), and Rerouted (the current step). Each stage SHALL carry a caption built from the snapshots: the failed or recovered links, the number of affected flows, and each panel's delivery, overloaded links and largest utilization.
+
+Source: a design decision of this change, added after the manual UI test (design.md).
+
+#### Scenario: Three stages of a failure
+- **WHEN** a link has been failed and the user steps through the stages
+- **THEN** Before shows the previous step, Link fails shows the failed link down with the affected flows' old paths marked and names the number of affected flows from the snapshot, and Rerouted shows the current step with each panel's delivery and overloaded links
+
+#### Scenario: Leaving the player
+- **WHEN** the user closes the stage player or applies another event
+- **THEN** both panels show the current step

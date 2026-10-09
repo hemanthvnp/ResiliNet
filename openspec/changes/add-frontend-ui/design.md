@@ -46,6 +46,12 @@ PLAN.md section 6 picks React, Vite, TypeScript, Cytoscape.js and Recharts, with
 **Determinism.** The layout uses a fixed seed and is computed once per topology, so the same network always appears in the same place and both panels match. The flow table is sorted by class then flow id, KPI causes appear in a fixed order, and event history is replayed in order. The UI generates no random values of its own; the seed field is sent to the backend as typed.
 *Rejected:* a force layout with a random start, because the demo network would look different at every rehearsal.
 
+**Traffic is animated as moving dashes along the selected flow's routes, not as packets.** The model is a steady-state fluid (PLAN.md section 2): it computes Mbps per path, with no packets or queues. Dashes move along each link of the selected flow, thickness follows the Mbps on that link, and on an overloaded link they turn red and sparse. A note under the graph says this is computed rates, not packets.
+*Rejected: dots for every flow at once.* On a 50-node campus with 200 flows the view becomes noise, and it costs a canvas overlay. *Rejected: packet-level animation.* It would show behaviour the model does not compute.
+
+**The stage player replays the last event from data the UI already has.** Before is the previous snapshot. Link fails is the previous allocation drawn with the new link states, with the snapshot's `affected_flows` marked. Rerouted is the current snapshot. The previous snapshots are kept in the UI when an event is applied, so no API change is needed.
+*Rejected: a new endpoint for intermediate states.* A full recompute has no intermediate state to fetch. The Link fails stage is a display composite, and its caption says so.
+
 ## Risks / Trade-offs
 
 - [Contract drift] → Generated types and mocks from H1.5.
