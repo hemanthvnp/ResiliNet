@@ -24,7 +24,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["core*", "api*", "cli*"]
+include = ["core*", "api*", "cli*", "ext*"]
 
 [tool.pytest.ini_options]
 # Unit tests live beside each module in core/<module>/tests/; importlib mode lets
