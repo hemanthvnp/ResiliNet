@@ -14,6 +14,7 @@ from pathlib import Path
 from pydantic import TypeAdapter
 
 from core.gen.campus import CAMPUS_PRIMARY_UPLINK
+from core.gen.traffic import generate_traffic
 from core.model.types import (
     Flow,
     GeneratedTopologySpec,
@@ -41,7 +42,9 @@ TEMPLATES: dict[str, tuple[str, str | None]] = {
 }
 
 TOPOLOGY_GENERATORS: dict[str, Callable[[GeneratedTopologySpec], ResolvedTopology]] = {}
-TRAFFIC_GENERATORS: dict[str, Callable[[GeneratedTrafficSpec, Topology], list[Flow]]] = {}
+TRAFFIC_GENERATORS: dict[str, Callable[[GeneratedTrafficSpec, Topology], list[Flow]]] = {
+    "campus": generate_traffic,
+}
 
 _topology_spec = TypeAdapter(TopologySpec)
 _traffic_spec = TypeAdapter(TrafficSpec)

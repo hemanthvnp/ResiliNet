@@ -7,8 +7,8 @@
 ## 2. Traffic generator (B, H1.5 to H4)
 
 - [x] 2.1 Add explicit-list `TrafficSpec` resolution, with a test that the two diamond flows pass through unchanged
-- [ ] 2.2 Add the seeded traffic generator (explicit `random.Random(seed)`, largest-remainder class counts, integer rates of at least 1, distinct endpoints), with tests: same seed gives identical flows, 200 flows with unique ids, the class-mix counts
-- [ ] 2.3 Give P0 flows a key-service endpoint and a `service` label, with a test on the campus template
+- [x] 2.2 Add the seeded traffic generator (explicit `random.Random(seed)`, largest-remainder class counts, integer rates of at least 1, distinct endpoints), with tests: same seed gives identical flows, 200 flows with unique ids, the class-mix counts
+- [x] 2.3 Give P0 flows a key-service endpoint and a `service` label, with a test on the campus template
 
 ## 3. Post-failure path check (B, at H4)
 
