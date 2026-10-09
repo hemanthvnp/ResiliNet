@@ -1,0 +1,62 @@
+{
+  "source": "PLAN.md section 4 worked example, copied by an agent. A must confirm against a hand calculation before merge (task 1.2).",
+  "topology": "AB cap 10 lat 1, BD cap 10 lat 1, AC cap 10 lat 2, CD cap 10 lat 2, each direction",
+  "flows": {
+    "F1": {"class": 0, "src": "A", "dst": "D", "rate": 15},
+    "F2": {"class": 2, "src": "A", "dst": "D", "rate": 10}
+  },
+  "cases": {
+    "healthy": {
+      "S0": {
+        "paths": {"F1": [["A", "B", "D"]], "F2": [["A", "B", "D"]]},
+        "arc_load": {"L_AB:A>B": 25, "L_BD:B>D": 25},
+        "scale": 0.4,
+        "delivered": {"F1": 6, "F2": 4},
+        "cause": {"F1": "OVERLOAD_LOSS", "F2": "OVERLOAD_LOSS"},
+        "dr_p0": 0.4, "dr_total": 0.4,
+        "overloaded_arcs": 2, "excess": 30
+      },
+      "S0-QoS": {
+        "paths": {"F1": [["A", "B", "D"]], "F2": [["A", "B", "D"]]},
+        "delivered": {"F1": 10, "F2": 0},
+        "dr_p0_fraction": "2/3", "dr_total": 0.4,
+        "overloaded_arcs": 2
+      },
+      "S2": {
+        "paths": {"F1": [["A", "B", "D"], ["A", "C", "D"]], "F2": [["A", "C", "D"]]},
+        "rates": {"F1": [10, 5], "F2": [5]},
+        "delivered": {"F1": 15, "F2": 5},
+        "unserved": {"F1": 0, "F2": 5},
+        "cause": {"F1": "NONE", "F2": "INSUFFICIENT_CAPACITY"},
+        "dr_p0": 1.0, "dr_p2": 0.5, "dr_total": 0.8,
+        "overloaded_arcs": 0
+      }
+    },
+    "bd_failed": {
+      "S0": {
+        "paths": {"F1": [["A", "C", "D"]], "F2": [["A", "C", "D"]]},
+        "arc_load": {"L_AC:A>C": 25, "L_CD:C>D": 25},
+        "delivered": {"F1": 6, "F2": 4},
+        "dr_p0": 0.4, "dr_total": 0.4
+      },
+      "S0-QoS": {
+        "paths": {"F1": [["A", "C", "D"]], "F2": [["A", "C", "D"]]},
+        "delivered": {"F1": 10, "F2": 0},
+        "dr_p0_fraction": "2/3", "dr_total": 0.4
+      },
+      "S2": {
+        "paths": {"F1": [["A", "C", "D"]], "F2": []},
+        "rates": {"F1": [10], "F2": []},
+        "delivered": {"F1": 10, "F2": 0},
+        "unserved": {"F1": 5, "F2": 10},
+        "cause": {"F1": "INSUFFICIENT_CAPACITY", "F2": "INSUFFICIENT_CAPACITY"},
+        "dr_p0_fraction": "2/3", "dr_total": 0.4,
+        "overloaded_arcs": 0
+      }
+    }
+  },
+  "non_integer_case": {
+    "description": "A 7 Mbps flow on an arc scaled by 0.4 under S0 delivers 2.8 and loses 4.2",
+    "rate": 7, "scale": 0.4, "delivered": 2.8, "unserved": 4.2
+  }
+}
