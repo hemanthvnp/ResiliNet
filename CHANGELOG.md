@@ -8,6 +8,14 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- `README.md`: problem and solution, how to run the backend, frontend, command
+  line and tests (checked on a fresh clone), demo steps, reproducing a run from a
+  seed, the model, the allocator pseudocode, the diamond worked example, an
+  architecture diagram, how correctness is checked, the results measured so far,
+  limitations, technical contribution, future work, external resources and the AI
+  use disclosure. The team, the official problem statement text and the 30-seed
+  benchmark results are still to be added.
+
 - Command line (`python -m cli`): `run --scenario <file|id> --policy <name>` writes
   the snapshot sequence as JSON, and `compare --scenario <file|id> [--policies ...]`
   prints the headline metrics per step and policy. `compare --out` writes the same

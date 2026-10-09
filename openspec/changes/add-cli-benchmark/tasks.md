@@ -31,8 +31,8 @@
 
 ## 5. README and demo deliverables (D, H16 to H22)
 
-- [ ] 5.1 Write the README setup (one command for the backend, one for the frontend) and verify it on a clean machine
-- [ ] 5.2 Write the model, assumptions, algorithm with pseudocode and architecture diagram sections
+- [x] 5.1 Write the README setup (one command for the backend, one for the frontend) and verify it on a clean machine
+- [x] 5.2 Write the model, assumptions, algorithm with pseudocode and architecture diagram sections
 - [ ] 5.3 Write "reproduce a run from a seed" and the benchmark results with the stress-case mapping
 - [ ] 5.4 Write the limitations section (ties and losses against S0-QoS, the single-pass baseline bias, greedy sub-optimality), the technical-contribution paragraph and future work
 - [ ] 5.5 Fill the demo script with numbers from the final run and save the fallback run JSON with `compare --out`
