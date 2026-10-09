@@ -13,20 +13,20 @@ It compares four routing policies on exactly the same network, traffic and failu
 
 ## Team
 
-> **TODO before submission (rulebook section 8):** team name, and each member's name and role.
+> **TODO before submission:** team name.
 
-| Role | Owns | Member |
-|---|---|---|
-| A: routing | `core/routing/`, `core/explain/` | TODO |
-| B: simulation, model, metrics | `core/model/`, `core/gen/`, `core/sim/`, `core/metrics/` | TODO |
-| C: frontend | `frontend/` | TODO |
-| D: integration and QA | `api/`, `tests/`, `cli/` | TODO |
+| Member | Roll number | Role | Owns |
+|---|---|---|---|
+| Hemanth Vasuthev | 24pw16 | A: routing | `core/routing/`, `core/explain/` |
+| Jithendra | 24pw37 | B: simulation, model, metrics | `core/model/`, `core/gen/`, `core/sim/`, `core/metrics/` |
+| Varunesh | 24pw28 | C: frontend | `frontend/` |
+| Nithiish | 24pw24 | D: integration and QA | `api/`, `tests/`, `cli/`, and the cycle 2 additions in `ext/` and `examples/` |
 
 ## Problem statement
 
 **Problem Statement 4: Network Rerouter.**
 
-> **TODO before submission:** paste the official problem statement text here.
+> Develop a network simulation and rerouting system that responds to link failures and attempts to maintain critical communication while efficiently using the remaining network capacity.
 
 We read it as follows. Model a campus network carrying traffic of different importance. Let users create or generate a topology, and fail and recover links. Then reroute traffic so that critical services keep working, no link is driven past its capacity, and every decision can be explained.
 
