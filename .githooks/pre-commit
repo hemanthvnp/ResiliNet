@@ -1,0 +1,11 @@
+#!/bin/sh
+# Refuse direct commits on main; work goes on a branch (CLAUDE.md, "Git rules").
+# Concluding a merge into main is allowed.
+
+branch=$(git symbolic-ref --quiet --short HEAD) || exit 0
+[ "$branch" = "main" ] || exit 0
+git rev-parse --quiet --verify MERGE_HEAD >/dev/null && exit 0
+
+echo "pre-commit: direct commits on main are not allowed." >&2
+echo "Create a branch first, for example: git switch -c feat/<name>" >&2
+exit 1

@@ -1,0 +1,40 @@
+#!/bin/sh
+# Check a commit message against CLAUDE.md, "Git rules".
+# Also run by .github/scripts/check-history.sh on every commit of a pull request.
+
+msg_file=$1
+fail=0
+err() {
+  echo "commit-msg: $1" >&2
+  fail=1
+}
+
+# Drop the "git commit -v" diff and comment lines, as git itself will.
+msg=$(sed '/^# -\{24\} >8 -\{24\}$/,$d' "$msg_file" | grep -v '^#')
+subject=$(printf '%s\n' "$msg" | sed -n '1p')
+second=$(printf '%s\n' "$msg" | sed -n '2p')
+
+if printf '%s\n' "$msg" | grep -qiE '^co-authored-by:'; then
+  err "remove the Co-Authored-By trailer; commits carry the author only"
+fi
+if printf '%s\n' "$msg" | grep -qiE 'generated with .*claude code|noreply@anthropic\.com|^claude-session:'; then
+  err "remove the AI attribution line"
+fi
+
+case $subject in
+  "Merge "* | "Revert \""* | "fixup! "* | "squash! "* | "amend! "*) ;;
+  *)
+    if [ "${#subject}" -gt 72 ]; then
+      err "subject is ${#subject} characters; keep it to 72 or fewer"
+    fi
+    case $subject in
+      *.) err "subject must not end with a period" ;;
+    esac
+    ;;
+esac
+
+if [ -n "$second" ]; then
+  err "leave a blank line between the subject and the body"
+fi
+
+exit $fail
