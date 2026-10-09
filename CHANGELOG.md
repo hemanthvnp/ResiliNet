@@ -24,8 +24,8 @@ Notable changes to this project, newest first. The format follows
   seed, the model, the allocator pseudocode, the diamond worked example, an
   architecture diagram, how correctness is checked, the results measured so far,
   limitations, technical contribution, future work, external resources and the AI
-  use disclosure, the team members and the official problem statement. The team
-  name and the 30-seed benchmark results are still to be added.
+  use disclosure, the team (Claude Maxxers) and the official problem statement.
+  The 30-seed benchmark results are still to be added.
 
 - Command line (`python -m cli`): `run --scenario <file|id> --policy <name>` writes
   the snapshot sequence as JSON, and `compare --scenario <file|id> [--policies ...]`

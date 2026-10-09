@@ -13,7 +13,7 @@ It compares four routing policies on exactly the same network, traffic and failu
 
 ## Team
 
-> **TODO before submission:** team name.
+**Team: Claude Maxxers**
 
 | Member | Roll number | Role | Owns |
 |---|---|---|---|

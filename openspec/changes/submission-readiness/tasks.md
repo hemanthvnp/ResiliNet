@@ -12,7 +12,7 @@
 
 ## 2. README sections (D, can start at any time)
 
-- [ ] 2.1 Create `README.md` if it does not exist, and write the sections for team name and members, problem statement (Problem Statement 4) and technologies. Verify that they render on GitHub.
+- [x] 2.1 Create `README.md` if it does not exist, and write the sections for team name and members, problem statement (Problem Statement 4) and technologies. Verify that they render on GitHub.
 - [x] 2.2 Write "External resources" with each direct dependency and its license, taken from `pyproject.toml` and `frontend/package.json`. Check every license against the project's own LICENSE file. Expected licenses:
   - backend: pydantic MIT, networkx BSD-3-Clause, FastAPI MIT, uvicorn BSD-3-Clause, pytest MIT, hypothesis MPL-2.0, httpx BSD-3-Clause, scipy BSD-3-Clause (optional, LP reference only)
   - frontend: React MIT, Vite MIT, Cytoscape.js MIT, Recharts MIT, lucide-react ISC, TypeScript Apache-2.0, Vitest MIT, Testing Library MIT, jsdom MIT, openapi-typescript MIT
