@@ -106,7 +106,7 @@ Source: PLAN.md section 13.
 - **THEN** it is delivered in full and `arc_load` is unchanged
 
 ### Requirement: Policies registered by name
-Policies SHALL be selectable by the names `S0`, `S0-QoS`, `S1` and `S2`. An unknown name SHALL raise an error.
+Policies SHALL be `RoutingPolicy` objects selectable by the names `S0`, `S0-QoS`, `S1` and `S2`. An unknown name SHALL raise an error. `route` SHALL accept an optional `step` keyword, written into every record, and SHALL reject duplicate flow ids, negative rates, `max_paths` below 1, a negative `congestion_lambda` and a `util_cap` outside (0, 1], because `PolicyConfig` checks only types. `arc_load` SHALL list every available arc, zero-load arcs included, and omit the arcs of down links.
 
 Source: PLAN.md section 14.
 

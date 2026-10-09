@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: S0 shortest-path routing
-S0 SHALL route each flow on its latency-shortest path over available arcs, with no capacity check and no priority. A flow with no path SHALL have no allocation and cause `DISCONNECTED`. `arc_load` SHALL be the offered load on each arc.
+S0 SHALL route each flow on its latency-shortest path over available arcs, with no capacity check and no priority. A flow with no path SHALL have no allocation and cause `DISCONNECTED`. `arc_load` SHALL be the offered load, listing every available arc with 0 for arcs that carry nothing and leaving out the arcs of down links, as the frozen fixtures do.
 
 Expected values: hand-worked, PLAN.md section 4 (diamond table).
 

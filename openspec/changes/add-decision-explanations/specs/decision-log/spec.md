@@ -14,13 +14,17 @@ Source: PLAN.md section 7 and 10.
 - **THEN** the record has an empty `attempts` list, an empty `cut`, and `maxflow_bound` and `greedy_gap` unset
 
 ### Requirement: Reference path and status
-Each record SHALL hold the latency-shortest path over available arcs, ignoring capacity, and a status stating whether it was used in full, used in part with the arc where residual ran out, or absent because the flow is disconnected. When a flow's previous path crosses a newly failed link, the record SHALL list the previous paths and name the failed link.
+Each record SHALL hold the reference path: the latency-shortest path, ignoring capacity, over the available arcs plus the links that the flow's previous paths crossed and that are now down. Its status SHALL state whether it was used in full, used in part with the arc where residual ran out, invalid because it crosses a down link, or absent because the flow is disconnected (in which case the reference path is empty). `failed_links` SHALL be the links that are down now and were crossed by the flow's previous paths; the record SHALL list the previous paths and name those links. A flow with no previous path has no failed links.
 
 Expected values: the decision-record example in PLAN.md section 10.
 
 #### Scenario: Previous path invalidated
 - **WHEN** a flow's previous path used link L7 and L7 has failed
 - **THEN** `previous` holds that path, `failed_links` contains `L7`, and the status says the path is invalid because L7 is down
+
+#### Scenario: Disconnected flow with a previous path
+- **WHEN** a flow's previous path crossed a link that is now down and the flow is disconnected
+- **THEN** `failed_links` names that link, the reference path is empty and the status says the flow is disconnected
 
 #### Scenario: Reference path only partly usable
 - **WHEN** a flow needs 15 and its reference path has bottleneck 10
