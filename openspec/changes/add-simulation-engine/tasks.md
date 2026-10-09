@@ -31,11 +31,11 @@
 
 ## 5. Audit (B, H12 to H16)
 
-- [ ] 5.1 Add tests for the section 13 edge cases through the simulation: two flows on the same pair, a capacity-0 link, parallel links, all P0 saturating a bottleneck; fix any failure in the code
+- [x] 5.1 Add tests for the section 13 edge cases through the simulation: two flows on the same pair, a capacity-0 link, parallel links, all P0 saturating a bottleneck; fix any failure in the code
 
 ## 6. Integrate
 
-- [ ] 6.1 Run the full test suite with `pytest`, and `check_invariants` on every snapshot of all eight fixtures under all four policies
-- [ ] 6.2 Rebase onto `main`
-- [ ] 6.3 Run `sh .github/scripts/check-history.sh`
-- [ ] 6.4 Open the pull request from `.github/pull_request_template.md`
+- [x] 6.1 Run the full test suite with `pytest`, and `check_invariants` on every snapshot of all eight fixtures under all four policies
+- [x] 6.2 Rebase onto `main`
+- [x] 6.3 Run `sh .github/scripts/check-history.sh`
+- [x] 6.4 Open the pull request from `.github/pull_request_template.md`

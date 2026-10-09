@@ -30,11 +30,25 @@ class Simulation:
         resolved, flows = resolve_inputs(self.scenario.topology, self.scenario.traffic)
         self.effective_seed = resolved.seed
         self.primary_uplink = resolved.primary_uplink
-        self._initial = resolved.topology.model_copy(deep=True)
+        self._start(resolved.topology, flows, policy, cfg or self.scenario.config, check)
+
+    @classmethod
+    def from_inputs(cls, topology: Topology, flows, policy: str | RoutingPolicy,
+                    cfg: PolicyConfig | None = None, check: bool = False) -> Simulation:
+        """A simulation on a concrete topology and flow list, without a scenario spec."""
+        sim = cls.__new__(cls)
+        sim.scenario = None
+        sim.effective_seed = None
+        sim.primary_uplink = None
+        sim._start(topology, list(flows), policy, cfg or PolicyConfig(), check)
+        return sim
+
+    def _start(self, topology: Topology, flows, policy, cfg: PolicyConfig, check: bool) -> None:
+        self._initial = topology.model_copy(deep=True)
         self.topology = self._initial.model_copy(deep=True)
-        self.flows = list(flows)
+        self.flows = [f.model_copy() for f in flows]
         self.policy = _policy(policy)
-        self.cfg = cfg or self.scenario.config
+        self.cfg = cfg
         self.check = check
         self.healthy_latency = _shortest_latency(self._initial, self.flows)
         self.step = 0
