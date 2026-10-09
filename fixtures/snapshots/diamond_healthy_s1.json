@@ -38,5 +38,20 @@
     "compute_ms": 0.0
   },
   "affected_flows": [],
-  "decisions": []
+  "decisions": [
+    {
+      "flow_id": "F1", "cls": 0, "demand": 15, "step": 0, "failed_links": [], "previous": [],
+      "reference_path": ["L2:A>B", "L7:B>D"], "reference_status": "PARTIAL: L2:A>B saturated",
+      "attempts": [{"iter": 1, "arcs": ["L2:A>B", "L7:B>D"], "cost": 2, "latency": 2, "bottleneck": 10, "pushed": 10}],
+      "delivered": 10.0, "unserved": 5.0, "cause": "PATH_LIMIT", "cut": [], "maxflow_bound": 15, "greedy_gap": 5.0,
+      "explanation": "F1 (P0, 15 Mbps): path A-B-D limited by L2 (saturated). Placed 10 Mbps to A-B-D (latency 2 ms). 5 Mbps unserved, of which 5 Mbps could have been routed (heuristic or path limit)."
+    },
+    {
+      "flow_id": "F2", "cls": 2, "demand": 10, "step": 0, "failed_links": [], "previous": [],
+      "reference_path": ["L2:A>B", "L7:B>D"], "reference_status": "PARTIAL: L2:A>B saturated",
+      "attempts": [{"iter": 1, "arcs": ["L5:A>C", "L6:C>D"], "cost": 4, "latency": 4, "bottleneck": 10, "pushed": 10}],
+      "delivered": 10.0, "unserved": 0.0, "cause": "NONE", "cut": [], "maxflow_bound": null, "greedy_gap": null,
+      "explanation": "F2 (P2, 10 Mbps): path A-B-D limited by L2 (saturated). Placed 10 Mbps to A-C-D (latency 4 ms)."
+    }
+  ]
 }

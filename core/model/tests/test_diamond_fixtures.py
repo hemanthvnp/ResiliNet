@@ -151,7 +151,17 @@ def test_snapshot_header(policy):
     assert s.step == 0
     assert s.link_state == {"L2": "up", "L5": "up", "L6": "up", "L7": "up"}
     assert s.affected_flows == []
-    assert s.decisions == []  # convention C6
+    if policy != "s1":
+        assert s.decisions == []  # convention C6
+        return
+    # S1 carries its records so p0_greedy_gap recomputes (I9); fixture change agreed by A, B, C, D.
+    records = {d.flow_id: d for d in s.decisions}
+    assert sorted(records) == ["F1", "F2"]
+    f1, f2 = records["F1"], records["F2"]
+    assert (f1.cause, f1.delivered, f1.unserved, f1.maxflow_bound, f1.greedy_gap, f1.cut) ==         ("PATH_LIMIT", 10.0, 5.0, 15, 5.0, [])
+    assert [(a.arcs, a.cost, a.bottleneck, a.pushed) for a in f1.attempts] == [(ABD, 2, 10, 10)]
+    assert (f2.cause, f2.delivered, f2.unserved, f2.maxflow_bound, f2.greedy_gap) == ("NONE", 10.0, 0.0, None, None)
+    assert [(a.arcs, a.cost, a.bottleneck, a.pushed) for a in f2.attempts] == [(ACD, 4, 10, 10)]
 
 
 # Group 3: S0 non-integer fixture (PLAN.md section 4, "a 7 Mbps flow scaled by 0.4")
