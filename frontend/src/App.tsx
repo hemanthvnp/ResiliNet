@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { TopologyGraph, ViewportState } from './components/TopologyGraph';
 import { KpiStrip } from './components/KpiStrip';
-import { FlowTable } from './components/FlowTable';
+import { FlowTable, CLASS_COLORS } from './components/FlowTable';
 import { apiClient } from './api/client';
 import { NetworkProvider, useNetwork } from './context/NetworkStore';
-import { Event } from './types/contract';
+import { Event, Snapshot } from './types/contract';
 
 export type ViewLayoutMode = 'side-by-side' | 'stacked' | 'toggle';
 
@@ -167,9 +167,11 @@ export const ResiliNetDashboard: React.FC = () => {
   // Find active decision for the selected flow in S2
   const selectedDecision = rightPanel.snapshot.decisions?.find((d) => d.flow_id === selectedFlowId);
 
-  // Selected flow's active paths for highlight
-  const selectedPaths = rightPanel.snapshot.allocation?.results?.[selectedFlowId || '']?.paths || [];
-  const highlightedArcs = selectedPaths.flatMap((p) => p.arcs);
+  // Each panel highlights its own routes for the selected flow, in the flow's class colour
+  const arcsFor = (snapshot: Snapshot) =>
+    (selectedFlowId ? snapshot.allocation.results[selectedFlowId]?.paths ?? [] : []).flatMap((p) => p.arcs);
+  const selectedCls = flows.find((f) => f.id === selectedFlowId)?.cls;
+  const highlightColor = selectedCls === undefined ? undefined : CLASS_COLORS[selectedCls];
 
   return (
     <div className="app-container" data-testid="app-root">
@@ -373,8 +375,8 @@ export const ResiliNetDashboard: React.FC = () => {
                   topology={topology}
                   snapshot={leftPanel.snapshot}
                   onLinkClick={handleLinkClick}
-                  highlightedArcs={highlightedArcs}
-                  highlightColor="#f59e0b"
+                  highlightedArcs={arcsFor(leftPanel.snapshot)}
+                  highlightColor={highlightColor}
                   readOnly={inFlight}
                   viewport={sharedViewport}
                   onViewportChange={setSharedViewport}
@@ -426,8 +428,8 @@ export const ResiliNetDashboard: React.FC = () => {
                   topology={topology}
                   snapshot={rightPanel.snapshot}
                   onLinkClick={handleLinkClick}
-                  highlightedArcs={highlightedArcs}
-                  highlightColor="#38bdf8"
+                  highlightedArcs={arcsFor(rightPanel.snapshot)}
+                  highlightColor={highlightColor}
                   readOnly={inFlight}
                   viewport={sharedViewport}
                   onViewportChange={setSharedViewport}
@@ -436,8 +438,8 @@ export const ResiliNetDashboard: React.FC = () => {
 
               <div className="legend-strip">
                 <div className="legend-item">
-                  <div className="legend-color-box" style={{ background: '#38bdf8' }} />
-                  <span>Active Route Path</span>
+                  <div className="legend-color-box" style={{ background: highlightColor ?? '#38bdf8' }} />
+                  <span>Selected Flow Route (class colour)</span>
                 </div>
                 <div className="legend-item">
                   <div className="legend-color-box" style={{ background: '#10b981' }} />

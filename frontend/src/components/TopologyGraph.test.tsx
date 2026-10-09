@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getDeterministicPositions, getLinkColor, getLinkLineStyle } from './TopologyGraph';
-import { CAMPUS_TOPOLOGY } from '../fixtures/mockData';
+import { getDeterministicPositions, getEdgeElements, getLinkColor, getLinkLineStyle } from './TopologyGraph';
+import { CAMPUS_TOPOLOGY, MOCK_STEP1_S2_SNAPSHOT } from '../fixtures/mockData';
 
 describe('Deterministic Topology Layout (Task 1.4 & Task 2.2)', () => {
   it('computes identical, deterministic coordinates for the same topology across multiple runs', () => {
@@ -39,5 +39,21 @@ describe('Deterministic Topology Layout (Task 1.4 & Task 2.2)', () => {
 
     expect(getLinkLineStyle(true)).toBe('dashed');
     expect(getLinkLineStyle(false)).toBe('solid');
+  });
+});
+
+describe('Selected flow route highlight (Task 4.1)', () => {
+  it('highlights every link of a two-path flow and no other link', () => {
+    // F03 in the S2 step-1 fixture is split over two paths:
+    // CS_ENG-DIST_N-CORE2-DC and CS_ENG-DIST_N-DIST_S-CORE2-DC
+    const arcs = MOCK_STEP1_S2_SNAPSHOT.allocation.results['F03'].paths.flatMap((p) => p.arcs);
+    const edges = getEdgeElements(CAMPUS_TOPOLOGY, MOCK_STEP1_S2_SNAPSHOT, arcs, '#60a5fa');
+    const colourOf = (id: string) => edges.find((e) => e.data.id === id)!.data.color;
+
+    for (const id of ['L_CS_DIST', 'L_DIST_N_C2', 'L_DC_BCK', 'L_X_DIST', 'L_DIST_S_C2']) {
+      expect(colourOf(id)).toBe('#60a5fa');
+    }
+    expect(colourOf('L_DC_PRI')).not.toBe('#60a5fa');
+    expect(colourOf('L_HST_DIST')).not.toBe('#60a5fa');
   });
 });

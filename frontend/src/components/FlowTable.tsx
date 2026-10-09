@@ -1,6 +1,9 @@
 import React from 'react';
 import { Flow, Snapshot } from '../types/contract';
 
+// Route highlight colour per class; matches the .badge-p0/p1/p2 colours in index.css
+export const CLASS_COLORS: Record<number, string> = { 0: '#f87171', 1: '#60a5fa', 2: '#a78bfa' };
+
 export interface FlowTableProps {
   flows: Flow[];
   snapshot: Snapshot;

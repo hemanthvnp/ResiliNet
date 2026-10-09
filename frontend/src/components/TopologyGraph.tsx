@@ -99,6 +99,39 @@ function interpolateColor(color1: string, color2: string, factor: number): strin
   return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }
 
+/** Cytoscape edge data per link; a link on any highlighted arc takes the highlight colour. */
+export function getEdgeElements(
+  topology: Topology,
+  snapshot: Snapshot,
+  highlightedArcs: string[],
+  highlightColor: string,
+): ElementDefinition[] {
+  return topology.links.map((link) => {
+    const isDown = snapshot.link_state[link.id] === 'down';
+    const util = snapshot.metrics.link_util[link.id];
+    const isHighlighted = highlightedArcs.some((arc) => arc.startsWith(`${link.id}:`));
+
+    // Capacity scaled thickness: 2px (500M) to 7px (2000M)
+    const width = Math.min(8, Math.max(2.5, Math.round((link.capacity / 2000) * 7)));
+
+    return {
+      group: 'edges' as const,
+      data: {
+        id: link.id,
+        source: link.u,
+        target: link.v,
+        capacity: link.capacity,
+        latency: link.latency,
+        status: isDown ? 'down' : 'up',
+        util: util !== undefined ? (util * 100).toFixed(0) : '0',
+        color: isHighlighted ? highlightColor : getLinkColor(util, isDown),
+        lineStyle: isDown ? 'dashed' : 'solid',
+        width: isHighlighted ? width + 2 : width,
+      },
+    };
+  });
+}
+
 export const TopologyGraph: React.FC<TopologyGraphProps> = ({
   topology,
   snapshot,
@@ -129,31 +162,7 @@ export const TopologyGraph: React.FC<TopologyGraphProps> = ({
         },
         position: positions[node.id],
       })),
-      // Edges
-      ...topology.links.map((link) => {
-        const isDown = snapshot.link_state[link.id] === 'down';
-        const util = snapshot.metrics.link_util[link.id];
-        const isHighlighted = highlightedArcs.some((arc) => arc.startsWith(`${link.id}:`));
-
-        // Capacity scaled thickness: 2px (500M) to 7px (2000M)
-        const width = Math.min(8, Math.max(2.5, Math.round((link.capacity / 2000) * 7)));
-
-        return {
-          group: 'edges' as const,
-          data: {
-            id: link.id,
-            source: link.u,
-            target: link.v,
-            capacity: link.capacity,
-            latency: link.latency,
-            status: isDown ? 'down' : 'up',
-            util: util !== undefined ? (util * 100).toFixed(0) : '0',
-            color: isHighlighted ? highlightColor : getLinkColor(util, isDown),
-            lineStyle: isDown ? 'dashed' : 'solid',
-            width: isHighlighted ? width + 2 : width,
-          },
-        };
-      }),
+      ...getEdgeElements(topology, snapshot, highlightedArcs, highlightColor),
     ];
 
     const cy = cytoscape({
