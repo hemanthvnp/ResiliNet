@@ -46,7 +46,7 @@
 
 ## 7. Integrate
 
-- [ ] 7.1 Run the frontend build and tests, and the full backend suite with `pytest`, which runs `check_invariants` on the snapshots the UI consumes
-- [ ] 7.2 Rebase onto `main`
-- [ ] 7.3 Run `sh .github/scripts/check-history.sh`
-- [ ] 7.4 Open the pull request from `.github/pull_request_template.md`
+- [x] 7.1 Run the frontend build and tests, and the full backend suite with `pytest`, which runs `check_invariants` on the snapshots the UI consumes
+- [x] 7.2 Rebase onto `main`
+- [x] 7.3 Run `sh .github/scripts/check-history.sh`
+- [x] 7.4 Open the pull request from `.github/pull_request_template.md`
