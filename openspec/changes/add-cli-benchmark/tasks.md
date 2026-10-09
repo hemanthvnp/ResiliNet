@@ -22,9 +22,9 @@
 
 ## 4. Statistics and hypotheses (D, H12 to H16)
 
-- [ ] 4.1 D writes a tiny CSV by hand with its expected mean, median and paired difference, committed as `tests/cli/expected_stats.json`. An agent does not produce these values
-- [ ] 4.2 Add mean, median and the seeded 95% bootstrap interval in `cli/stats.py`, with tests from `expected_stats.json` and a test that the interval is identical on repeat
-- [ ] 4.3 Add the paired S2 minus S0-QoS difference per seed, with a test from `expected_stats.json`
+- [x] 4.1 D writes a tiny CSV by hand with its expected mean, median and paired difference, committed as `tests/cli/expected_stats.json`. An agent does not produce these values
+- [x] 4.2 Add mean, median and the seeded 95% bootstrap interval in `cli/stats.py`, with tests from `expected_stats.json` and a test that the interval is identical on repeat
+- [x] 4.3 Add the paired S2 minus S0-QoS difference per seed, with a test from `expected_stats.json`
 - [ ] 4.4 Add the H1, H1b, H2, H3, H4 and H5 evaluations with measured values and pass or fail, with tests: H1 passes at 10 points, fails below, H5 lists the runs with a non-zero gap
 - [ ] 4.5 Run the full benchmark, commit the results tables under `results/`, and draft the results section
 - [ ] 4.6 Rerun once at the H16 freeze on the frozen code and replace the tables; only this run's numbers are used
