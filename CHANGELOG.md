@@ -8,6 +8,16 @@ Notable changes to this project, newest first. The format follows
 
 ### Added
 
+- Single-link sensitivity sweep (`python -m ext sweep --scenario <file|id>`,
+  `ext/sweep.py`): fails each link alone from the healthy state, per policy (S2
+  and S0-QoS by default), and reports post-failure DR_P0, DR, overloaded arcs and
+  the drop from the healthy values side by side. Bridges are listed as a
+  structural group with the demand they cut off; the rest are ranked, with exact
+  ties sharing a rank. The CSV is byte-identical between runs. On the campus
+  template, S2 keeps every P0 flow for every single non-bridge failure, while the
+  primary uplink L6 is S0-QoS's worst (DR 0.706, one overloaded link). `ext/` is
+  added to the package list.
+
 - Command line (`python -m cli`): `run --scenario <file|id> --policy <name>` writes
   the snapshot sequence as JSON, and `compare --scenario <file|id> [--policies ...]`
   prints the headline metrics per step and policy. `compare --out` writes the same
