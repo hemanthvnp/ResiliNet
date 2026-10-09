@@ -158,8 +158,8 @@ Every tool used is listed in the README's AI section (rulebook §6.5), since com
 
 | Owner | Request | Fallback if not done |
 |---|---|---|
-| A | The policy registry accepts new names at import time, for example a `register(name, policy)` function next to the S0 to S2 entries | `ext` wraps the registry lookup itself |
-| A | The S0 and S0-QoS delivery models are callable on any allocation, including flows with several paths | `ext` repeats the two delivery formulas (about 15 lines), tested against the S0 and S0-QoS diamond numbers |
+| A | The policy registry accepts new names at import time, for example a `register(name, policy)` function next to the S0 to S2 entries | **Fallback taken:** there is no `register()`; `ext` adds its policies to the `POLICIES` dict in `core/routing/registry.py` at import |
+| A | The S0 and S0-QoS delivery models are callable on any allocation, including flows with several paths | **Fallback taken:** delivery is single-route and private (`_route_baseline`); `ext` repeats the two formulas, tested against the S0 and S0-QoS diamond numbers |
 | D | The CLI entry point is a function, `main(argv)`, not only a `__main__` block | **Already in place:** `cli/main.py` defines `main(argv)` |
 
 **Capabilities.** Cycle-2 OpenSpec changes add **new** capabilities only (`ecmp-routing`, `criticality-sweep`, `judge-kit`). None modifies a cycle-1 capability, so they can be archived after the nine cycle-1 changes in any order.

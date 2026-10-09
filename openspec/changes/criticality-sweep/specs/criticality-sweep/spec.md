@@ -56,7 +56,7 @@ The sweep SHALL also print, per policy, every structural link and the top 5 oper
 Source: PLAN.md sections 7 and 9 (reproducibility). PLAN-CYCLE2.md section 10 (C3.2, C3.4).
 
 #### Scenario: Default run
-- **WHEN** `python -m ext sweep --scenario diamond --out sweep.csv` is run
+- **WHEN** `python -m ext sweep --scenario 07_diamond --out sweep.csv` is run
 - **THEN** it exits 0, and `sweep.csv` has 8 data rows (2 policies × 4 links) in the stated order
 
 #### Scenario: Repeat run
