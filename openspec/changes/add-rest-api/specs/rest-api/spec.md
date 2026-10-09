@@ -57,7 +57,7 @@ Source: PLAN.md section 7.
 - **THEN** the returned snapshot equals the run's original step-0 snapshot, apart from `compute_ms`
 
 ### Requirement: Compare policies
-`POST /compare` SHALL run every requested policy on identical copies of the scenario and return a table of headline metrics per policy and the snapshots of each policy.
+`POST /compare` SHALL run every requested policy on identical copies of the scenario and return the resolved scenario, topology and flows, a table of headline metrics per policy and the snapshots of each policy.
 
 Expected values: hand-worked, PLAN.md section 4 (diamond table).
 

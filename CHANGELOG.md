@@ -69,3 +69,8 @@ Notable changes to this project, newest first. The format follows
   latency stretch by 7 to 30%, so it is not used; it stays in the code with the
   default 0 because the field is part of the frozen contract. See
   `core/routing/tests/ablation.py` and PR 13.
+- REST API skeleton (`api/`): the six PLAN.md section 7 routes, request and
+  response envelopes in `api/schemas.py`, local CORS for the Vite dev server, and
+  a mock mode (`REROUTER_MOCK=1 uvicorn api.app:app`) answering from `fixtures/`.
+  Live mode answers 501 until the simulation engine lands. The generated OpenAPI
+  schema is committed as `api/openapi.json` for the frontend client.
