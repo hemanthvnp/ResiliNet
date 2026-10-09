@@ -3,8 +3,20 @@ from dataclasses import replace
 import pytest
 
 from core.routing.allocator import allocate
-from core.routing.inputs import AllocConfig, ArcSpec, FlowSpec, PathRate
-from core.routing.tests.helpers import EXPECTED, F1, F2, diamond, link, node_paths, nodes, random_case
+from core.routing.inputs import AllocConfig, FlowSpec, PathRate
+from core.routing.tests.helpers import (
+    CASES,
+    EXPECTED,
+    F1,
+    F2,
+    blocking_arcs,
+    blocking_flow,
+    diamond,
+    link,
+    node_paths,
+    nodes,
+    random_case,
+)
 
 S2 = AllocConfig(order="class_size_desc", max_paths=3, congestion_lambda=0, util_cap=1.0)
 
@@ -34,22 +46,29 @@ def test_healthy_diamond_loads_are_within_capacity():
     assert result.arc_load == {"L_AB:A>B": 10, "L_AC:A>C": 10, "L_BD:B>D": 10, "L_CD:C>D": 10}
 
 
-def test_path_limit_one_delivers_10_of_15():
-    result = allocate(diamond(), [F1], AllocConfig(max_paths=1))
+def test_path_limit_case_matches_expected_cases():
+    expected = CASES["path_limit"]
+    result = allocate(diamond(), [F1], AllocConfig(max_paths=expected["max_paths"]))
     outcome = result.outcomes["F1"]
-    assert (outcome.delivered, outcome.unserved, outcome.cause) == (10.0, 5.0, "PATH_LIMIT")
-    assert len(outcome.paths) == 1
+    assert node_paths(outcome) == expected["paths"] and rates(outcome) == expected["rates"]
+    assert (outcome.delivered, outcome.unserved, outcome.cause) == (
+        expected["delivered"], expected["unserved"], expected["cause"],
+    )
 
 
 # --- hard constraints ----------------------------------------------------------------------
 
 
-def test_util_cap_limits_load_to_floor_of_cap_times_capacity():
-    # floor(0.9 * 10) = 9, so a 20 Mbps flow on one arc delivers 9.
-    arcs = link("L1", "A", "B", 10, 1)
-    result = allocate(arcs, [FlowSpec("X", "A", "B", 20, 0)], AllocConfig(util_cap=0.9))
-    assert result.outcomes["X"].delivered == 9 and result.outcomes["X"].cause == "INSUFFICIENT_CAPACITY"
-    assert result.arc_load == {"L1:A>B": 9}
+def test_util_cap_case_matches_expected_cases():
+    expected = CASES["util_cap"]
+    arcs = link("L1", "A", "B", expected["capacity"], 1)
+    flow = FlowSpec("X", "A", "B", expected["rate"], 0)
+    result = allocate(arcs, [flow], AllocConfig(util_cap=expected["util_cap"]))
+    outcome = result.outcomes["X"]
+    assert (outcome.delivered, outcome.unserved, outcome.cause) == (
+        expected["delivered"], expected["unserved"], expected["cause"],
+    )
+    assert result.arc_load == expected["arc_load"]
 
 
 def test_util_cap_rounding_is_exact():
@@ -148,18 +167,13 @@ def test_unknown_destination_is_disconnected():
     assert outcome.cause == "DISCONNECTED"
 
 
-def test_blocking_example_cause_is_insufficient_capacity():
-    # One-way arcs S>A, A>B, B>T (latency 1) and S>B, A>T (latency 10), all capacity 1.
-    # The shortest path S-A-B-T takes 1 and blocks the rest, so 1 of 2 is delivered, while
-    # max flow is 2 (S-A-T plus S-B-T).
-    arcs = [
-        ArcSpec("L1:S>A", "S", "A", 1, 1), ArcSpec("L2:A>B", "A", "B", 1, 1), ArcSpec("L3:B>T", "B", "T", 1, 1),
-        ArcSpec("L4:S>B", "S", "B", 1, 10), ArcSpec("L5:A>T", "A", "T", 1, 10),
-    ]
-    result = allocate(arcs, [FlowSpec("X", "S", "T", 2, 0)], S2)
-    outcome = result.outcomes["X"]
-    assert (outcome.delivered, outcome.unserved, outcome.cause) == (1.0, 1.0, "INSUFFICIENT_CAPACITY")
-    assert (result.records[0].maxflow_bound, result.records[0].greedy_gap) == (2, 1.0)
+def test_blocking_example_matches_expected_cases():
+    expected = CASES["blocking"]
+    outcome = allocate(blocking_arcs(), [blocking_flow()], S2).outcomes["X"]
+    assert node_paths(outcome) == expected["paths"] and rates(outcome) == expected["rates"]
+    assert (outcome.delivered, outcome.unserved, outcome.cause) == (
+        expected["delivered"], expected["unserved"], expected["cause"],
+    )
 
 
 def test_same_source_and_destination_is_delivered_without_load():

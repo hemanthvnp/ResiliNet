@@ -1,0 +1,39 @@
+{
+  "source": "Worked by hand from PLAN.md sections 4 and 5 by an agent at the user's instruction, before comparing with the code. A should still check each case independently.",
+  "blocking": {
+    "description": "One-way arcs. The cheapest path S-A-B-T (cost 3) blocks S-A-T and S-B-T (cost 11 each), so 1 of 2 is delivered while max flow is 2.",
+    "arcs": [
+      ["L1:S>A", "S", "A", 1, 1],
+      ["L2:A>B", "A", "B", 1, 1],
+      ["L3:B>T", "B", "T", 1, 1],
+      ["L4:S>B", "S", "B", 1, 10],
+      ["L5:A>T", "A", "T", 1, 10]
+    ],
+    "flow": {"id": "X", "src": "S", "dst": "T", "rate": 2, "cls": 0},
+    "paths": [["S", "A", "B", "T"]],
+    "rates": [1],
+    "delivered": 1,
+    "unserved": 1,
+    "cause": "INSUFFICIENT_CAPACITY",
+    "maxflow": 2
+  },
+  "path_limit": {
+    "description": "Healthy diamond, max_paths 1, F1 alone (15 Mbps): 10 on A-B-D, A-C-D still free.",
+    "max_paths": 1,
+    "paths": [["A", "B", "D"]],
+    "rates": [10],
+    "delivered": 10,
+    "unserved": 5,
+    "cause": "PATH_LIMIT"
+  },
+  "util_cap": {
+    "description": "util_cap 0.9 on capacity 10 gives effective capacity floor(9.0) = 9.",
+    "util_cap": 0.9,
+    "capacity": 10,
+    "rate": 20,
+    "delivered": 9,
+    "unserved": 11,
+    "cause": "INSUFFICIENT_CAPACITY",
+    "arc_load": {"L1:A>B": 9}
+  }
+}

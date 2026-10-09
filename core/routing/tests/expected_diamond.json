@@ -1,5 +1,5 @@
 {
-  "source": "PLAN.md section 4 worked example, copied by an agent. A must confirm against a hand calculation before merge (task 1.2).",
+  "source": "PLAN.md section 4 worked example, re-derived by hand step by step by an agent at the user's instruction, before comparing with the code. The S2 causes for BD failed are not in the PLAN.md table and come from the definitions in section 4. A should still check each cell independently.",
   "topology": "AB cap 10 lat 1, BD cap 10 lat 1, AC cap 10 lat 2, CD cap 10 lat 2, each direction",
   "flows": {
     "F1": {"class": 0, "src": "A", "dst": "D", "rate": 15},

@@ -6,6 +6,10 @@ from core.explain.template import arc_nodes
 from core.routing.inputs import AllocConfig, ArcSpec, FlowSpec
 
 EXPECTED = json.loads((Path(__file__).parent / "expected_diamond.json").read_text(encoding="utf-8"))
+CASES = json.loads((Path(__file__).parent / "expected_cases.json").read_text(encoding="utf-8"))
+RECORDS = json.loads(
+    (Path(__file__).parents[2] / "explain" / "tests" / "expected_records.json").read_text(encoding="utf-8")
+)
 
 F1 = FlowSpec("F1", "A", "D", 15, 0)
 F2 = FlowSpec("F2", "A", "D", 10, 2)
@@ -57,3 +61,19 @@ def random_case(seed: int):
         util_cap=rng.choice([1.0, 0.9]),
     )
     return arcs, flows, cfg
+
+
+def blocking_arcs() -> list[ArcSpec]:
+    return [ArcSpec(i, u, v, cap, lat) for i, u, v, cap, lat in CASES["blocking"]["arcs"]]
+
+
+def blocking_flow() -> FlowSpec:
+    return FlowSpec(**CASES["blocking"]["flow"])
+
+
+def cut_view(record) -> list[dict]:
+    """The cut of a record in the JSON shape of expected_records.json."""
+    return [
+        {"arc": c.arc, "state": c.state, "load_by_class": {str(k): v for k, v in c.load_by_class.items()}}
+        for c in record.cut
+    ]
