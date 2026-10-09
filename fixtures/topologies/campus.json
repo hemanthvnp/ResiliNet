@@ -1,0 +1,42 @@
+{
+  "nodes": [
+    {"id": "C1", "type": "core", "name": "Core 1"},
+    {"id": "C2", "type": "core", "name": "Core 2"},
+    {"id": "AUTH", "type": "service", "name": "Auth server"},
+    {"id": "EMRG", "type": "service", "name": "Emergency"},
+    {"id": "LMS", "type": "service", "name": "Learning platform"},
+    {"id": "INET", "type": "service", "name": "Internet gateway"},
+    {"id": "D1", "type": "distribution", "name": "Distribution 1"},
+    {"id": "D2", "type": "distribution", "name": "Distribution 2"},
+    {"id": "B1", "type": "building", "name": "Engineering"},
+    {"id": "B2", "type": "building", "name": "Science"},
+    {"id": "B3", "type": "building", "name": "Library"},
+    {"id": "B4", "type": "building", "name": "Admin"},
+    {"id": "B5", "type": "building", "name": "Labs"},
+    {"id": "H1", "type": "hostel", "name": "Boys' hostel"},
+    {"id": "H2", "type": "hostel", "name": "Girls' hostel"}
+  ],
+  "links": [
+    {"id": "L1", "u": "C1", "v": "C2", "capacity": 100, "latency": 1, "status": "up"},
+    {"id": "L2", "u": "C1", "v": "AUTH", "capacity": 100, "latency": 1, "status": "up"},
+    {"id": "L3", "u": "C1", "v": "EMRG", "capacity": 100, "latency": 1, "status": "up"},
+    {"id": "L4", "u": "C1", "v": "LMS", "capacity": 100, "latency": 1, "status": "up"},
+    {"id": "L5", "u": "C1", "v": "INET", "capacity": 100, "latency": 1, "status": "up"},
+    {"id": "L6", "u": "D1", "v": "C1", "capacity": 50, "latency": 1, "status": "up"},
+    {"id": "L7", "u": "D1", "v": "C2", "capacity": 20, "latency": 1, "status": "up"},
+    {"id": "L8", "u": "D2", "v": "C1", "capacity": 50, "latency": 1, "status": "up"},
+    {"id": "L9", "u": "D2", "v": "C2", "capacity": 20, "latency": 1, "status": "up"},
+    {"id": "L10", "u": "B1", "v": "D1", "capacity": 20, "latency": 1, "status": "up"},
+    {"id": "L11", "u": "B1", "v": "D2", "capacity": 10, "latency": 3, "status": "up"},
+    {"id": "L12", "u": "B2", "v": "D1", "capacity": 20, "latency": 1, "status": "up"},
+    {"id": "L13", "u": "B2", "v": "D2", "capacity": 10, "latency": 3, "status": "up"},
+    {"id": "L14", "u": "B3", "v": "D1", "capacity": 20, "latency": 1, "status": "up"},
+    {"id": "L15", "u": "B3", "v": "D2", "capacity": 10, "latency": 3, "status": "up"},
+    {"id": "L16", "u": "B4", "v": "D2", "capacity": 20, "latency": 1, "status": "up"},
+    {"id": "L17", "u": "B4", "v": "D1", "capacity": 10, "latency": 3, "status": "up"},
+    {"id": "L18", "u": "B5", "v": "D2", "capacity": 20, "latency": 1, "status": "up"},
+    {"id": "L19", "u": "B5", "v": "D1", "capacity": 10, "latency": 3, "status": "up"},
+    {"id": "L20", "u": "H1", "v": "D2", "capacity": 10, "latency": 1, "status": "up"},
+    {"id": "L21", "u": "H2", "v": "D2", "capacity": 10, "latency": 1, "status": "up"}
+  ]
+}

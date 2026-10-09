@@ -1,12 +1,12 @@
 ## 1. Branch and campus template (B, H1.5 to H4)
 
-- [ ] 1.1 Create the branch `feat/add-network-generators` from an up-to-date `main`
-- [ ] 1.2 B draws the campus template by hand (core mesh, distribution, building switches, key-service nodes, primary uplink) and its traffic at load factor about 0.5; all four members agree to the new fixture, then it is saved under `fixtures/` with a test that it validates
-- [ ] 1.3 Add the generator registry and `TopologySpec` resolution for `{template: "campus"}`, with tests: template loads identically twice, unknown name raises
+- [x] 1.1 Create the branch `feat/add-network-generators` from an up-to-date `main`
+- [x] 1.2 B draws the campus template by hand (core mesh, distribution, building switches, key-service nodes, primary uplink) and its traffic at load factor about 0.5; all four members agree to the new fixture, then it is saved under `fixtures/` with a test that it validates
+- [x] 1.3 Add the generator registry and `TopologySpec` resolution for `{template: "campus"}`, with tests: template loads identically twice, unknown name raises
 
 ## 2. Traffic generator (B, H1.5 to H4)
 
-- [ ] 2.1 Add explicit-list `TrafficSpec` resolution, with a test that the two diamond flows pass through unchanged
+- [x] 2.1 Add explicit-list `TrafficSpec` resolution, with a test that the two diamond flows pass through unchanged
 - [ ] 2.2 Add the seeded traffic generator (explicit `random.Random(seed)`, largest-remainder class counts, integer rates of at least 1, distinct endpoints), with tests: same seed gives identical flows, 200 flows with unique ids, the class-mix counts
 - [ ] 2.3 Give P0 flows a key-service endpoint and a `service` label, with a test on the campus template
 
