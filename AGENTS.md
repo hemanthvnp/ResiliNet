@@ -25,6 +25,7 @@ pytest
 | B: simulation, model, metrics | `core/model/`, `core/gen/`, `core/sim/`, `core/metrics/` |
 | C: frontend | `frontend/` |
 | D: integration and QA | `api/`, `tests/`, `cli/` |
+| Cycle 2 (nithiishsd) | `ext/`, `examples/` ([PLAN-CYCLE2.md](PLAN-CYCLE2.md) section 7) |
 
 An agent edits only its owner's folders. A change needed in another member's folder is requested from that member, not made. Unit tests live beside each module in `core/<module>/tests/`; the top-level `tests/` holds D's cross-module suites.
 

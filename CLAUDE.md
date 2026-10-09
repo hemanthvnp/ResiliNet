@@ -31,11 +31,11 @@ This turns on the hooks in [.githooks/](.githooks/). They must be committed as e
 
 ## Team rules (PLAN.md section 11)
 
-- **Stay in the owner's folders.** A: `routing/`, `explain/`. B: `model/`, `gen/`, `sim/`, `metrics/`. C: `frontend/`. D: `api/`, `tests/`, `cli/`. If it is not clear which member a session is working for, ask. A change needed in another owner's folder is requested from that person, not made.
+- **Stay in the owner's folders.** A: `routing/`, `explain/`. B: `model/`, `gen/`, `sim/`, `metrics/`. C: `frontend/`. D: `api/`, `tests/`, `cli/`. Cycle 2 (nithiishsd): `ext/`, `examples/`. If it is not clear which member a session is working for, ask. A change needed in another owner's folder is requested from that person, not made.
 - **The contract is edited by humans only.** Never edit `core/model/types.py`, `fixtures/` or the OpenAPI schema after the H1.5 freeze. A change needs all four members to agree, and the fixtures change first.
 - **The core stays pure.** Nothing under `core/` imports FastAPI or frontend code.
 - **Determinism.** All randomness goes through an explicit `random.Random(seed)`; sort by id wherever order could matter; never depend on dict or set ordering.
-- **After the H16 feature freeze**, only fixes and docs.
+- **After the H16 feature freeze**, only fixes and docs. Team exception (PLAN-CYCLE2.md section 2): new code in `ext/` and data in `examples/` may land until H20; every other folder stays frozen.
 
 ## Git rules
 

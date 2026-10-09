@@ -165,9 +165,9 @@ Every tool used is listed in the README's AI section (rulebook §6.5), since com
 **Capabilities.** Cycle-2 OpenSpec changes add **new** capabilities only (`ecmp-routing`, `criticality-sweep`, `judge-kit`). None modifies a cycle-1 capability, so they can be archived after the nine cycle-1 changes in any order.
 
 ## 8. Open items before cycle 2 starts
-1. **Team exception for the freeze (blocker for 3.1 and 3.2):** all four members agree that `ext/`-only code may land until H20. Otherwise those sections become pitch "next steps".
+1. **Team exception for the freeze (blocker for 3.1 and 3.2):** all four members agree that `ext/`-only code may land until H20. Otherwise those sections become pitch "next steps". **Agreed;** recorded in CLAUDE.md.
 2. **Team membership:** every cycle-2 contributor must be a registered member of this team (rulebook §1, §10).
-3. **Ownership of `ext/` and `examples/`** recorded in CLAUDE.md by the team.
+3. **Ownership of `ext/` and `examples/`** recorded in CLAUDE.md by the team. **Done:** nithiishsd, in CLAUDE.md and AGENTS.md.
 4. **Hand-worked numbers:** the expected values in the cycle-2 specs were worked out by the spec author and checked again in review (section 10). A human re-checks them by hand before any test uses them (team testing rule), and the implementation is not written by the model that writes the tests.
 
 ## 9. Concepts the presenters must be able to explain
