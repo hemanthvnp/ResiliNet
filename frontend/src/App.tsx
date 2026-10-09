@@ -634,7 +634,10 @@ export const ResiliNetDashboard: React.FC = () => {
                 />
               </div>
 
-              <DecisionPanel decision={decisionFor(leftPanel.snapshot)} />
+              <DecisionPanel
+                decision={decisionFor(leftPanel.snapshot)}
+                result={selectedFlowId ? leftPanel.snapshot.allocation.results[selectedFlowId] : undefined}
+              />
 
               <Legend />
             </div>
@@ -672,7 +675,10 @@ export const ResiliNetDashboard: React.FC = () => {
                 />
               </div>
 
-              <DecisionPanel decision={decisionFor(rightPanel.snapshot)} />
+              <DecisionPanel
+                decision={decisionFor(rightPanel.snapshot)}
+                result={selectedFlowId ? rightPanel.snapshot.allocation.results[selectedFlowId] : undefined}
+              />
 
               <Legend />
             </div>
