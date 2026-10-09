@@ -6,11 +6,11 @@
 
 ## 2. Types (B, with A on DecisionRecord, H0.5 to H1.5)
 
-- [ ] 2.1 Add `Node`, `Link`, `Topology`, `Flow` to `core/model/types.py`, with tests that a non-integer capacity or rate is rejected
-- [ ] 2.2 Add `PathAlloc`, `FlowResult`, `Allocation` with float `delivered` and `unserved`, with tests for a fractional delivery and an unknown cause
-- [ ] 2.3 Add `PolicyConfig` and `Event`, with a test of the section 7 defaults
-- [ ] 2.4 Add `Attempt`, `CutArc`, `DecisionRecord` (A and B together), with a test that `{"0": 10}` loads as `{0: 10}`
-- [ ] 2.5 Add `Metrics`, `TopologySpec`, `TrafficSpec`, `Scenario`, `Snapshot` and the `RoutingPolicy` protocol, with a test that no model has an `Any` field
+- [x] 2.1 Add `Node`, `Link`, `Topology`, `Flow` to `core/model/types.py`, with tests that a non-integer capacity or rate is rejected
+- [x] 2.2 Add `PathAlloc`, `FlowResult`, `Allocation` with float `delivered` and `unserved`, with tests for a fractional delivery and an unknown cause
+- [x] 2.3 Add `PolicyConfig` and `Event`, with a test of the section 7 defaults
+- [x] 2.4 Add `Attempt`, `CutArc`, `DecisionRecord` (A and B together), with a test that `{"0": 10}` loads as `{0: 10}`
+- [x] 2.5 Add `Metrics`, `TopologySpec`, `TrafficSpec`, `Scenario`, `Snapshot` and the `RoutingPolicy` protocol, with a test that no model has an `Any` field
 
 ## 3. Arc model and ledger (B, H0.5 to H1.5)
 
