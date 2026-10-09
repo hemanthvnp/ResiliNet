@@ -20,7 +20,7 @@
 - [x] 3.4 Time the first seed and apply the matrix-sizing rule, with a test that a projected overrun cuts the ablations and records it
 - [x] 3.5 Measure the median `compute_ms` at demo size for H4 and report it to A (assumption A3)
 
-## 4. Statistics and hypotheses (A, H12 to H16; handed over by D in #24, delivered in #26 and #29; 4.5 and 4.6 remain with A)
+## 4. Statistics and hypotheses (A, H12 to H16; handed over by D in #24, delivered in #26 and #29; 4.5 and 4.6 back with D)
 
 - [x] 4.1 D writes a tiny CSV by hand with its expected mean, median and paired difference, committed as `tests/cli/expected_stats.json`. An agent does not produce these values
 - [x] 4.2 Add mean, median and the seeded 95% bootstrap interval in `cli/stats.py`, with tests from `expected_stats.json` and a test that the interval is identical on repeat
