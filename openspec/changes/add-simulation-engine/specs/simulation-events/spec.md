@@ -60,7 +60,7 @@ Source: PLAN.md section 5 and 9 (scenarios 3 and 8).
 
 #### Scenario: Simultaneous equals sequential
 - **WHEN** three links are failed in one event, and in another run the same three links are failed in three events
-- **THEN** the final snapshots are equal apart from the step number and `compute_ms`
+- **THEN** the final link states, allocations and metrics are equal, apart from `compute_ms` and the measures of the last event (`recovery_ratio`, `churn_flows`, `churn_rate`); `affected_flows` and the event fields of the decision records (`step`, `failed_links`, `previous`) describe the event and may differ
 
 #### Scenario: Recovery restores the original allocation
 - **WHEN** a link is failed and then recovered

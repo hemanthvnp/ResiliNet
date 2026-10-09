@@ -1,0 +1,223 @@
+{
+  "scenario": {
+    "id": "02_uplink_failure",
+    "seed": 0,
+    "topology": {
+      "template": "campus"
+    },
+    "traffic": [
+      {
+        "id": "F1",
+        "src": "B1",
+        "dst": "AUTH",
+        "rate": 2,
+        "cls": 0,
+        "service": "auth"
+      },
+      {
+        "id": "F2",
+        "src": "B1",
+        "dst": "LMS",
+        "rate": 8,
+        "cls": 1,
+        "service": "lms"
+      },
+      {
+        "id": "F3",
+        "src": "B1",
+        "dst": "INET",
+        "rate": 5,
+        "cls": 2,
+        "service": "internet"
+      },
+      {
+        "id": "F4",
+        "src": "B2",
+        "dst": "AUTH",
+        "rate": 2,
+        "cls": 0,
+        "service": "auth"
+      },
+      {
+        "id": "F5",
+        "src": "B2",
+        "dst": "LMS",
+        "rate": 8,
+        "cls": 1,
+        "service": "lms"
+      },
+      {
+        "id": "F6",
+        "src": "B2",
+        "dst": "INET",
+        "rate": 5,
+        "cls": 2,
+        "service": "internet"
+      },
+      {
+        "id": "F7",
+        "src": "B3",
+        "dst": "AUTH",
+        "rate": 2,
+        "cls": 0,
+        "service": "auth"
+      },
+      {
+        "id": "F8",
+        "src": "B3",
+        "dst": "LMS",
+        "rate": 8,
+        "cls": 1,
+        "service": "lms"
+      },
+      {
+        "id": "F9",
+        "src": "B3",
+        "dst": "INET",
+        "rate": 5,
+        "cls": 2,
+        "service": "internet"
+      },
+      {
+        "id": "F10",
+        "src": "B4",
+        "dst": "AUTH",
+        "rate": 2,
+        "cls": 0,
+        "service": "auth"
+      },
+      {
+        "id": "F11",
+        "src": "B4",
+        "dst": "LMS",
+        "rate": 8,
+        "cls": 1,
+        "service": "lms"
+      },
+      {
+        "id": "F12",
+        "src": "B4",
+        "dst": "INET",
+        "rate": 5,
+        "cls": 2,
+        "service": "internet"
+      },
+      {
+        "id": "F13",
+        "src": "B5",
+        "dst": "AUTH",
+        "rate": 2,
+        "cls": 0,
+        "service": "auth"
+      },
+      {
+        "id": "F14",
+        "src": "B5",
+        "dst": "LMS",
+        "rate": 8,
+        "cls": 1,
+        "service": "lms"
+      },
+      {
+        "id": "F15",
+        "src": "B5",
+        "dst": "INET",
+        "rate": 5,
+        "cls": 2,
+        "service": "internet"
+      },
+      {
+        "id": "F16",
+        "src": "H1",
+        "dst": "EMRG",
+        "rate": 1,
+        "cls": 0,
+        "service": "emergency"
+      },
+      {
+        "id": "F17",
+        "src": "H1",
+        "dst": "INET",
+        "rate": 4,
+        "cls": 2,
+        "service": "internet"
+      },
+      {
+        "id": "F18",
+        "src": "H2",
+        "dst": "EMRG",
+        "rate": 1,
+        "cls": 0,
+        "service": "emergency"
+      },
+      {
+        "id": "F19",
+        "src": "H2",
+        "dst": "INET",
+        "rate": 4,
+        "cls": 2,
+        "service": "internet"
+      }
+    ],
+    "events": [
+      {
+        "step": 1,
+        "kind": "fail",
+        "links": [
+          "L6"
+        ]
+      }
+    ],
+    "config": {}
+  },
+  "expect": {
+    "source": "Hand-worked by B from PLAN.md sections 4, 5, 8 and 9; confirmed by B (Group 2 of add-simulation-engine); all four members agreed to the fixture",
+    "metrics": {
+      "S0": [
+        {
+          "dr": 1.0,
+          "overloaded_arcs": 0
+        },
+        {
+          "dr": 0.7058823529411765,
+          "dr_by_class": {
+            "0": 0.7222222222222222,
+            "1": 0.6666666666666666,
+            "2": 0.7474747474747475
+          },
+          "overloaded_arcs": 1
+        }
+      ],
+      "S0-QoS": [
+        {
+          "dr": 1.0,
+          "overloaded_arcs": 0
+        },
+        {
+          "dr": 0.7058823529411765,
+          "dr_by_class": {
+            "0": 1.0,
+            "1": 0.75,
+            "2": 0.5454545454545454
+          },
+          "overloaded_arcs": 1
+        }
+      ],
+      "S2": [
+        {
+          "dr": 1.0,
+          "overloaded_arcs": 0
+        },
+        {
+          "dr": 1.0,
+          "dr_by_class": {
+            "0": 1.0,
+            "1": 1.0,
+            "2": 1.0
+          },
+          "overloaded_arcs": 0
+        }
+      ]
+    }
+  }
+}

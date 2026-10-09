@@ -12,6 +12,7 @@ import pytest
 from pydantic import TypeAdapter
 
 from core.model import types
+from core.sim.scenario import ScenarioFixture
 
 FIXTURES = Path(__file__).resolve().parents[3] / "fixtures"
 
@@ -21,7 +22,7 @@ FOLDER_MODELS = {
     "flows": TypeAdapter(list[types.Flow]),
     "snapshots": TypeAdapter(types.Snapshot),
     "decisions": TypeAdapter(types.DecisionRecord),
-    "scenarios": TypeAdapter(types.Scenario),
+    "scenarios": TypeAdapter(ScenarioFixture),  # {"scenario": Scenario, "expect": {...}}
 }
 
 SECTION_7_NAMES = [
