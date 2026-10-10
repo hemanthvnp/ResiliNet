@@ -1,3 +1,10 @@
+## Problem statement
+
+**Problem Statement 4: Network Rerouter.**
+
+> Develop a network simulation and rerouting system that responds to link failures and attempts to maintain critical communication while efficiently using the remaining network capacity.
+
+
 # Network Rerouter
 
 When a link fails on a campus network, routing usually sends everything onto the next-shortest path, even if that path is already full. Network Rerouter is a simulator of a campus network with a central routing controller. You fail and recover links. After each event the controller recomputes every route, and the system shows what was delivered, what was not, and why.
@@ -17,16 +24,12 @@ It compares four routing policies on exactly the same network, traffic and failu
 
 | Member | Roll number | Role | Owns |
 |---|---|---|---|
-| Hemanth Vasuthev | 24pw16 | A: routing | `core/routing/`, `core/explain/` |
+| Hemanth Vasudev | 24pw16 | A: routing | `core/routing/`, `core/explain/` |
 | Jithendra | 24pw37 | B: simulation, model, metrics | `core/model/`, `core/gen/`, `core/sim/`, `core/metrics/` |
 | Varunesh | 24pw28 | C: frontend | `frontend/` |
 | Nithiish | 24pw24 | D: integration and QA | `api/`, `tests/`, `cli/`, and the cycle 2 additions in `ext/` and `examples/` |
 
-## Problem statement
 
-**Problem Statement 4: Network Rerouter.**
-
-> Develop a network simulation and rerouting system that responds to link failures and attempts to maintain critical communication while efficiently using the remaining network capacity.
 
 We read it as follows. Model a campus network carrying traffic of different importance. Let users create or generate a topology, and fail and recover links. Then reroute traffic so that critical services keep working, no link is driven past its capacity, and every decision can be explained.
 
